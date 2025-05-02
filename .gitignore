@@ -172,3 +172,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# Others
+
+**/__pycache__
+**/*.db
+**/flask_session
+
+.env

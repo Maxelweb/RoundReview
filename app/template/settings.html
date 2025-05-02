@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content">
+    <h2>{{ title }}</h2>
+    {% if output %}
+    <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
+    {% endif %}
+    <h3>Change password</h3>
+    <form action="{{ url_for('basic.settings') }}" method="post">
+        <fieldset>
+            <div>
+                <input type="password" name="old_password" min="4" placeholder="Old password" class="my-1" required>
+                <input type="password" name="new_password" min="4" placeholder="New password" class="my-1" required>
+                <input type="password" name="confirm_password" min="4" placeholder="Confirm password" class="my-1" required>
+            </div>
+            <input type="submit" class="my-1" value="Confirm">
+        </fieldset>
+    </form>
+</section>
+{% endblock %}

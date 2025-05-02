@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content">
+    <h2>{{ title }}</h2>
+    <p>Welcome to Round Review! <i class="far fa-smile"></i></p> 
+    <p>This is a simple web application to review documents.</p>
+    {% if logged %}
+        You are logged in.
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+services:
+  roundreview_app:
+    container_name: "roundreview_app"
+    build: .
+    restart: unless-stopped
+    ports: 
+      - "8080:8080"
+    volumes:
+      - sessions:/app/flask_session:rw
+      - database:/app/database:rw
+      - ./app:/app/app
+
+volumes:
+  sessions:
+  database:

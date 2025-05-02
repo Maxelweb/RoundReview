@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content">
+    <h2 class="error">{{ title }} <small>admin</small></h2>
+    <h3>Search</h3>
+    <form action="{{ url_for('admin.logs') }}" method="get">
+        <fieldset>
+            <div class="my-1">
+                <input type="text" name="action" placeholder="Search for action" {% if action %}value="{{ action }}"{% endif %} class="my-1 custom-input">
+                <input type="text" name="user_id" placeholder="Search for User ID" {% if user_id %}value="{{ user_id }}"{% endif %} class="my-1 custom-input">
+            </div>
+            <input type="submit" class="my-1" value="Search">
+            {% if action %}
+            <button type="button" class="my-1" onclick="window.location.href='{{ url_for('admin.logs') }}'">
+                Clear <i class="fas fa-times"></i>
+            </button>
+            {% endif %}
+        </fieldset>
+    </form>
+    <h3>Logs list</h3>
+    {% if logs|length == 0 %}
+    <p class="muted">No logs available</p>
+    {% else %}
+    <div class="scroll">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Submission date</th>
+                <th>User</th>
+                <th>Action</th>
+            </tr>
+            {% for log in logs %}
+                <tr>
+                    <td>#{{ log.id }}</a></td>
+                    <td>{{ log.date }}</td>
+                    <td><a href="{{ url_for('admin.users', user_id=log.user.id) }}">{{ log.user.name }}</a></td>
+                    <td class="tleft">{{ log.action }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
