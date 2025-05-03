@@ -110,9 +110,38 @@ class Database:
             );
         ''')
         self.commit()
+        self.c.execute('''                        
+            CREATE TABLE IF NOT EXISTS "project" (
+                "id"	INTEGER,
+                "title"	TEXT NOT NULL,
+                "deleted" INTEGER DEFAULT 0,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            );
+        ''')
+        self.commit()
+        self.c.execute('''                        
+            CREATE TABLE IF NOT EXISTS "user_project" (
+                "project_id" INTEGER REFERENCES project(id),
+                "user_id" INTEGER REFERENCES user(id),
+                "role" VARCHAR(32) DEFAULT NULL
+            );
+        ''')
+        self.commit()
+        self.c.execute('''                        
+            CREATE TABLE IF NOT EXISTS "document" (
+                "id" CHAR(36),
+                "parent_id" INTEGER DEFAULT NULL REFERENCES document(id),
+                "user_id" INTEGER REFERENCES user(id),
+                "object_path" TEXT DEFAULT "/",
+                "title" TEXT NOT NULL,
+                "version" VARCHAR(64) NOT NULL,
+                "status" VARCHAR(32) DEFAULT NULL
+            );
+        ''')
+        self.commit()
         raw_tables = self.c.execute("SELECT name FROM sqlite_master").fetchall()
         if raw_tables is None:
             return False
         tables = [table[0] for table in raw_tables]
-        return "log" in tables and "user" in tables
+        return all(["log", "user", "project", "user_project", "document"], tables)
     
