@@ -133,6 +133,7 @@ class Database:
                 "parent_id" INTEGER DEFAULT NULL REFERENCES document(id),
                 "user_id" INTEGER REFERENCES user(id),
                 "object_path" TEXT DEFAULT "/",
+                "raw_document" BLOB NOT NULL,
                 "title" TEXT NOT NULL,
                 "version" VARCHAR(64) NOT NULL,
                 "status" VARCHAR(32) DEFAULT NULL
