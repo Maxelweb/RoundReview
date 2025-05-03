@@ -8,11 +8,11 @@
 <body>
     <header>
         <div class="container">
-            <a href="{{ url_for('basic.index') }}"><h1>Round Review</h1></a>
+            <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
             <div class="nav">
             {% if logged %}
                 {% if admin %}
-                <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+                <a href="{{ url_for('admin.users') }}" class="current"><i class="fas fa-users"></i> Users</a>
                 <a href="{{ url_for('admin.logs') }}"><i class="fas fa-rectangle-list"></i> Logs</a>
                 {% endif %}
                 <a href="{{ url_for('basic.settings') }}"><i class="fas fa-gears"></i> Settings</a>

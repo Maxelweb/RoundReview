@@ -11,9 +11,10 @@ header{
     margin: -8px -8px 0px;
     padding: 0;
     text-align: left;
-    border-bottom: 3px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
     color: #FFF;
-    background: linear-gradient(45deg,  rgba(254,191,1,1) 0%,rgba(168,90,1,1) 100%);
+    background: #f7f5f4;
+    height: 120px;
 }
 
 header img{
@@ -21,19 +22,25 @@ header img{
 }
 
 header a, header a:visited{
-    color: #FAFAFA;
+    color: #444;
 }
 
 header a:hover {
-    color: #333;
+    color: #222;
 }
 
 header h1{
     display: inline-block;
     margin: 14px 12px;
     vertical-align: top;
-    font-family: Arial, Helvetica, sans-serif;
 }
+
+header .logo h1 {
+    font-family: "Caveat Brush", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
 
 footer img{
     display: block;
@@ -43,10 +50,9 @@ footer img{
 
 section{
     margin: 0 0 20px;
-    background-color: #F0F0F0;
+    background-color: #FFF;
     padding: 12px 14px 24px;
-    max-width: 1000px;
-    width: 90%;
+    max-width: 1115px;
     text-align: left;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -72,17 +78,38 @@ footer {
 
 
 .container {
-    max-width: 950px;
+    max-width: 1115px;
     margin: 0 auto;
 }
 
 .nav {
-    display: inline-block;
-    margin: 10px 20px;
+    display: block;
+    margin: 6px 12px;
 }
 
 .nav a{
     display: inline-block;
     padding: 10px;
     text-decoration: none;
+    margin-right: 5px;
+}
+
+.nav a:hover{
+    background-color: #ebebeb;
+    border: color(#CCC);
+    border-radius: 8px;
+}
+
+.nav a.current {
+    color: var(--primary);
+    padding: 10px 10px 15px;
+    border-bottom: 2px solid var(--primary);
+    border-radius: 0;
+}
+
+
+.nav a.current:hover {
+    color: var(--secondary);
+    border-color: var(--secondary);
+    background-color: transparent;
 }
