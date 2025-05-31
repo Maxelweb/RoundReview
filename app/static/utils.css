@@ -17,25 +17,25 @@
 }
 
 .bg-muted {
-    background-color: #747474;
+    background-color: var(--muted);
     color: white;
     font-weight: bold;
 }
 
 .bg-error {
-    background-color: rgb(181, 57, 57);
+    background-color: var(--error);
     color: white;
     font-weight: bold;
 }
 
 .bg-success {
-    background-color: rgb(121, 185, 1);;
+    background-color: var(--success);
     color: white;
     font-weight: bold;
 }
 
 .bg-warning {
-    background-color: rgb(185, 132, 1);
+    background-color: var(--warning);
     color: white;
     font-weight: bold;
 }

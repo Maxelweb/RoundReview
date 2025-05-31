@@ -1,0 +1,29 @@
+/* 
+    Round Review Theme CSS - DARK theme
+    by Maxelweb
+*/
+
+/* ========================================== */
+
+:root {
+    --primary: #4f73dd;
+    --secondary: #666666;
+    --warning: #784e27;
+    --success: #658131;
+    --error: #813636;
+    --muted: #666666;
+
+
+    --theme-body-bg: #212123;
+    --theme-body-text: #F0F0F0;
+    --theme-banner-bg: #2c2c2f;
+    --theme-banner-border: #474746;
+    --theme-banner-text: #F0F0F0;
+    --theme-banner-a: #CCC;
+    --theme-banner-a-hover: #C0C0C0;
+    --theme-banner-nav-hover: #434344;
+    --theme-input-tables-bg: #272729;
+    --theme-input-tables-border: #1b1b1d;
+    --theme-input-focus-primary: #1d2c5a;
+    --theme-input-focus-secondary: #2e2f30;
+}

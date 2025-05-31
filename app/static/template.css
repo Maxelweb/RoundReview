@@ -11,9 +11,9 @@ header{
     margin: -8px -8px 0px;
     padding: 0;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    color: #FFF;
-    background: #f7f5f4;
+    border-bottom: 1px solid var(--theme-banner-border);
+    color: var(--theme-banner-text);
+    background: var(--theme-banner-bg);
     height: 120px;
 }
 
@@ -22,11 +22,11 @@ header img{
 }
 
 header a, header a:visited{
-    color: #444;
+    color: var(--theme-banner-a);
 }
 
 header a:hover {
-    color: #222;
+    color: var(--theme-banner-a-hover);
 }
 
 header h1{
@@ -50,7 +50,7 @@ footer img{
 
 section{
     margin: 0 0 20px;
-    background-color: #FFF;
+    background-color: var(--theme-body-bg);
     padding: 12px 14px 24px;
     max-width: 1115px;
     text-align: left;
@@ -95,8 +95,8 @@ footer {
 }
 
 .nav a:hover{
-    background-color: #ebebeb;
-    border: color(#CCC);
+    background-color: var(--theme-banner-nav-hover);
+    border-color: var(--theme-banner-border);
     border-radius: 8px;
 }
 

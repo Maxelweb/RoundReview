@@ -1,0 +1,28 @@
+/* 
+    Round Review Theme CSS - LIGHT theme
+    by Maxelweb
+*/
+
+/* ========================================== */
+
+:root {
+    --primary: #37519d;
+    --secondary: #333;
+    --warning: #b98401;
+    --success: #79b901;
+    --error: #b53939;
+    --muted: #747474;
+
+    --theme-body-bg: #FFF;
+    --theme-body-text: #333;
+    --theme-banner-bg: #f7f5f4;
+    --theme-banner-border: #e0e0e0;
+    --theme-banner-text: #333;
+    --theme-banner-a: #444;
+    --theme-banner-a-hover: #222;
+    --theme-banner-nav-hover: #ebebeb;
+    --theme-input-tables-bg: #fdfdfd;
+    --theme-input-tables-border: #eee9e9;
+    --theme-input-focus-primary: #c9d0da;
+    --theme-input-focus-secondary: #d1d1d1;
+}
