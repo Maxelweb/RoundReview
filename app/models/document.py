@@ -10,6 +10,7 @@ class DocumentStatus(Enum):
     def values() -> list:
         return list(map(lambda t: t.value, DocumentStatus))
 
+# FIXME: to refactor
 class Document:
 
     DATE_FORMAT = "%Y-%m-%d, %H:%M"

@@ -128,15 +128,16 @@ class Database:
         ''')
         self.commit()
         self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "document" (
+            CREATE TABLE IF NOT EXISTS "object" (
                 "id" CHAR(36),
-                "parent_id" INTEGER DEFAULT NULL REFERENCES document(id),
+                "parent_id" INTEGER DEFAULT NULL REFERENCES object(id),
                 "user_id" INTEGER REFERENCES user(id),
-                "object_path" TEXT DEFAULT "/",
-                "raw_document" BLOB NOT NULL,
-                "title" TEXT NOT NULL,
-                "comments" TEXT,
-                "version" VARCHAR(64) NOT NULL,
+                "project_id" INTEGER REFERENCES project(id),
+                "name" TEXT NOT NULL,
+                "description" TEXT DEFAULT NULL,
+                "raw" BLOB DEFAULT NULL,
+                "comments" TEXT DEFAULT NULL,
+                "version" VARCHAR(64) DEFAULT NULL,
                 "status" VARCHAR(32) DEFAULT NULL
             );
         ''')
@@ -146,6 +147,6 @@ class Database:
             return False
         tables = [table[0] for table in raw_tables]
         log.debug("Checking tables creation...")
-        return all(t in tables for t in ["log", "user", "project", "user_project", "document"])
+        return all(t in tables for t in ["log", "user", "project", "user_project", "object"])
     
     
