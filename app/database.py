@@ -135,6 +135,7 @@ class Database:
                 "object_path" TEXT DEFAULT "/",
                 "raw_document" BLOB NOT NULL,
                 "title" TEXT NOT NULL,
+                "comments" TEXT,
                 "version" VARCHAR(64) NOT NULL,
                 "status" VARCHAR(32) DEFAULT NULL
             );
@@ -144,5 +145,7 @@ class Database:
         if raw_tables is None:
             return False
         tables = [table[0] for table in raw_tables]
-        return all(["log", "user", "project", "user_project", "document"], tables)
+        log.debug("Checking tables creation...")
+        return all(t in tables for t in ["log", "user", "project", "user_project", "document"])
+    
     

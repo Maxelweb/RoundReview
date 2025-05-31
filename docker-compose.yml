@@ -10,6 +10,9 @@ services:
       - database:/app/database:rw
       - ./app:/app/app
 
+    environment:
+      - DEBUG=true
+
 volumes:
   sessions:
   database:
