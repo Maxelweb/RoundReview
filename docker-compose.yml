@@ -7,7 +7,7 @@ services:
       - "8080:8080"
     volumes:
       - sessions:/app/flask_session:rw
-      - database:/app/database:rw
+      - ./database:/app/database:rw
       - ./app:/app/app
 
     environment:
@@ -15,4 +15,4 @@ services:
 
 volumes:
   sessions:
-  database:
+  # database:

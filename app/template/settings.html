@@ -7,7 +7,7 @@
     <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
     {% endif %}
     <h3>Change password</h3>
-    <form action="{{ url_for('basic.settings') }}" method="post">
+    <form action="{{ url_for('settings.password') }}" method="post">
         <fieldset>
             <div>
                 <input type="password" name="old_password" min="4" placeholder="Old password" class="my-1" required>
@@ -15,6 +15,37 @@
                 <input type="password" name="confirm_password" min="4" placeholder="Confirm password" class="my-1" required>
             </div>
             <input type="submit" class="my-1" value="Confirm">
+            <input type="reset" class="secondary" value="Reset">
+        </fieldset>
+    </form>
+
+    <h3>Developer</h3>
+    <form action="{{ url_for('settings.properties') }}" method="post">
+        <fieldset>
+            <div class="my-2">
+                <input type="checkbox" name="enable_api_key" id="enableApiKey" value="1"
+                {% if user.has_prop("api_key") %}
+                checked
+                {% endif %}
+                > <label for="enableApiKey">Enable API Key</label>
+
+                {% if user.has_prop("api_key") %}
+                <table class="my-2">
+                    <tr>
+                        <th>Your API Key
+                        </th>
+                        <td>
+                            <input type="password" class="inline raw my-1" readonly value="{{ user.prop('api_key') }}" id="apiKeyInput">
+                            <button type="button" class="inline" onclick="document.getElementById('apiKeyInput').type = document.getElementById('apiKeyInput').type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('fa-eye'); this.querySelector('i').classList.toggle('fa-eye-slash');">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <p class="small block muted">Do not share this key. To regenerate the key, disable and re-enable the API key setting.</p>
+                        </td>
+                    </tr>
+                </table>
+                {% endif %}
+            </div>
+            <input type="submit" class="my-1" value="Update">
             <input type="reset" class="secondary" value="Reset">
         </fieldset>
     </form>

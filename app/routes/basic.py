@@ -35,6 +35,7 @@ def login():
         ).fetchone()
         if res:
             session["user"] = User(res)
+            session["user"].load_properties_from_db(db)
             db.log(session["user"].id, "login")
             return redirect("/")
         else:
@@ -53,43 +54,3 @@ def logout():
     """ Logout page """
     session.pop("user", None)
     return redirect("/")
-
-@basic_blueprint.route("/settings", methods=["POST", "GET"])
-def settings():
-    """ Settings page """
-    output = ""
-    if not is_logged():
-        return redirect("/")
-    db = Database()
-    old_psw = request.form.get('old_password')
-    new_psw = request.form.get('new_password')
-    chk_psw = request.form.get('confirm_password')
-    if request.method == "POST" and old_psw is not None and new_psw is not None and chk_psw is not None:
-        if db.hash(old_psw) != session['user']._password:
-            output = ("error", "Old password wrong")
-        elif new_psw != chk_psw:
-            output = ("error", "New password does not match the confirm password field")
-        else:
-            db.c.execute(
-                'UPDATE user SET password = ? WHERE id = ? LIMIT 1', 
-                (db.hash(new_psw), session['user'].id)
-            ).fetchone()
-            db.commit()
-            res = db.c.execute(
-                'SELECT * FROM user WHERE id = ? LIMIT 1', (session['user'].id,)
-            ).fetchone()
-            if not res:
-                output = ("error", "Unable to re-load session, please logout.")
-            else:
-                session["user"] = User(res)
-                db.log(session["user"].id, "settings update (target=password)")
-                output = ("success", "Password changed successfully.")
-    db.close()
-    return render_template(
-        "settings.html",
-        title="Settings",
-        output=output,
-        version=VERSION,
-        logged=is_logged(),
-        admin=is_logged_admin(),
-    )

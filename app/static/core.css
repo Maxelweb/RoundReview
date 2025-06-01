@@ -125,8 +125,6 @@ input[type=reset].secondary:focus {
     background-color: var(--theme-input-focus-secondary);
 }
 
-
-
 textarea {
     max-width: 98% !important;
     resize: vertical;

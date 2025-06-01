@@ -87,6 +87,9 @@ class Database:
         self.commit()
 
     def __create_tables(self) -> bool:
+
+        tables_to_create = ["log", "user", "project", "project_user", "object"]
+
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS "log" (
                 "id"	INTEGER,
@@ -101,12 +104,20 @@ class Database:
         self.c.execute('''                        
             CREATE TABLE IF NOT EXISTS "user" (
                 "id"	INTEGER,
-                "name"	TEXT NOT NULL,
-                "email"	TEXT UNIQUE,
+                "name"	VARCHAR(32) NOT NULL,
+                "email"	VARCHAR(64) UNIQUE,
                 "password"	TEXT NOT NULL,
                 "admin"	INTEGER DEFAULT 0,
                 "deleted" INTEGER DEFAULT 0,
                 PRIMARY KEY("id" AUTOINCREMENT)
+            );
+        ''')
+        self.commit()
+        self.c.execute('''                        
+            CREATE TABLE IF NOT EXISTS "user_property" (
+                "key"	VARCHAR(32) NOT NULL,
+                "value"	TEXT NOT NULL,
+                "user_id" INTEGER REFERENCES user(id)
             );
         ''')
         self.commit()
@@ -120,10 +131,10 @@ class Database:
         ''')
         self.commit()
         self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "user_project" (
+            CREATE TABLE IF NOT EXISTS "project_user" (
                 "project_id" INTEGER REFERENCES project(id),
                 "user_id" INTEGER REFERENCES user(id),
-                "role" VARCHAR(32) DEFAULT NULL
+                "role" VARCHAR(32) NOT NULL
             );
         ''')
         self.commit()
@@ -147,6 +158,9 @@ class Database:
             return False
         tables = [table[0] for table in raw_tables]
         log.debug("Checking tables creation...")
-        return all(t in tables for t in ["log", "user", "project", "user_project", "object"])
+        if not all(t in tables for t in tables_to_create):
+            log.warning("Failed to create the following tables: %s", ", ".join([t for t in tables_to_create if t not in tables]))
+            return False
+        return True
     
     
