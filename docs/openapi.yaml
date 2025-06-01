@@ -1,0 +1,314 @@
+openapi: 3.0.2
+info:
+  title: RoundReview API
+  description: API documentation for the RoundReview application.
+  version: "1.0.0"
+  contact:
+    name: Support Team
+    email: support@roundreview.com
+    url: http://localhost
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /api/projects:
+    get:
+      summary: List projects
+      description: Retrieve a list of projects where the user is involved.
+      operationId: listProjects
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+        "401":
+          description: Unauthorized
+    post:
+      summary: Create a project
+      description: Create a new project.
+      operationId: createProject
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the project
+                  example: "New Project"
+      responses:
+        "201":
+          description: Project created successfully
+        "400":
+          description: Missing required field 'title'
+        "401":
+          description: Unauthorized
+  /api/projects/{project_id}:
+    put:
+      summary: Update a project
+      description: Update an existing project (only for project owners).
+      operationId: updateProject
+      tags:
+        - Projects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: New title for the project
+      responses:
+        "200":
+          description: Project updated successfully
+        "400":
+          description: Missing required field 'title'
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only project owners can update the project"
+  /api/projects/{project_id}/join:
+    post:
+      summary: Add a member to a project
+      description: Add a new member using their email to a project (only for project owners).
+      operationId: addMemberToProject
+      tags:
+        - Projects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email of the user to add
+                role:
+                  type: string
+                  description: Role of the user in the project
+      responses:
+        "201":
+          description: User added to the project successfully
+        "400":
+          description: Missing required fields or invalid role
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only project owners can add members"
+        "404":
+          description: User with the given email does not exist
+  /api/projects/{project_id}/unjoin:
+    delete:
+      summary: Remove a member from a project
+      description: Remove a member using their email from a project (only for project owners or the member themselves).
+      operationId: removeMemberFromProject
+      tags:
+        - Projects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email of the user to remove
+      responses:
+        "200":
+          description: User removed from the project successfully
+        "400":
+          description: Missing required field or invalid operation
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only project owners can remove other members"
+        "404":
+          description: User with the given email does not exist
+  /api/projects/{project_id}/objects:
+    get:
+      summary: List objects in a project
+      description: Retrieve a list of all objects inside the project.
+      operationId: listProjectObjects
+      tags:
+        - Projects
+        - Objects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of objects
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: You are not a member of this project"
+    post:
+      summary: Create an object in a project
+      description: Create a new object inside the project.
+      operationId: createProjectObjects
+      tags:
+        - Projects
+        - Objects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the object
+                description:
+                  type: string
+                  description: Description of the object
+                comments:
+                  type: string
+                  description: Comments about the object
+                version:
+                  type: string
+                  description: Version of the object
+                status:
+                  type: string
+                  description: Status of the object
+      responses:
+        "201":
+          description: Object created successfully
+        "400":
+          description: Missing required fields or invalid status
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: You are not a member of this project"
+  /api/objects/{object_id}:
+    get:
+      summary: Get object details
+      description: Retrieve detailed information of an object.
+      operationId: getObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object details
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: You are not a member of the project associated with this object"
+        "404":
+          description: Object not found
+    put:
+      summary: Update an object
+      description: Update an existing object.
+      operationId: updateObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                comments:
+                  type: string
+                version:
+                  type: string
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Object updated successfully
+        "400":
+          description: Missing request body or invalid fields
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only the object owner or a project owner can update the object"
+        "404":
+          description: Object not found
+    delete:
+      summary: Delete an object
+      description: Delete an existing object.
+      operationId: deleteObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object deleted successfully
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only the object owner or a project owner can delete the object"
+        "404":
+          description: Object not found
