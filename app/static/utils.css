@@ -40,6 +40,10 @@
     font-weight: bold;
 }
 
+.primary, .blue{
+    color: var(--primary);
+}
+
 .error, .red{
     color: rgb(168, 7, 7);
 }

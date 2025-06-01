@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content">
+    <h2>{{ title }}</h2>
+    {% if output %}
+    <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
+    {% endif %}
+
+    {% block inner_content %}{% endblock %}
+
+</section>
+{% endblock %}

@@ -12,9 +12,10 @@
             <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
             <div class="nav">
             {% if logged %}
+                <a href="{{ url_for('project.list') }}" class="current"><i class="fas fa-rocket"></i> Projects</a>
                 {% if admin %}
-                <a href="{{ url_for('admin.users') }}" class="current"><i class="fas fa-users"></i> Users</a>
-                <a href="{{ url_for('admin.logs') }}"><i class="fas fa-rectangle-list"></i> Logs</a>
+                    <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+                    <a href="{{ url_for('admin.logs') }}"><i class="fas fa-rectangle-list"></i> Logs</a>
                 {% endif %}
                 <a href="{{ url_for('settings.settings') }}"><i class="fas fa-gears"></i> Settings</a>
                 <a href="{{ url_for('basic.logout') }}"><i class="fas fa-arrow-right-from-bracket"></i> Logout</a>

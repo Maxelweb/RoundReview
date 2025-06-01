@@ -113,3 +113,8 @@ footer {
     border-color: var(--secondary);
     background-color: transparent;
 }
+
+.dropzone {
+    background-color: transparent !important;
+    border: 4px dashed var(--primary) !important;
+}

@@ -44,6 +44,25 @@ class Object:
             version=db_row[7],
             status=db_row[8]
         )
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "Object":
+        required_keys = {"id", "parent_id", "user_id", "project_id", "name", 
+                         "description", "comments", "version", "status"}
+        if not required_keys.issubset(data.keys()):
+            raise ValueError(f"Missing required keys: {required_keys - data.keys()}")
+        
+        return cls(
+            id=data["id"],
+            parent_id=data["parent_id"],
+            user_id=data["user_id"],
+            project_id=data["project_id"],
+            name=data["name"],
+            description=data["description"],
+            comments=data["comments"],
+            version=data["version"],
+            status=data["status"]
+        )
 
     def load_raw(self, db:Database) -> bool:
         result = db.c.execute(

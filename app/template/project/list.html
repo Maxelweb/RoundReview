@@ -1,0 +1,25 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <p>Click on a project to view the resources inside of it</p>
+
+    <div class="my-2">
+        <a href="{{ url_for('project.create') }}"><button><i class="fas fa-plus-circle"></i> New Project</button></a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Projects</th>
+        </tr>
+        {% for project in projects %}
+            <tr>
+                <td>
+                    <i class="fas fa-rocket primary my-1"></i>
+                    <a href="{{ url_for('project.view_objects', project_id=project.id) }}">{{ project.title }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}

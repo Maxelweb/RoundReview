@@ -1,9 +1,8 @@
-from types import SimpleNamespace
-from flask import render_template, request, session, redirect, Blueprint
-from .utils import is_logged, is_logged_admin
+from flask import request, session, Blueprint
+from .utils import is_logged
 from ..config import VERSION, log
 from ..database import Database
-from ..models import User, Log, Project, Property, Role, Object, ObjectStatus
+from ..models import User, Project, Property, Role, Object, ObjectStatus
 
 api_blueprint = Blueprint('api', __name__)
 
@@ -88,14 +87,16 @@ def project_list():
         db.close()
 
 @api_blueprint.route("/api/projects", methods=["POST"])
-def project_create():
+def project_create(args:dict=None):
     """ Create a new project """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
+    #data = args if args is not None else request.json
+    data = request.form or request.json
+    log.debug(data)
     if not data or "title" not in data:
         return {"error": "Missing required field 'title'"}, 400
 

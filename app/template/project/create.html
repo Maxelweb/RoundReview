@@ -1,0 +1,21 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <p>Fill the form below to create a new project.</p>
+
+    <form action="{{ url_for('project.create') }}" method="post">
+        <table>
+            <tr>
+                <th><label for="projectTitle">Project Title</label></th>
+                <td>
+                    <input type="text" id="projectTitle" name="title" placeholder="Enter project title" required class="my-1">
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="submit" value="Confirm">
+        </div>
+    </form>
+
+
+{% endblock %}

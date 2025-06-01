@@ -13,6 +13,14 @@ class Project:
         self.deleted = deleted
 
     @classmethod
+    def from_dict(cls, data: dict) -> "Project":
+        return cls(
+            id=data.get("id"),
+            title=data["title"],
+            deleted=data.get("deleted", 0)
+        )
+
+    @classmethod
     def from_db_row(cls, db_row: tuple) -> "Project":
         if len(db_row) != 3:
             raise ValueError("Unable to unserialize db row into a Project instance")
