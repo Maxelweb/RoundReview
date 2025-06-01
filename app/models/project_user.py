@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from enum import Enum
 
-class UserRole(Enum):
-    Reviewer = "Reviewer"
-    Editor = "Editor"
-    Owner = "Owner"
+class Role(Enum):
+    REVIEWER = "Reviewer"
+    EDITOR = "Editor"
+    OWNER = "Owner"
 
     @staticmethod
     def values() -> list:
-        return list(map(lambda t: t.value, UserRole))
+        return list(map(lambda t: t.value, Role))
 
 @dataclass
 class ProjectUser:
@@ -19,7 +19,7 @@ class ProjectUser:
     def __init__(self, project_id: int, user_id: int, role: str) -> None:
         self.project_id = project_id
         self.user_id = user_id
-        self.role = UserRole(role) if role in UserRole.values() else None
+        self.role = Role(role) if role in Role.values() else None
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "ProjectUser":

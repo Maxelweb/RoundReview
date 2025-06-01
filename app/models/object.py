@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from ..database import Database
 
 class ObjectStatus(Enum):
     NO_REVIEW = "No Review"
@@ -17,21 +18,20 @@ class Object:
     DATE_FORMAT = "%Y-%m-%d, %H:%M"
 
     def __init__(self, id: str, parent_id: int, user_id: int, project_id: int, name: str, 
-                 description: str, raw: bytes, comments: str, version: str, status: str) -> None:
+                 description: str, comments: str, version: str, status: str) -> None:
         self.id = id
         self.parent_id = parent_id
         self.user_id = user_id
         self.project_id = project_id
         self.name = name
         self.description = description
-        self.raw = raw
         self.comments = comments
         self.version = version
         self.status = ObjectStatus(status) if status in ObjectStatus.values() else None
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "Object":
-        if len(db_row) != 10:
+        if len(db_row) != 9:
             raise ValueError("Unable to unserialize db row into an Object instance")
         return cls(
             id=db_row[0],
@@ -40,11 +40,22 @@ class Object:
             project_id=db_row[3],
             name=db_row[4],
             description=db_row[5],
-            raw=db_row[6],
-            comments=db_row[7],
-            version=db_row[8],
-            status=db_row[9]
+            comments=db_row[6],
+            version=db_row[7],
+            status=db_row[8]
         )
+
+    def load_raw(self, db:Database) -> bool:
+        result = db.c.execute(
+            "SELECT raw FROM object WHERE id = ?;",
+            (self.id,)
+        ).fetchone()
+
+        if result is None:
+            return False
+
+        self.raw = result[0]
+        return True
 
     def to_dict(self) -> dict:
         return {
@@ -54,7 +65,6 @@ class Object:
             "project_id": self.project_id,
             "name": self.name,
             "description": self.description,
-            "raw": self.raw,
             "comments": self.comments,
             "version": self.version,
             "status": self.status.value if self.status else None
