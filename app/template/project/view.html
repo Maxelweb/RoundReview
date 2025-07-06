@@ -10,6 +10,10 @@
     <form action="/file-upload" class="dropzone" id="my-awesome-dropzone">
     </form>  -->
 
+    <div class="my-2">
+        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
+    </div>
+    
     <table>
         <tr>
             <th>Resource</th>

@@ -3,8 +3,8 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
-from ..models import Project, Object
-from .api import project_list, project_create, project_objects_list
+from ..models import Project, Object, ObjectStatus
+from .api import project_list, project_create, project_objects_list, project_objects_create
 
 project_blueprint = Blueprint('project', __name__)
 
@@ -47,7 +47,7 @@ def create():
         admin=is_logged_admin()
     )
 
-@project_blueprint.route('/projects/<project_id>', methods=["GET"])
+@project_blueprint.route('/projects/<project_id>/', methods=["GET"])
 def view_objects(project_id:str):
     """ View the objects of a specific project """
     output = ()
@@ -65,6 +65,26 @@ def view_objects(project_id:str):
         "project/view.html",
         title=project.title,
         objects=objects,
+        project=project,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin()
+    )
+
+@project_blueprint.route('/projects/<project_id>/create', methods=["GET"])
+def create_object(project_id:str):
+    """ Create a new object in project """
+    output = ()
+    if request.method == "POST":
+        res, status = project_objects_create()
+        if status == 201:
+            return redirect(f"/projects/{res["project_id"]}")
+        else:
+            output = ("error", res["error"])
+    return render_template(
+        "project/object/create.html",
+        title="Create new document",
         output=output,
         version=VERSION,
         logged=is_logged(),
