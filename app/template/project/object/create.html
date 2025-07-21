@@ -3,7 +3,7 @@
 {% block inner_content %}
     <p>Fill the form below to create a new document.</p>
 
-    <form action="#" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('project.create_object', project_id=project_id) }}" method="post" enctype="multipart/form-data">
         <table>
             <tr>
                 <th><label for="objectPdf">Location</label></th>
@@ -11,7 +11,7 @@
                     
                     <div id="locationInput" class="location-input" tabindex="0" style="display: flex; align-items: center; flex-wrap: wrap; padding: 4px; min-height: 26px;">
                         <code>/</code> &nbsp;
-                        <input type="hidden" name="location" id="locationHidden">
+                        <input type="hidden" name="path" id="locationHidden">
                         <span id="locationSegments" style="display: flex; align-items: center; flex-wrap: wrap;">
                             <span style="margin: 0px 2px;">/</span>
                         </span>
@@ -56,7 +56,7 @@
                                 locationSegments.appendChild(slash);
                             }
                         });
-                        locationHidden.value = segments.join('/');
+                        locationHidden.value = '/' + segments.join('/');
                     }
 
                     locationText.addEventListener('keydown', function(e) {
@@ -98,7 +98,7 @@
             <tr>
                 <th><label for="objectPdf">PDF File</label></th>
                 <td>
-                    <input type="file" id="objectPdf" name="pdf" accept="application/pdf" required class="my-1">
+                    <input type="file" id="objectPdf" name="file" accept="application/pdf" required class="my-1">
                 </td>
             </tr>
             <tr>

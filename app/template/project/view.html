@@ -1,7 +1,7 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
-    <h3><i class="fas fa-rocket primary my-1"></i> Project Resources</h3>
+    <h3><i class="fas fa-file primary my-1"></i> Project Resources</h3>
     <p>Click on a resource to explore more.</p>
 
     <!--  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
@@ -14,15 +14,28 @@
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
     
-    <table>
+    <table id="resource-table">
         <tr>
             <th>Resource</th>
             <th>Description</th>
+            <th>Status</th>
+            <th>Version</th>
         </tr>
         {% for object in objects %}
             <tr>
-                <td><a href="#">{{ object.name }}</a></td>
+                <td><a href="">{{ object.name }}</a></td>
                 <td class="small">{{ object.description }}</td>
+                <td class="small" style="color: 
+                    {% if object.status.value == 'No Review' %}gray
+                    {% elif object.status.value == 'Pending Review' %}orange
+                    {% elif object.status.value == 'Under Review' %}blue
+                    {% elif object.status.value == 'Require Changes' %}red
+                    {% elif object.status.value == 'Approved' %}green
+                    {% else %}black
+                    {% endif %};">
+                    {{ object.status.value }}
+                </td>
+                <td class="small">{{ object.version }}</td>
             </tr>
         {% endfor %}
         </table>

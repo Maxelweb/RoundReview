@@ -1,3 +1,4 @@
+import uuid
 from flask import request, session, Blueprint
 from .utils import is_logged
 from ..config import VERSION, log
@@ -367,7 +368,7 @@ def project_objects_list(project_id:str):
         # Fetch all objects inside the project
         rows = db.c.execute(
             '''
-            SELECT id, parent_id, user_id, project_id, name, description, comments, version, status
+            SELECT id, path, user_id, project_id, name, description, comments, version, status
             FROM object
             WHERE project_id = ? AND status IS NOT NULL
             ''',
@@ -385,22 +386,35 @@ def project_objects_list(project_id:str):
         db.close()
 
 @api_blueprint.route("/api/projects/<project_id>/objects", methods=["POST"])
-def project_objects_create(project_id:str):
-    """ Create a new object inside the project """
+def project_objects_create(project_id: str):
+    """ Create a new object inside the project, accepting application/pdf and storing file as blob """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
-    if not data or "name" not in data or "description" not in data:
-        return {"error": "Missing required fields 'name' and 'description'"}, 400
+    # Check if the request contains a file
+    if "file" not in request.files:
+        return {"error": "Missing required file 'file'"}, 400
 
-    name = data["name"]
-    description = data["description"]
-    comments = data.get("comments", "")
-    version = data.get("version", "")
-    status = data.get("status", ObjectStatus.NO_REVIEW.value)
+    file = request.files["file"]
+
+    # Validate file type
+    if file.content_type != "application/pdf":
+        return {"error": "Invalid file type. Only 'application/pdf' is allowed"}, 400
+
+    # Extract metadata from the request
+    name = request.form.get("name")
+    description = request.form.get("description", "")
+    path = request.form.get("path", "/")
+    version = request.form.get("version", "")
+    status = request.form.get("status", ObjectStatus.NO_REVIEW.value)
+
+    if not path.startswith("/"):
+        return {"error": "Invalid path. Path must start with '/'."}, 400
+
+    if not name:
+        return {"error": "Missing required field 'name'"}, 400
 
     if status not in ObjectStatus.values():
         return {"error": f"Invalid status. Valid statuses are: {', '.join(ObjectStatus.values())}"}, 400
@@ -420,13 +434,17 @@ def project_objects_create(project_id:str):
         if not member_check:
             return {"error": "Forbidden: You are not a member of this project"}, 403
 
+        # Read the file content as blob
+        file_blob = file.read()
+
         # Insert the new object into the database
+        object_id = str(uuid.uuid4())
         db.c.execute(
             '''
-            INSERT INTO object (id, parent_id, user_id, project_id, name, description, comments, version, status)
-            VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO object (id, path, user_id, project_id, name, description, version, status, raw)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
-            (user_id, project_id, name, description, comments, version, status)
+            (object_id, path, user_id, project_id, name, description, version, status, file_blob)
         )
         db.commit()
 
@@ -440,7 +458,7 @@ def project_objects_create(project_id:str):
         db.close()
 
 @api_blueprint.route("/api/objects/<object_id>", methods=["GET"])
-def project_objects(object_id: str):
+def object_get(object_id: str):
     """ Get detail information of the object """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
@@ -479,7 +497,7 @@ def project_objects(object_id: str):
         # Fetch the object details
         object_row = db.c.execute(
             '''
-            SELECT id, parent_id, user_id, project_id, name, description, comments, version, status
+            SELECT id, path, user_id, project_id, name, description, comments, version, status
             FROM object
             WHERE id = ?
             ''',
@@ -503,7 +521,7 @@ def project_objects(object_id: str):
         db.close()
 
 @api_blueprint.route("/api/objects/<object_id>", methods=["DELETE"])
-def project_objects_delete(object_id: str):
+def object_delete(object_id: str):
     """ Delete an object """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
@@ -566,7 +584,7 @@ def project_objects_delete(object_id: str):
         db.close()
 
 @api_blueprint.route("/api/objects/<object_id>", methods=["PUT"])
-def project_objects_update(object_id: str):
+def object_update(object_id: str):
     """ Update an object """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
@@ -577,7 +595,7 @@ def project_objects_update(object_id: str):
     if not data:
         return {"error": "Missing request body"}, 400
 
-    allowed_fields = {"name", "description", "comments", "version", "status"}
+    allowed_fields = {"name", "description", "comments", "version", "status", "path"}
     updates = {key: value for key, value in data.items() if key in allowed_fields}
 
     if "status" in updates and updates["status"] not in ObjectStatus.values():

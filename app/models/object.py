@@ -17,10 +17,10 @@ class Object:
 
     DATE_FORMAT = "%Y-%m-%d, %H:%M"
 
-    def __init__(self, id: str, parent_id: int, user_id: int, project_id: int, name: str, 
+    def __init__(self, id: str, path: int, user_id: int, project_id: int, name: str, 
                  description: str, comments: str, version: str, status: str) -> None:
         self.id = id
-        self.parent_id = parent_id
+        self.path = path
         self.user_id = user_id
         self.project_id = project_id
         self.name = name
@@ -35,7 +35,7 @@ class Object:
             raise ValueError("Unable to unserialize db row into an Object instance")
         return cls(
             id=db_row[0],
-            parent_id=db_row[1],
+            path=db_row[1],
             user_id=db_row[2],
             project_id=db_row[3],
             name=db_row[4],
@@ -47,14 +47,14 @@ class Object:
     
     @classmethod
     def from_dict(cls, data: dict) -> "Object":
-        required_keys = {"id", "parent_id", "user_id", "project_id", "name", 
+        required_keys = {"id", "path", "user_id", "project_id", "name", 
                          "description", "comments", "version", "status"}
         if not required_keys.issubset(data.keys()):
             raise ValueError(f"Missing required keys: {required_keys - data.keys()}")
         
         return cls(
             id=data["id"],
-            parent_id=data["parent_id"],
+            path=data["path"],
             user_id=data["user_id"],
             project_id=data["project_id"],
             name=data["name"],
@@ -69,17 +69,15 @@ class Object:
             "SELECT raw FROM object WHERE id = ?;",
             (self.id,)
         ).fetchone()
-
         if result is None:
             return False
-
         self.raw = result[0]
         return True
 
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "parent_id": self.parent_id,
+            "path": self.path,
             "user_id": self.user_id,
             "project_id": self.project_id,
             "name": self.name,

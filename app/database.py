@@ -141,7 +141,7 @@ class Database:
         self.c.execute('''                        
             CREATE TABLE IF NOT EXISTS "object" (
                 "id" CHAR(36),
-                "parent_id" INTEGER DEFAULT NULL REFERENCES object(id),
+                "path" TEXT NOT NULL,
                 "user_id" INTEGER REFERENCES user(id),
                 "project_id" INTEGER REFERENCES project(id),
                 "name" TEXT NOT NULL,
