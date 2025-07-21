@@ -60,13 +60,29 @@ def view_objects(project_id:str):
     if status == 200:
         objects = [Object.from_dict(elem) for elem in res["objects"]]
         print("object paths:", [obj.path for obj in objects])
-                
+
+        def build_tree(objects):
+            tree = {'root': {'_objects': []}}
+            for obj in objects:
+                path_parts = obj.path.strip('/').split('/')
+                current_level = tree['root']
+                for part in path_parts:
+                    if part not in current_level:
+                        current_level[part] = {'_objects': []}
+                    current_level = current_level[part]
+                current_level['_objects'].append(obj)
+            return tree
+
+        tree = build_tree(objects)
+        print("tree:", tree)
+
     else:
         output = ("error", res["error"])
     return render_template(
         "project/view.html",
         title=project.title,
         objects=objects,
+        tree=tree,
         project=project,
         output=output,
         version=VERSION,
