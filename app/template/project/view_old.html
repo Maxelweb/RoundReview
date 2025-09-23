@@ -13,8 +13,7 @@
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
-    {{ path }}
-
+    
     <table id="resource-table" class="resource-table">
         <tr>
             <th colspan="4">Resources</th>
@@ -22,21 +21,19 @@
         {% macro render_tree(tree, parent_path='') %}
             {% for key, value in tree.items() %}
             {% if key != '_objects' %}
-                {% set current_path = parent_path + '/' + key %}
-                <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %}>
+                <tr class="folder-row" data-folder-path="{{ parent_path }}/{{ key }}">
                 <td colspan="4">
                     <i class="fas fa-folder"></i>
-                    <a href="#" class="folder-link">{{ key }}</a> 
-                    <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}">
-                        <i class="fas fa-plus-circle"></i>
+                    <a href="#" class="folder-link">
+                    {{ key }}
                     </a>
                 </td>
                 </tr>
                 {% if value %}
-                <tr class="folder-content" data-folder-path="{{ current_path }}" style="display: {% if path and (path == current_path or path.startswith(current_path + '/')) %}table-row{% else %}none{% endif %};">
+                <tr class="folder-content" data-folder-path="{{ parent_path }}/{{ key }}" style="display: none;">
                     <td colspan="4">
                     <table class="nested-table">
-                        {{ render_tree(value, current_path) }}
+                        {{ render_tree(value, parent_path + '/' + key) }}
                     </table>
                     </td>
                 </tr>
@@ -79,9 +76,7 @@
                     const folderPath = this.closest('.folder-row').dataset.folderPath;
                     const folderContent = document.querySelector(`.folder-content[data-folder-path="${folderPath}"]`);
                     if (folderContent) {
-                        const isOpen = folderContent.style.display !== 'none';
-                        folderContent.style.display = isOpen ? 'none' : '';
-                        this.closest('.folder-row').dataset.open = !isOpen;
+                        folderContent.style.display = folderContent.style.display === 'none' ? '' : 'none';
                     }
                 });
             });

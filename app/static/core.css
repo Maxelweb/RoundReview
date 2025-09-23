@@ -17,7 +17,7 @@ body {
 }
 
 a {
-    color:#37519d;
+    color:var(--theme-a-link);
 }
 
 a:hover {
@@ -25,7 +25,7 @@ a:hover {
 }
 
 a:visited {
-    color:#2755df;
+    color: var(--theme-a-link-visited);
 }
 
 .raw {

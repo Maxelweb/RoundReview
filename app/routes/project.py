@@ -50,6 +50,7 @@ def create():
 @project_blueprint.route('/projects/<project_id>/', methods=["GET"])
 def view_objects(project_id:str):
     """ View the objects of a specific project """
+    path = request.args.get('path', '/') # Default to root if no path is provided
     output = ()
     objects = {}
     project = None
@@ -59,7 +60,7 @@ def view_objects(project_id:str):
     res, status = project_objects_list(project_id)
     if status == 200:
         objects = [Object.from_dict(elem) for elem in res["objects"]]
-        print("object paths:", [obj.path for obj in objects])
+        log.debug("view_objects - object paths:", [obj.path for obj in objects])
 
         def build_tree(objects):
             tree = {'root': {'_objects': []}}
@@ -74,7 +75,7 @@ def view_objects(project_id:str):
             return tree
 
         tree = build_tree(objects)
-        print("tree:", tree)
+        log.debug("view_objects - tree: %s", tree)
 
     else:
         output = ("error", res["error"])
@@ -83,6 +84,7 @@ def view_objects(project_id:str):
         title=project.title,
         objects=objects,
         tree=tree,
+        path=path,
         project=project,
         output=output,
         version=VERSION,

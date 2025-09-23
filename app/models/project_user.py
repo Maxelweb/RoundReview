@@ -14,7 +14,7 @@ class Role(Enum):
 class ProjectUser:
     project_id: int
     user_id: int
-    role: str
+    role: Role | None
 
     def __init__(self, project_id: int, user_id: int, role: str) -> None:
         self.project_id = project_id

@@ -118,3 +118,28 @@ footer {
     background-color: transparent !important;
     border: 4px dashed var(--primary) !important;
 }
+
+table.resource-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+table.resource-table td, table.resource-table th {
+    padding: 10px 14px;
+}
+
+table.nested-table {
+    border: none;
+}
+table.nested-table td {
+    border: none;
+}
+
+.status-label {
+    font-size: 90%;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #FFF;
+}
