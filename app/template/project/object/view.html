@@ -1,0 +1,77 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <h3><i class="fas fa-file primary my-1"></i> Document detail </h3>
+
+    <div class="object-details">
+        <form method="POST" action="#">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Name:</th>
+                    <td>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ object.name }}" {% if not can_edit %}readonly{% endif %}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description:</th>
+                    <td>
+                        <textarea id="description" name="description" class="form-control" placeholder="No description" {% if not can_edit %}readonly{% endif %}>{{ object.description }}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Version:</th>
+                    <td>
+                        <input type="text" id="version" name="version" class="form-control" value="{{ object.version }}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Status:</th>
+                    <td>
+                        <span class="status-label" style="background-color: 
+                        {% if object.status.value == 'No Review' %}gray
+                        {% elif object.status.value == 'Pending Review' %}orange
+                        {% elif object.status.value == 'Under Review' %}blue
+                        {% elif object.status.value == 'Require Changes' %}red
+                        {% elif object.status.value == 'Approved' %}green
+                        {% else %}black
+                        {% endif %};">
+                            {{ object.status.value }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Actions:</th>
+                    <td>
+                        {% if can_comment %}
+                        <div class="form-group text-center">
+                            <button id="start-reviewing" class="btn btn-secondary">Start Reviewing</button>
+                        </div>
+                        {% endif %}
+                        {% if object.status == 'Approved' %}
+                        <div class="form-group text-center">
+                            <a href="{{ url_for('object.download_signed', object_id=object.id) }}" class="btn btn-success">
+                                Download Digitally Signed Version
+                            </a>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if can_edit %}
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('start-reviewing').addEventListener('click', function () {
+            alert('Reviewing started. You can now add comments.');
+        });
+    </script>
+
+
+{% endblock %}

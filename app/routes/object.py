@@ -1,0 +1,46 @@
+from types import SimpleNamespace
+from flask import render_template, request, session, redirect, Blueprint
+from .utils import is_logged, is_logged_admin
+from ..config import VERSION, log
+from ..database import Database
+from ..models import Project, Object, ObjectStatus
+from .api import project_list, object_get
+
+object_blueprint = Blueprint('object', __name__)
+
+@object_blueprint.route('/projects/<project_id>/objects/<object_id>', methods=["GET"])
+def view_object(project_id: str, object_id: str):
+    """ View and handle the object of a specific project """
+    output = ()
+    project = None
+    obj = None
+    can_edit = False
+    can_comment = False
+
+    # Fetch project details
+    res, status = project_list()
+    if status == 200:
+        project = next((Project.from_dict(elem) for elem in res["projects"] if elem["id"] == int(project_id)), None)
+        
+    # Fetch object details
+    res, status = object_get(object_id)
+    if status == 200:
+        obj = Object.from_dict(res["object"])
+        log.debug("view_object - object details: %s", obj)
+        can_edit = True #FIXME: obj.can_edit(session.get("user_id"))
+        can_comment = True #FIXME: obj.can_comment(session.get("user_id"))
+    else:
+        output = ("error", res["error"])
+
+    return render_template(
+        "project/object/view.html",
+        title=obj.name if obj else "Object",
+        object=obj,
+        project=project,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
+        can_edit=can_edit,
+        can_comment=can_comment
+    )

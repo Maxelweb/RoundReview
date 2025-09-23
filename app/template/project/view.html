@@ -13,7 +13,6 @@
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
-    {{ path }}
 
     <table id="resource-table" class="resource-table">
         <tr>
@@ -47,7 +46,7 @@
             <tr>
                 <td>
                     <i class="fas fa-file-alt"></i>
-                    <a href="#" class="resource-link">
+                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">
                     {{ obj.name }}
                     </a>
                 </td>
