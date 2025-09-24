@@ -67,10 +67,143 @@
         </form>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+    <div id="pdf-container">
+        <div id="controls">
+            <button id="prev-page"><i class="fas fa-arrow-left"></i></button>
+            <button id="next-page"><i class="fas fa-arrow-right"></i></button>
+            Page: <span id="page-num">1</span> / <span id="total-pages-num">X</span>
+        </div>
+        <canvas id="pdf-canvas"></canvas>
+        <div id="markers"></div>
+        <textarea id="comment-input" placeholder="Write the comment here"></textarea>
+    </div>
+
+    <div id="sidebar">
+        <h3>Comments on this page</h3>
+        <div id="comments-list"></div>
+    </div>
+
     <script>
-        document.getElementById('start-reviewing').addEventListener('click', function () {
-            alert('Reviewing started. You can now add comments.');
+        const url = "{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}";
+        let pdfInstance = null;
+        let currentPage = 1;
+        let lastClick = { x: 0, y: 0 };
+        const canvas = document.getElementById("pdf-canvas");
+        const context = canvas.getContext("2d");
+        const input = document.getElementById("comment-input");
+        const markers = document.getElementById("markers");
+        const commentsList = document.getElementById("comments-list");
+        const pageNumDisplay = document.getElementById("page-num");
+        const totalPageNumDisplay = document.getElementById("total-pages-num");
+        document.getElementById("controls").appendChild(totalPageNumDisplay);
+
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            pdfInstance = pdf;
+            totalPageNumDisplay.textContent = pdf.numPages;
+            renderPage(currentPage);
         });
+
+        function renderPage(pageNumber) {
+            pdfInstance.getPage(pageNumber).then(page => {
+                const scale = 1.275;
+                const viewport = page.getViewport({ scale });
+
+                canvas.width =  viewport.width;
+                canvas.height = viewport.height;
+
+                const renderContext = { canvasContext: context, viewport };
+                return page.render(renderContext).promise;
+            }).then(() => {
+                pageNumDisplay.textContent = pageNumber;
+                loadAnnotations();
+            });
+        }
+
+        document.getElementById("next-page").addEventListener("click", () => {
+            if (currentPage < pdfInstance.numPages) {
+                currentPage++;
+                renderPage(currentPage);
+            }
+        });
+
+        document.getElementById("prev-page").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage(currentPage);
+            }
+        });
+
+        canvas.addEventListener("click", event => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top + 30;
+
+            lastClick = { x, y }; // Salva le coordinate dell'ultimo click
+
+            input.style.left = `${x}px`;
+            input.style.top = `${y}px`;
+            input.style.display = "block";
+            input.focus();
+
+            const onKeyDown = (e) => {
+                if (e.key === "Enter" && input.value !== "") {
+                    saveAnnotation(input.value, lastClick.x, lastClick.y, currentPage);
+                    input.value = "";
+                    input.style.display = "none";
+                    input.removeEventListener("keydown", onKeyDown);
+                    loadAnnotations();
+                } else if (e.key === "Escape") {
+                    input.value = "";
+                    input.style.display = "none";
+                    input.removeEventListener("keydown", onKeyDown);
+                }
+            };
+
+            input.removeEventListener("keydown", onKeyDown); // prevent duplicates
+            input.addEventListener("keydown", onKeyDown);
+        });
+
+        function saveAnnotation(text, x, y, page) {
+            // TODO: add name of the author
+            let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+            const id = `comment-${Date.now()}`;
+            data.push({ id, text, x, y, page });
+            localStorage.setItem("annotations", JSON.stringify(data));
+        }
+
+        function loadAnnotations() {
+            markers.innerHTML = "";
+            commentsList.innerHTML = "";
+            let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+            data.filter(a => a.page === currentPage).forEach(({ id, text, x, y }) => {
+                // Quadrato giallo
+                const marker = document.createElement("div");
+                marker.className = "marker";
+                marker.style.left = `${x}px`;
+                marker.style.top = `${y}px`;
+                marker.dataset.commentId = id;
+                marker.addEventListener("click", () => focusComment(id));
+                markers.appendChild(marker);
+
+                // Commento nella sidebar
+                const comment = document.createElement("div");
+                comment.className = "comment";
+                comment.id = id;
+                comment.innerText = text;
+                commentsList.appendChild(comment);
+            });
+        }
+
+        function focusComment(id) {
+            document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add("focused");
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
     </script>
 
 

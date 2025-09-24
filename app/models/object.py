@@ -18,7 +18,7 @@ class Object:
     DATE_FORMAT = "%Y-%m-%d, %H:%M"
 
     def __init__(self, id: str, path: int, user_id: int, project_id: int, name: str, 
-                 description: str, comments: str, version: str, status: str) -> None:
+                 description: str, comments: str, version: str, status: str, raw: bytes | None = None) -> None:
         self.id = id
         self.path = path
         self.user_id = user_id
@@ -28,6 +28,7 @@ class Object:
         self.comments = comments
         self.version = version
         self.status = ObjectStatus(status) if status in ObjectStatus.values() else None
+        self.raw:bytes|None = raw  # Placeholder for raw data, to be loaded separately if needed
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "Object":
@@ -61,7 +62,8 @@ class Object:
             description=data["description"],
             comments=data["comments"],
             version=data["version"],
-            status=data["status"]
+            status=data["status"],
+            raw=data.get("raw", None)
         )
 
     def load_raw(self, db:Database) -> bool:
@@ -75,7 +77,7 @@ class Object:
         return True
 
     def to_dict(self) -> dict:
-        return {
+        output:dict = {
             "id": self.id,
             "path": self.path,
             "user_id": self.user_id,
@@ -86,6 +88,9 @@ class Object:
             "version": self.version,
             "status": self.status.value if self.status else None
         }
+        if self.raw is not None:
+            output["raw"] = self.raw
+        return output
                 
     
     

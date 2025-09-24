@@ -23,10 +23,10 @@ def view_object(project_id: str, object_id: str):
         project = next((Project.from_dict(elem) for elem in res["projects"] if elem["id"] == int(project_id)), None)
         
     # Fetch object details
-    res, status = object_get(object_id)
+    res, status = object_get(object_id, load_raw=False)
     if status == 200:
         obj = Object.from_dict(res["object"])
-        log.debug("view_object - object details: %s", obj)
+        log.debug("view_object - object details: ", obj)
         can_edit = True #FIXME: obj.can_edit(session.get("user_id"))
         can_comment = True #FIXME: obj.can_comment(session.get("user_id"))
     else:
@@ -44,3 +44,26 @@ def view_object(project_id: str, object_id: str):
         can_edit=can_edit,
         can_comment=can_comment
     )
+
+@object_blueprint.route('/projects/<project_id>/objects/<object_id>/file', methods=["GET"])
+def get_file(project_id: str, object_id: str):
+    """ Serve the file associated with the object """
+    # Fetch object details with raw data
+    res, status = object_get(object_id, load_raw=True)
+    log.debug("get_file - object details: ", status)
+    if status == 200:
+        obj = Object.from_dict(res["object"])
+        # print(obj.raw)
+        if obj.raw is not None:
+            return (
+                obj.raw,
+                200,
+                {
+                    "Content-Type": "application/pdf",
+                    "Content-Disposition": f"inline; filename={obj.name}.pdf"
+                }
+            )
+        else:
+            return "PDF content not found", 404
+    else:
+        return f"Error fetching object: {res['error']}", status

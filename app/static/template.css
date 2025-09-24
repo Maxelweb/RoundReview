@@ -6,7 +6,7 @@
 /* ========================================== */
 
 
-header{
+header {
     display: block;
     margin: -8px -8px 0px;
     padding: 0;
@@ -17,11 +17,12 @@ header{
     height: 120px;
 }
 
-header img{
+header img {
     margin-top: 16px;
 }
 
-header a, header a:visited{
+header a,
+header a:visited {
     color: var(--theme-banner-a);
 }
 
@@ -29,7 +30,7 @@ header a:hover {
     color: var(--theme-banner-a-hover);
 }
 
-header h1{
+header h1 {
     display: inline-block;
     margin: 14px 12px;
     vertical-align: top;
@@ -42,13 +43,13 @@ header .logo h1 {
 }
 
 
-footer img{
+footer img {
     display: block;
     margin: 20px auto;
     max-width: 180px !important;
 }
 
-section{
+section {
     margin: 0 0 20px;
     background-color: var(--theme-body-bg);
     padding: 12px 14px 24px;
@@ -58,12 +59,12 @@ section{
     border-bottom-right-radius: 8px;
 }
 
-section.content{
+section.content {
     min-height: calc(100vh - 300px);
     margin: 0 auto;
 }
 
-section .section-logo{
+section .section-logo {
     position: absolute;
     margin-top: 0;
     margin-right: 0;
@@ -87,14 +88,14 @@ footer {
     margin: 6px 12px;
 }
 
-.nav a{
+.nav a {
     display: inline-block;
     padding: 10px;
     text-decoration: none;
     margin-right: 5px;
 }
 
-.nav a:hover{
+.nav a:hover {
     background-color: var(--theme-banner-nav-hover);
     border-color: var(--theme-banner-border);
     border-radius: 8px;
@@ -125,13 +126,15 @@ table.resource-table {
     margin-top: 12px;
 }
 
-table.resource-table td, table.resource-table th {
+table.resource-table td,
+table.resource-table th {
     padding: 10px 14px;
 }
 
 table.nested-table {
     border: none;
 }
+
 table.nested-table td {
     border: none;
 }
@@ -142,4 +145,68 @@ table.nested-table td {
     padding: 4px 8px;
     border-radius: 4px;
     color: #FFF;
+}
+
+#pdf-container {
+    position: relative;
+    width: 70%;
+    max-width: 800px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#sidebar {
+    width: 25%;
+    padding: 10px;
+    min-height: 100vh;
+    margin: 55px 0px;
+    background: #333;
+    color: var(--theme-body-text);
+    display: inline-block;
+    border-left: 1px solid #999;
+}
+
+canvas {
+    display: block;
+}
+
+.marker {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: yellow;
+    border: 2px solid orange;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.comment {
+    background: #a1a1a1;
+    border: 1px solid #ccc;
+    padding: 6px;
+    margin: 5px 0;
+    border-radius: 4px;
+    color: #000;
+}
+
+.comment.focused {
+    background: #fff3a0;
+    border-color: orange;
+}
+
+#comment-input {
+    position: absolute;
+    display: none;
+    z-index: 10;
+    width: 200px;
+    border: 4px solid orange;
+    border-radius: 8px;
+    border-top-left-radius: 0px !important;
+    border-bottom-color: darkgoldenrod;
+    border-right-color: darkgoldenrod;
+}
+
+
+#controls {
+    margin: 10px;
 }

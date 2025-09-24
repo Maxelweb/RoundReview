@@ -458,8 +458,12 @@ def project_objects_create(project_id: str):
         db.close()
 
 @api_blueprint.route("/api/objects/<object_id>", methods=["GET"])
-def object_get(object_id: str):
+def object_get(object_id: str, load_raw: bool=False):
     """ Get detail information of the object """
+
+    if request.args.get("raw", "0") == "1":
+        load_raw = True
+
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
@@ -510,7 +514,8 @@ def object_get(object_id: str):
         obj = Object.from_db_row(object_row)
 
         # Load raw data if available
-        obj.load_raw(db)
+        if load_raw:
+            obj.load_raw(db)
 
         return {"object": obj.to_dict()}, 200
 
