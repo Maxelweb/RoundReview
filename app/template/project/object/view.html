@@ -2,85 +2,50 @@
 
 {% block inner_content %}
     <div class="container">
-        <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}</h3>
+        <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}
+        <span class="status-label" style="background-color: 
+        {% if object.status.value == 'No Review' %}gray
+        {% elif object.status.value == 'Pending Review' %}orange
+        {% elif object.status.value == 'Under Review' %}blue
+        {% elif object.status.value == 'Require Changes' %}red
+        {% elif object.status.value == 'Approved' %}green
+        {% else %}black
+        {% endif %};">
+            {{ object.status.value }}
+        </span>
+        </h3>
+        <p class="muted">
+            v{{ object.version }} - {{ object.description if object.description else "No description" }}
+        </p>
     </div>
 
     <div class="object-details">
-        <form method="POST" action="#">
-            <table class="table table-bordered">
-                <tr>
-                    <th>Name:</th>
-                    <td>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ object.name }}" {% if not can_edit %}readonly{% endif %}>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Description:</th>
-                    <td>
-                        <textarea id="description" name="description" class="form-control" placeholder="No description" {% if not can_edit %}readonly{% endif %}>{{ object.description }}</textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Version:</th>
-                    <td>
-                        <input type="text" id="version" name="version" class="form-control" value="{{ object.version }}" readonly>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Status:</th>
-                    <td>
-                        <span class="status-label" style="background-color: 
-                        {% if object.status.value == 'No Review' %}gray
-                        {% elif object.status.value == 'Pending Review' %}orange
-                        {% elif object.status.value == 'Under Review' %}blue
-                        {% elif object.status.value == 'Require Changes' %}red
-                        {% elif object.status.value == 'Approved' %}green
-                        {% else %}black
-                        {% endif %};">
-                            {{ object.status.value }}
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Actions:</th>
-                    <td>
-                        {% if can_comment %}
-                        <div class="form-group text-center">
-                            <button id="start-reviewing" class="btn btn-secondary">Start Reviewing</button>
-                        </div>
-                        {% endif %}
-                        {% if object.status == 'Approved' %}
-                        <div class="form-group text-center">
-                            <a href="{{ url_for('object.download_signed', object_id=object.id) }}" class="btn btn-success">
-                                Download Digitally Signed Version
-                            </a>
-                        </div>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% if can_edit %}
-                <tr>
-                    <td colspan="2" class="text-center">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </td>
-                </tr>
-                {% endif %}
-            </table>
-        </form>
+        {% if object.status == 'Approved' %}
+        <div class="form-group text-center">
+            <a href="{{ url_for('object.download_signed', object_id=object.id) }}" class="btn btn-success">
+                Download Digitally Signed Version
+            </a>
+        </div>
+        {% endif %}
     </div>
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
 
     <div class="pdf-container">
-        <div class="pdf-navbar" id="controls">
-            <button id="prev-page"><i class="fas fa-arrow-left"></i></button>
-            <button id="next-page"><i class="fas fa-arrow-right"></i></button>
-            Page: <span id="page-num">1</span> / 
-            <span id="total-pages-num"></span>
-
-            <button id="page-zoom-in"><i class="fas fa-search-plus"></i></button>
-            <button id="page-zoom-out"><i class="fas fa-search-minus"></i></button>
-            Scale: <span id="page-scale"></span>
+        <div class="pdf-navbar container" id="controls">
+            <div class="pdf-control">
+                <button id="prev-page"><i class="fas fa-arrow-left"></i></button>
+                <button id="next-page"><i class="fas fa-arrow-right"></i></button>
+                Page: <span class="bold" id="page-num">1</span> / 
+                <span id="total-pages-num"></span>
+            </div>
+            <div class="pdf-control">
+                <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
+                <button id="page-zoom-in"><i class="fas fa-search-plus"></i></button>
+                <button id="page-zoom-out"><i class="fas fa-search-minus"></i></button>
+                Scale: <span class="bold" id="page-scale"></span>
+            </div>
         </div>
         <div class="pdf-viewer" id="pdf-container">
             <canvas id="pdf-canvas"></canvas>
@@ -89,13 +54,14 @@
         </div>
 
         <div class="pdf-sidebar" id="sidebar">
-            <h3>Comments on this page</h3>
+            <h3><span class="badge-total" id="total-page-comments">0</span> Comments on this page</h3>
             <div id="comments-list"></div>
         </div>
 
         <script>
             const url = "{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}";
-            var pdfscale = 1.60; // Scala per posizionare i marker correttamente
+            let pdfscale = 1.35; // Scala per posizionare i marker correttamente
+            const pdfscaleDefault = 1.35;
             let pdfInstance = null;
             let currentPage = 1;
             let lastClick = { x: 0, y: 0 };
@@ -107,6 +73,7 @@
             const pageNumDisplay = document.getElementById("page-num");
             const totalPageNumDisplay = document.getElementById("total-pages-num");
             const pageScaleDisplay = document.getElementById("page-scale");
+            const totalPageComments = document.getElementById("total-page-comments");
 
             pdfjsLib.getDocument(url).promise.then(pdf => {
                 pdfInstance = pdf;
@@ -203,6 +170,7 @@
                 markers.innerHTML = "";
                 commentsList.innerHTML = "";
                 counter = 1;
+                totalAnnotations = 0;
                 let data = JSON.parse(localStorage.getItem("annotations") || "[]");
                 data.filter(a => a.page === currentPage).forEach(({ id, text, x, y}) => {
                     // Quadrato giallo
@@ -220,11 +188,39 @@
                     comment.className = "comment";
                     comment.id = id;
                     comment.innerText = "(#"+counter+") " + text;
-                    comment.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
+                    
+                    const commentControl = document.createElement("div");
+                    commentControl.className = "comment-control";
+                    
+                    const goToBtn = document.createElement("span");
+                    goToBtn.title = "Find in document";
+                    goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
+                    commentControl.appendChild(goToBtn);
+
+                    const deleteBtn = document.createElement("span");
+                    deleteBtn.title = "Delete comment";
+                    deleteBtn.innerHTML = "<i class='fas danger fa-trash-alt'></i>";
+                    deleteBtn.addEventListener("click", () => {
+                        if (confirm("Are you sure you want to delete this comment?")) {
+                            let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+                            data = data.filter(a => a.id !== id);
+                            localStorage.setItem("annotations", JSON.stringify(data));
+                            loadAnnotations();
+                        }
+                    });
+                    commentControl.appendChild(deleteBtn);
+
+                    comment.appendChild(commentControl);
+                    goToBtn.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
                     commentsList.appendChild(comment);
                     
                     counter++;
+                    totalAnnotations++;
                 });
+                totalPageComments.textContent = totalAnnotations;
+                if (totalAnnotations === 0) {
+                    commentsList.innerHTML = "<p class='muted'>No comments on this page.</p>";
+                }
             }
 
             function focusCommentFromSidebarToPDF(id) {
@@ -232,6 +228,7 @@
                 const target = document.getElementById(id);
                 if (target) {
                     target.classList.add("focused");
+                    setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
                     const marker = document.querySelector(`.marker[data-comment-id='${id}']`);
                     if (marker) {
                         marker.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -250,6 +247,23 @@
                     setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
                 }
             }
+
+
+            const resetScaleButton = document.getElementById("reset-scale");
+            resetScaleButton.addEventListener("click", () => {
+                pdfscale = pdfscaleDefault;
+                pageScaleDisplay.textContent = (pdfscale * 100).toFixed(0) + "%";
+                renderPage(currentPage);
+                updateResetButtonVisibility();
+            });
+
+            function updateResetButtonVisibility() {
+                resetScaleButton.style.display = (pdfscale !== pdfscaleDefault) ? "inline-block" : "none";
+            }
+
+            // Update visibility of reset button on zoom in/out
+            document.getElementById("page-zoom-in").addEventListener("click", updateResetButtonVisibility);
+            document.getElementById("page-zoom-out").addEventListener("click", updateResetButtonVisibility);
         </script>
     </div>
 

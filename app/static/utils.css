@@ -10,6 +10,10 @@
     color: #7c7b7b;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 .box {
     padding: 10px;
     border-radius: 8px;
@@ -44,7 +48,7 @@
     color: var(--primary);
 }
 
-.error, .red{
+.error, .red, .danger{
     color: rgb(168, 7, 7);
 }
 

@@ -247,22 +247,97 @@ table.nested-table td {
 }
 
 .pdf-navbar {
+    margin: 0 auto 10px;
     padding: 10px;
     background: #222;
     color: var(--theme-body-text);
-    border-bottom: 1px solid #333;
+    border: 2px solid #333;
     text-align: left;
+    border-radius: 4px;
+    display: flex;
+}
+
+.badge-total {
+    background: #CCC;
+    border-radius: 4px;
+    color: #333;
+    padding: 0 5px;
+}
+
+.pdf-control {
+    display: inline-block;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.pdf-control:nth-last-child(1) {
+    text-align: right;
 }
 
 .pdf-sidebar {
-    width: 25%;
+    width: 20%;
     padding: 10px;
-    min-height: 100vh;
-    background: #333;
+    min-height: 20vh;
     color: var(--theme-body-text);
     display: inline-block;
-    border-left: 1px solid #999;
 }
+
+.comment::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f075";
+    display: inline-block;
+    padding-right: 6px;
+    vertical-align: middle;
+    color: #555;
+}
+
+.comment {
+    background: #333;
+    border: 1px solid #333;
+    padding: 6px;
+    margin: 5px 0;
+    border-radius: 4px;
+    color: var(--theme-body-text);
+    transition: 0.5s;
+    text-align: left !important;
+}
+
+.comment.focused {
+    background: #fff3a0;
+    border-color: orange;
+    color: #333;
+    transition: 0.5s;
+}
+
+.comment .comment-control {
+    font-size: 90%;
+    color: #777;
+    cursor: pointer;
+    text-align: right;
+    margin: 5px 0 0 0;
+}
+
+.comment .comment-control span {
+    margin-left: 12px;
+    transition: 0.3s;
+}
+
+.comment .comment-control i {
+    color: #ffff44;
+}
+
+.comment .comment-control i:hover {
+    color: #cfcf6c;
+}
+
+.comment .comment-control i.danger {
+    color: #aa5a5a;
+}
+
+.comment .comment-control i.danger:hover {
+    color: #794a4a;
+}
+
 
 canvas {
     display: block;
@@ -272,7 +347,7 @@ canvas {
     position: absolute;
     width: 20px;
     height: 20px;
-    background: #ffff44;
+    background-color: #ffff44;
     border: 2px solid #e9bf8b;
     border-radius: 15px;
     cursor: pointer;
@@ -282,28 +357,11 @@ canvas {
 }
 
 .marker:hover {
-    background: #cfcf6c;
+    background-color: #cfcf6c;
 }
 
 .marker.focused {
-    background: orange;
-    border-color: darkorange;
-    transition: 0.5s;
-}
-
-.comment {
-    background: #a1a1a1;
-    border: 1px solid #ccc;
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 4px;
-    color: #000;
-    transition: 0.5s;
-}
-
-.comment.focused {
-    background: #fff3a0;
-    border-color: orange;
+    box-shadow: 0 0 11px #6e6e0c;
     transition: 0.5s;
 }
 
@@ -317,9 +375,4 @@ canvas {
     border-top-left-radius: 0px !important;
     /* border-bottom-color: darkgoldenrod;
     border-right-color: darkgoldenrod; */
-}
-
-
-#controls {
-    margin: 10px;
 }
