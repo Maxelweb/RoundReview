@@ -34,7 +34,7 @@ def view_object(project_id: str, object_id: str):
 
     return render_template(
         "project/object/view.html",
-        title=obj.name if obj else "Object",
+        title="Document",
         object=obj,
         project=project,
         output=output,

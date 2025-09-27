@@ -26,7 +26,7 @@
             </a>
         </div>
     </header>
-    <div class="container">
+    <div class="container {% if wide_content %}container-full{% endif %}" id="main-content">
         {% block content %}{% endblock %}
     </div>
     <footer>

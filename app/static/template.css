@@ -84,6 +84,15 @@ footer {
     margin: 0 auto;
 }
 
+.container-full {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.container-full section.content {
+    max-width: 100%;
+}
+
 .nav {
     display: block;
     margin: 6px 12px;
@@ -209,11 +218,13 @@ table.nested-table td {
 }
 
 .status-label {
-    font-size: 90%;
-    font-weight: 600;
-    padding: 4px 8px;
+    font-size: 80% !important;
+    font-weight: bold;
+    padding: 1px 4px;
     border-radius: 4px;
     color: #FFF;
+    border: 1px solid #2c2c2f;
+    text-transform: lowercase;
 }
 
 
@@ -225,20 +236,28 @@ table.nested-table td {
 }
 
 
+.pdf-container{
+    text-align: center;
+}
 
-#pdf-container {
+.pdf-viewer {
     position: relative;
-    width: 70%;
-    max-width: 800px;
     display: inline-block;
     vertical-align: top;
 }
 
-#sidebar {
+.pdf-navbar {
+    padding: 10px;
+    background: #222;
+    color: var(--theme-body-text);
+    border-bottom: 1px solid #333;
+    text-align: left;
+}
+
+.pdf-sidebar {
     width: 25%;
     padding: 10px;
     min-height: 100vh;
-    margin: 55px 0px;
     background: #333;
     color: var(--theme-body-text);
     display: inline-block;
@@ -251,12 +270,13 @@ canvas {
 
 .marker {
     position: absolute;
-    width: 15px;
-    height: 15px;
-    background: yellow;
-    border: 2px solid orange;
-    border-radius: 3px;
+    width: 20px;
+    height: 20px;
+    background: #ffff44;
+    border: 2px solid #e9bf8b;
+    border-radius: 15px;
     cursor: pointer;
+    color: #CCC;
 }
 
 .comment {

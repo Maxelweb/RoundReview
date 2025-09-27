@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% set wide_content = True %}
+{% block content %}
+<section class="content">
+    <div class="container">
+        <h2>{{ title }}</h2>
+        {% if output %}
+        <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
+        {% endif %}
+    </div>
+    {% block inner_content %}{% endblock %}
+</section>
+{% endblock %}
