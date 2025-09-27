@@ -277,6 +277,18 @@ canvas {
     border-radius: 15px;
     cursor: pointer;
     color: #82643f;
+    animation: pulse 1s infinite;
+    transition: 0.5s;
+}
+
+.marker:hover {
+    background: #cfcf6c;
+}
+
+.marker.focused {
+    background: orange;
+    border-color: darkorange;
+    transition: 0.5s;
 }
 
 .comment {
@@ -286,11 +298,13 @@ canvas {
     margin: 5px 0;
     border-radius: 4px;
     color: #000;
+    transition: 0.5s;
 }
 
 .comment.focused {
     background: #fff3a0;
     border-color: orange;
+    transition: 0.5s;
 }
 
 .comment-textarea {

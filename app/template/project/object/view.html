@@ -85,7 +85,7 @@
         <div class="pdf-viewer" id="pdf-container">
             <canvas id="pdf-canvas"></canvas>
             <div id="markers"></div>
-            <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here"></textarea>
+            <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
         </div>
 
         <div class="pdf-sidebar" id="sidebar">
@@ -220,10 +220,25 @@
                     comment.className = "comment";
                     comment.id = id;
                     comment.innerText = "(#"+counter+") " + text;
+                    comment.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
                     commentsList.appendChild(comment);
                     
                     counter++;
                 });
+            }
+
+            function focusCommentFromSidebarToPDF(id) {
+                document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
+                const target = document.getElementById(id);
+                if (target) {
+                    target.classList.add("focused");
+                    const marker = document.querySelector(`.marker[data-comment-id='${id}']`);
+                    if (marker) {
+                        marker.scrollIntoView({ behavior: "smooth", block: "center" });
+                        marker.classList.add("focused");
+                        setTimeout(() => marker.classList.remove("focused"), 1500); // Remove highlight
+                    }
+                }
             }
 
             function focusComment(id) {
@@ -232,6 +247,7 @@
                 if (target) {
                     target.classList.add("focused");
                     target.scrollIntoView({ behavior: "smooth", block: "center" });
+                    setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
                 }
             }
         </script>
