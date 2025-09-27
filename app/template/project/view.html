@@ -2,8 +2,12 @@
 
 {% block inner_content %}
     <h3><i class="fas fa-file primary my-1"></i> Project Resources</h3>
-    <p>Click on a resource to explore more.</p>
-
+    <p>Click on a resource to explore more.
+    {% if project_role == role.OWNER %}
+        Go to <a href="{{ url_for('project.view_users', project_id=project.id) }}">User Project Management.</a>
+    {% endif %}
+    </p>
+    
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>

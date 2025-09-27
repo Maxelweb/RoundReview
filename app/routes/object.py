@@ -3,7 +3,7 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
-from ..models import Project, Object, ObjectStatus
+from ..models import Project, Object, ObjectStatus, Role
 from .api import project_list, object_get
 from .project import get_user_role_in_project
 
@@ -15,8 +15,8 @@ def view_object(project_id: str, object_id: str):
     output = ()
     project:Project = None
     obj:Object = None
-    can_edit = False
-    can_comment = False
+    can_edit = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER, Role.MEMBER] else False
+    can_comment = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER] else False
 
     res, status = project_list()
     if status == 200:
@@ -25,9 +25,6 @@ def view_object(project_id: str, object_id: str):
     res, status = object_get(object_id, load_raw=False)
     if status == 200:
         obj = Object.from_dict(res["object"])
-        log.debug("view_object - object details: ", obj)
-        can_edit = True
-        can_comment = True
     else:
         output = ("error", res["error"])
 

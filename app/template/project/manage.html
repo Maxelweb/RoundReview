@@ -1,0 +1,39 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <h3><i class="fas fa-users primary my-1"></i> User Project Management</h3>
+    
+    <h3>View users</h3>
+
+    {{
+        users
+    }}
+    
+
+    <h3>Join new user to project</h3>
+
+    <form action="{{ url_for('project.create') }}" method="post">
+        <table>
+            <tr>
+                <th><label for="projectTitle">Username</label></th>
+                <td>
+                    <input type="text" id="projectTitle" name="user_name" placeholder="Enter username" required class="my-1">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="projectRole">Role</label></th>
+                <td>
+                    <select id="projectRole" name="user_role" required class="my-1">
+                        {% for role in role.values() %}
+                            <option>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="submit" value="Confirm">
+        </div>
+    </form>
+
+{% endblock %}

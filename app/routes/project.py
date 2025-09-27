@@ -3,7 +3,7 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin, build_object_tree
 from ..config import VERSION, log
 from ..database import Database
-from ..models import Project, Object, ObjectStatus, Role
+from ..models import Project, Object, ObjectStatus, Role, ProjectUser
 from .api import project_list, project_create, project_objects_list, project_objects_create, project_users_list
 
 def get_user_role_in_project(project_id:str) -> Role:
@@ -93,6 +93,7 @@ def view_objects(project_id:str):
         version=VERSION,
         logged=is_logged(),
         admin=is_logged_admin(),
+        role=Role,
         project_role=get_user_role_in_project(project_id),
     )
 
@@ -129,11 +130,36 @@ def view_users(project_id:str):
 
     res, status = project_users_list(project_id)
     if status == 200:
-        users = [Role.from_dict(elem) for elem in res["users"]]
+        users = [elem for elem in res["users"]]
     else:
         output = ("error", res["error"])
     return render_template(
-        "project/users.html",
+        "project/manage.html",
+        title="Project Users",
+        user=session["user"],
+        users=users,
+        project_id=project_id,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
+        role=Role,
+        project_role=get_user_role_in_project(project_id),
+    )
+
+@project_blueprint.route('/projects/<project_id>/users/<user_id>', methods=["POST"])
+def update_user(project_id:str):
+    """ TODO: Add / Remove users or update their roles """
+    output = ()
+    users = []
+
+    res, status = project_users_list(project_id)
+    if status == 200:
+        users = [ProjectUser.from_dict(elem) for elem in res["users"]]
+    else:
+        output = ("error", res["error"])
+    return render_template(
+        "project/manage.html",
         title="Project Users",
         user=session["user"],
         users=users,
@@ -143,4 +169,5 @@ def view_users(project_id:str):
         logged=is_logged(),
         admin=is_logged_admin(),
         project_role=get_user_role_in_project(project_id),
+        role=Role,
     )
