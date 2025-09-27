@@ -85,7 +85,7 @@
         <div class="pdf-viewer" id="pdf-container">
             <canvas id="pdf-canvas"></canvas>
             <div id="markers"></div>
-            <textarea id="comment-input" placeholder="Write the comment here"></textarea>
+            <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here"></textarea>
         </div>
 
         <div class="pdf-sidebar" id="sidebar">
@@ -202,6 +202,7 @@
             function loadAnnotations() {
                 markers.innerHTML = "";
                 commentsList.innerHTML = "";
+                counter = 1;
                 let data = JSON.parse(localStorage.getItem("annotations") || "[]");
                 data.filter(a => a.page === currentPage).forEach(({ id, text, x, y}) => {
                     // Quadrato giallo
@@ -211,14 +212,17 @@
                     marker.style.top = `${y*pdfscale}px`;
                     marker.dataset.commentId = id;
                     marker.addEventListener("click", () => focusComment(id));
+                    marker.innerText = counter;
                     markers.appendChild(marker);
 
                     // Commento nella sidebar
                     const comment = document.createElement("div");
                     comment.className = "comment";
                     comment.id = id;
-                    comment.innerText = text;
+                    comment.innerText = "(#"+counter+") " + text;
                     commentsList.appendChild(comment);
+                    
+                    counter++;
                 });
             }
 

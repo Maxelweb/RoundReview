@@ -276,7 +276,7 @@ canvas {
     border: 2px solid #e9bf8b;
     border-radius: 15px;
     cursor: pointer;
-    color: #CCC;
+    color: #82643f;
 }
 
 .comment {
@@ -293,16 +293,16 @@ canvas {
     border-color: orange;
 }
 
-#comment-input {
+.comment-textarea {
     position: absolute;
     display: none;
     z-index: 10;
     width: 200px;
-    border: 4px solid orange;
+    outline: 3px solid darkgoldenrod;
     border-radius: 8px;
     border-top-left-radius: 0px !important;
-    border-bottom-color: darkgoldenrod;
-    border-right-color: darkgoldenrod;
+    /* border-bottom-color: darkgoldenrod;
+    border-right-color: darkgoldenrod; */
 }
 
 
