@@ -1,10 +1,24 @@
 from types import SimpleNamespace
 from flask import render_template, request, session, redirect, Blueprint
-from .utils import is_logged, is_logged_admin
+from .utils import is_logged, is_logged_admin, build_object_tree
 from ..config import VERSION, log
 from ..database import Database
-from ..models import Project, Object, ObjectStatus
-from .api import project_list, project_create, project_objects_list, project_objects_create
+from ..models import Project, Object, ObjectStatus, Role
+from .api import project_list, project_create, project_objects_list, project_objects_create, project_users_list
+
+def get_user_role_in_project(project_id:str) -> Role:
+    """ Get the role of the current logged user in a specific project """
+    if not is_logged():
+        return Role.NO_ROLE
+    res, status = project_users_list(project_id)
+    if status != 200:
+        return Role.NO_ROLE
+    user_id = session["user"].id
+    for user in res["users"]:
+        if user["id"] == user_id:
+            return Role(user["role"]) if user["role"] in Role.values() else Role.NO_ROLE
+    return Role.NO_ROLE
+
 
 project_blueprint = Blueprint('project', __name__)
 
@@ -21,6 +35,7 @@ def list():
     return render_template(
         "project/list.html",
         title="Your Projects",
+        user=session["user"],
         projects=projects,
         output=output,
         version=VERSION,
@@ -41,6 +56,7 @@ def create():
     return render_template(
         "project/create.html",
         title="Create new project",
+        user=session["user"],
         output=output,
         version=VERSION,
         logged=is_logged(),
@@ -60,23 +76,7 @@ def view_objects(project_id:str):
     res, status = project_objects_list(project_id)
     if status == 200:
         objects = [Object.from_dict(elem) for elem in res["objects"]]
-
-        def build_tree(objects):
-            tree = {'root': {'_objects': []}}
-            for obj in objects:
-                path_parts = obj.path.strip('/').split('/')
-                current_level = tree['root']
-                if path_parts == ['']:
-                    current_level['_objects'].append(obj)
-                    continue
-                for part in path_parts:
-                    if part not in current_level:
-                        current_level[part] = {'_objects': []}
-                    current_level = current_level[part]
-                current_level['_objects'].append(obj)
-            return tree
-
-        tree = build_tree(objects)
+        tree = build_object_tree(objects)
         log.debug("view_objects - tree: %s", tree)
 
     else:
@@ -84,6 +84,7 @@ def view_objects(project_id:str):
     return render_template(
         "project/view.html",
         title=project.title,
+        user=session["user"],
         objects=objects,
         tree=tree,
         path=path,
@@ -91,7 +92,8 @@ def view_objects(project_id:str):
         output=output,
         version=VERSION,
         logged=is_logged(),
-        admin=is_logged_admin()
+        admin=is_logged_admin(),
+        project_role=get_user_role_in_project(project_id),
     )
 
 @project_blueprint.route('/projects/<project_id>/create', methods=["GET", "POST"])
@@ -99,6 +101,7 @@ def create_object(project_id:str):
     """ Create a new object in project """
     folder_path = request.args.get('folder_path', '/') # Default to root if no path is provided
     output = ()
+
     if request.method == "POST":
         res, status = project_objects_create(project_id=project_id)
         if status == 201:
@@ -108,10 +111,36 @@ def create_object(project_id:str):
     return render_template(
         "project/object/create.html",
         title="Create new document",
+        user=session["user"],
         output=output,
         folder_path=folder_path,
         project_id=project_id,
         version=VERSION,
         logged=is_logged(),
-        admin=is_logged_admin()
+        admin=is_logged_admin(),
+        project_role=get_user_role_in_project(project_id),
+    )
+
+@project_blueprint.route('/projects/<project_id>/users', methods=["GET"])
+def view_users(project_id:str):
+    """ Show the users of a specific project with the roles """
+    output = ()
+    users = []
+
+    res, status = project_users_list(project_id)
+    if status == 200:
+        users = [Role.from_dict(elem) for elem in res["users"]]
+    else:
+        output = ("error", res["error"])
+    return render_template(
+        "project/users.html",
+        title="Project Users",
+        user=session["user"],
+        users=users,
+        project_id=project_id,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
+        project_role=get_user_role_in_project(project_id),
     )

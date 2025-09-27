@@ -9,7 +9,11 @@
 <body>
     <header>
         <div class="container">
-            <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
+            <div class="nav-logo">
+                <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
+            </div>
+        </div>
+        <div class="container header-container">
             <div class="nav">
             {% if logged %}
                 <a href="{{ url_for('project.list') }}" class="current"><i class="fas fa-rocket"></i> Projects</a>
@@ -23,7 +27,16 @@
                 <a href="{{ url_for('basic.login') }}"><i class="fas fa-arrow-right-to-bracket"></i> Login</a>
             {% endif %}
             </div>
-            </a>
+            <div class="nav-user">
+                <span class="nav-user-item">
+                    <i class="fas fa-user"></i>
+                    <strong>{{ user.name }}</strong></span>
+                {% if project %}
+                    <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
+                {% else %}
+                    <span class="nav-user-item">&nbsp;</span>
+                {% endif %}
+            </div>
         </div>
     </header>
     <div class="container {% if wide_content %}container-full{% endif %}" id="main-content">

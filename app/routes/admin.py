@@ -63,7 +63,8 @@ def users():
         title="Users",
         version=VERSION,
         logged=is_logged(),
-        admin=is_logged_admin()
+        admin=is_logged_admin(),
+        user=session["user"],
     )
 
 @admin_blueprint.route('/admin/logs')
@@ -96,5 +97,6 @@ def logs():
         user_id=int(user_id) if user_id not in [None, ''] else None,
         version=VERSION,
         logged=is_logged(),
-        admin=is_logged_admin()
+        admin=is_logged_admin(),
+        user=session["user"],
     )

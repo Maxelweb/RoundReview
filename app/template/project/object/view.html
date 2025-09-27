@@ -2,10 +2,10 @@
 
 {% block inner_content %}
     <div class="container">
-        <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}
-        </h3>
+        <a href="{{ url_for('project.view_objects', project_id=project.id) }}">&larr; Back to project</a>
+        <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}</h3>
         <p class="muted">
-            v{{ object.version }} - {{ object.description if object.description else "No description" }}
+            Project: {{ project.title }} - v{{ object.version }} - {{ object.description if object.description else "No description" }}
         </p>
     </div>
 

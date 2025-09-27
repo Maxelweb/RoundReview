@@ -171,6 +171,50 @@ def project_update(project_id:str):
     finally:
         db.close()
 
+@api_blueprint.route("/api/projects/<project_id>/users", methods=["GET"])
+def project_users_list(project_id: str):
+    """ Retrieve a list of all users who are members of the project """
+    if not check_authentication():
+        return {"error": "Unauthorized"}, 401
+
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+
+    db = Database()
+    try:
+        # Check if the user is a member of the project
+        member_check = db.c.execute(
+            '''
+            SELECT 1
+            FROM project_user
+            WHERE project_id = ? AND user_id = ?
+            ''',
+            (project_id, user_id)
+        ).fetchone()
+
+        if not member_check:
+            return {"error": "Forbidden: You are not a member of this project"}, 403
+
+        # Fetch all users in the project
+        rows = db.c.execute(
+            '''
+            SELECT u.id, u.name, u.email, pu.role
+            FROM user u
+            INNER JOIN project_user pu ON u.id = pu.user_id
+            WHERE pu.project_id = ? AND u.deleted = 0
+            ''',
+            (project_id,)
+        ).fetchall()
+
+        # Convert rows to dictionaries
+        users = [{"id": row[0], "name": row[1], "role": row[3]} for row in rows]
+        return {"users": users}, 200
+
+    except Exception as e:
+        log.error(f"Error fetching users for project {project_id}: {e}")
+        return {"error": "Internal server error"}, 500
+    finally:
+        db.close()
+
 @api_blueprint.route("/api/projects/<project_id>/join", methods=["POST"])
 def project_join(project_id:str):
     """ Add a new member using their email to a project (only for project owners) """

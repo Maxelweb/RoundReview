@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 
 class Role(Enum):
+    NO_ROLE = "No Role"
+    MEMBER = "Member"
     REVIEWER = "Reviewer"
-    EDITOR = "Editor"
     OWNER = "Owner"
 
     @staticmethod
