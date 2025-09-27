@@ -119,11 +119,7 @@ footer {
 
 /* == PROJECTS == */
 
-span.action-item {
-    font-size: 90%;
-    color: #aaa;
-    margin-left: 8px;
-}
+
 
 td.nested-table-cell {
     padding-top: 0 !important;
@@ -132,11 +128,19 @@ td.nested-table-cell {
 }
 
 td.folder-actions {
-    text-align: right;   
+    text-align: right;
+    width: 120px;
+}
+
+span.action-item {
+    font-size: 90%;
+    color: #aaa;
+    margin-left: 8px;
 }
 
 td.folder-link {
     cursor: pointer;
+    width: max-content;
 }
 
 td.folder-link i.fas{
@@ -151,6 +155,21 @@ td.folder-link a.folder-link-key {
 
 td.folder-link:hover {
     background-color: #45454e;
+}
+
+td.file-infos {
+    text-align: right;
+    width: 150px;
+}
+
+span.info-item {
+    font-size: 90%;
+    /* color: #aaa; */
+    margin-left: 8px;
+}
+
+table.nested-table td:first-child {
+    width: max-content;
 }
 
 table.resource-table td {

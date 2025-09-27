@@ -60,19 +60,18 @@
                     {{ obj.name }}
                     </a>
                 </td>
-                <td class="small text-center">{{ obj.version }}</td>
-                <td class="small">
-                <span class="status-label" style="background-color: 
-                {% if obj.status.value == 'No Review' %}gray
-                {% elif obj.status.value == 'Pending Review' %}orange
-                {% elif obj.status.value == 'Under Review' %}blue
-                {% elif obj.status.value == 'Require Changes' %}red
-                {% elif obj.status.value == 'Approved' %}green
-                {% else %}black
-                {% endif %};">
-                {{ obj.status.value }}</span>
+                <td colspan="3" class="file-infos">
+                    <span class="info-item status-label" style="background-color: 
+                    {% if obj.status.value == 'No Review' %}gray
+                    {% elif obj.status.value == 'Pending Review' %}orange
+                    {% elif obj.status.value == 'Under Review' %}blue
+                    {% elif obj.status.value == 'Require Changes' %}red
+                    {% elif obj.status.value == 'Approved' %}green
+                    {% else %}black
+                    {% endif %};">
+                    {{ obj.status.value }}</span>
+                    <span class="info-item">v{{ obj.version }}</span>
                 </td>
-                <td width="200px" class="small text-muted">{{ obj.description }}</td>
             </tr>
             {% endfor %}
         {% endmacro %}
