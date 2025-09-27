@@ -270,6 +270,12 @@ table.nested-table td {
     flex-grow: 1;
 }
 
+.pdf-status {
+    text-align: center;
+    margin: 5px 0 0 0;
+    font-size: 110%;
+}
+
 .pdf-control:nth-last-child(1) {
     text-align: right;
 }

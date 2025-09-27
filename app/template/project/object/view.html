@@ -3,16 +3,6 @@
 {% block inner_content %}
     <div class="container">
         <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}
-        <span class="status-label" style="background-color: 
-        {% if object.status.value == 'No Review' %}gray
-        {% elif object.status.value == 'Pending Review' %}orange
-        {% elif object.status.value == 'Under Review' %}blue
-        {% elif object.status.value == 'Require Changes' %}red
-        {% elif object.status.value == 'Approved' %}green
-        {% else %}black
-        {% endif %};">
-            {{ object.status.value }}
-        </span>
         </h3>
         <p class="muted">
             v{{ object.version }} - {{ object.description if object.description else "No description" }}
@@ -40,6 +30,17 @@
                 Page: <span class="bold" id="page-num">1</span> / 
                 <span id="total-pages-num"></span>
             </div>
+                <div class="pdf-control pdf-status"><span class="status-label" style="background-color: 
+                    {% if object.status.value == 'No Review' %}gray
+                    {% elif object.status.value == 'Pending Review' %}orange
+                    {% elif object.status.value == 'Under Review' %}blue
+                    {% elif object.status.value == 'Require Changes' %}red
+                    {% elif object.status.value == 'Approved' %}green
+                    {% else %}black
+                    {% endif %};">
+                        {{ object.status.value }}
+                    </span>
+                </div>
             <div class="pdf-control">
                 <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
                 <button id="page-zoom-in"><i class="fas fa-search-plus"></i></button>
