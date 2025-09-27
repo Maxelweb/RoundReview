@@ -4,12 +4,6 @@
     <h3><i class="fas fa-file primary my-1"></i> Project Resources</h3>
     <p>Click on a resource to explore more.</p>
 
-    <!--  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-
-    <form action="/file-upload" class="dropzone" id="my-awesome-dropzone">
-    </form>  -->
-
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
@@ -19,21 +13,35 @@
             <th colspan="4">Resources</th>
         </tr>
         {% macro render_tree(tree, parent_path='') %}
+            
+        
             {% for key, value in tree.items() %}
             {% if key != '_objects' %}
                 {% set current_path = parent_path + '/' + key %}
                 <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %}>
-                <td colspan="4">
+                <td colspan="3" class="folder-link">
                     <i class="fas fa-folder"></i>
-                    <a href="#" class="folder-link">{{ key }}</a> 
-                    <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}">
-                        <i class="fas fa-plus-circle"></i>
-                    </a>
+                    <a href="#" class="folder-link-key">{{ key }}</a> 
+                </td>
+                <td class="folder-actions">
+                    <span class="action-item">
+                        {{ (value|length - (1 if '_objects' in value else 0)) + (value['_objects']|length if '_objects' in value else 0) }} items
+                    </span>
+                    <span class="action-item">
+                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" title="Add new document here">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
+                    </span>
+                    <span class="action-item">
+                        <a href="{{ url_for('project.view_objects', project_id=project.id, path=current_path) }}" title="Copy link to this folder">
+                            <i class="fas fa-link"></i>
+                        </a>
+                    </span>
                 </td>
                 </tr>
                 {% if value %}
-                <tr class="folder-content" data-folder-path="{{ current_path }}" style="display: {% if path and (path == current_path or path.startswith(current_path + '/')) %}table-row{% else %}none{% endif %};">
-                    <td colspan="4">
+                <tr class="folder-file" data-folder-path="{{ current_path }}" style="display: {% if path and (path == current_path or path.startswith(current_path + '/')) %}table-row{% else %}none{% endif %};">
+                    <td colspan="4" class="nested-table-cell">
                     <table class="nested-table">
                         {{ render_tree(value, current_path) }}
                     </table>
@@ -42,6 +50,8 @@
                 {% endif %}
             {% endif %}
             {% endfor %}
+
+
             {% for obj in tree['_objects'] %}
             <tr>
                 <td>
@@ -76,7 +86,7 @@
                 link.addEventListener('click', function (event) {
                     event.preventDefault();
                     const folderPath = this.closest('.folder-row').dataset.folderPath;
-                    const folderContent = document.querySelector(`.folder-content[data-folder-path="${folderPath}"]`);
+                    const folderContent = document.querySelector(`.folder-file[data-folder-path="${folderPath}"]`);
                     if (folderContent) {
                         const isOpen = folderContent.style.display !== 'none';
                         folderContent.style.display = isOpen ? 'none' : '';

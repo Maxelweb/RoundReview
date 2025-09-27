@@ -5,6 +5,7 @@
 
 /* ========================================== */
 
+/* == GENERAL == */
 
 header {
     display: block;
@@ -115,9 +116,57 @@ footer {
     background-color: transparent;
 }
 
-.dropzone {
-    background-color: transparent !important;
-    border: 4px dashed var(--primary) !important;
+
+/* == PROJECTS == */
+
+span.action-item {
+    font-size: 90%;
+    color: #aaa;
+    margin-left: 8px;
+}
+
+td.nested-table-cell {
+    padding-top: 0 !important;
+    padding-right: 0 !important;
+    padding-left: 24px !important;
+}
+
+td.folder-actions {
+    text-align: right;   
+}
+
+td.folder-link {
+    cursor: pointer;
+}
+
+td.folder-link i.fas{
+    color: #dda94f;
+}
+
+td.folder-link a.folder-link-key {
+    color: var(--theme-body-text);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+td.folder-link:hover {
+    background-color: #45454e;
+}
+
+table.resource-table td {
+    border: none;
+}
+
+table.resource-table tr.folder-row {
+    background-color: #39393d;
+    border-bottom: 2px solid #333;
+}
+
+table.nested-table tr:nth-last-child(1) {
+    border-bottom: none !important;
+}
+table.nested-table tr {
+    border-bottom: 1px solid #333;
 }
 
 table.resource-table {
@@ -133,6 +182,7 @@ table.resource-table th {
 
 table.nested-table {
     border: none;
+    width: 100%;
 }
 
 table.nested-table td {
@@ -146,6 +196,16 @@ table.nested-table td {
     border-radius: 4px;
     color: #FFF;
 }
+
+
+/* FIXME: refactor this */
+
+.dropzone {
+    background-color: transparent !important;
+    border: 4px dashed var(--primary) !important;
+}
+
+
 
 #pdf-container {
     position: relative;

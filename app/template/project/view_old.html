@@ -13,7 +13,7 @@
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
-    
+
     <table id="resource-table" class="resource-table">
         <tr>
             <th colspan="4">Resources</th>
@@ -21,19 +21,21 @@
         {% macro render_tree(tree, parent_path='') %}
             {% for key, value in tree.items() %}
             {% if key != '_objects' %}
-                <tr class="folder-row" data-folder-path="{{ parent_path }}/{{ key }}">
+                {% set current_path = parent_path + '/' + key %}
+                <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %}>
                 <td colspan="4">
                     <i class="fas fa-folder"></i>
-                    <a href="#" class="folder-link">
-                    {{ key }}
+                    <a href="#" class="folder-link">{{ key }}</a> 
+                    <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}">
+                        <i class="fas fa-plus-circle"></i>
                     </a>
                 </td>
                 </tr>
                 {% if value %}
-                <tr class="folder-content" data-folder-path="{{ parent_path }}/{{ key }}" style="display: none;">
+                <tr class="folder-content" data-folder-path="{{ current_path }}" style="display: {% if path and (path == current_path or path.startswith(current_path + '/')) %}table-row{% else %}none{% endif %};">
                     <td colspan="4">
                     <table class="nested-table">
-                        {{ render_tree(value, parent_path + '/' + key) }}
+                        {{ render_tree(value, current_path) }}
                     </table>
                     </td>
                 </tr>
@@ -44,7 +46,7 @@
             <tr>
                 <td>
                     <i class="fas fa-file-alt"></i>
-                    <a href="#" class="resource-link">
+                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">
                     {{ obj.name }}
                     </a>
                 </td>
@@ -76,7 +78,9 @@
                     const folderPath = this.closest('.folder-row').dataset.folderPath;
                     const folderContent = document.querySelector(`.folder-content[data-folder-path="${folderPath}"]`);
                     if (folderContent) {
-                        folderContent.style.display = folderContent.style.display === 'none' ? '' : 'none';
+                        const isOpen = folderContent.style.display !== 'none';
+                        folderContent.style.display = isOpen ? 'none' : '';
+                        this.closest('.folder-row').dataset.open = !isOpen;
                     }
                 });
             });

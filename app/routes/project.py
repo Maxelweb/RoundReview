@@ -60,13 +60,15 @@ def view_objects(project_id:str):
     res, status = project_objects_list(project_id)
     if status == 200:
         objects = [Object.from_dict(elem) for elem in res["objects"]]
-        log.debug("view_objects - object paths:", [obj.path for obj in objects])
 
         def build_tree(objects):
             tree = {'root': {'_objects': []}}
             for obj in objects:
                 path_parts = obj.path.strip('/').split('/')
                 current_level = tree['root']
+                if path_parts == ['']:
+                    current_level['_objects'].append(obj)
+                    continue
                 for part in path_parts:
                     if part not in current_level:
                         current_level[part] = {'_objects': []}
@@ -95,6 +97,7 @@ def view_objects(project_id:str):
 @project_blueprint.route('/projects/<project_id>/create', methods=["GET", "POST"])
 def create_object(project_id:str):
     """ Create a new object in project """
+    folder_path = request.args.get('folder_path', '/') # Default to root if no path is provided
     output = ()
     if request.method == "POST":
         res, status = project_objects_create(project_id=project_id)
@@ -106,6 +109,7 @@ def create_object(project_id:str):
         "project/object/create.html",
         title="Create new document",
         output=output,
+        folder_path=folder_path,
         project_id=project_id,
         version=VERSION,
         logged=is_logged(),

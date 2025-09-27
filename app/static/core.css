@@ -18,15 +18,16 @@ body {
 
 a {
     color:var(--theme-a-link);
+    text-decoration: none;
 }
 
 a:hover {
-    color:#333;
+    color: var(--theme-a-link-hover);
 }
 
-a:visited {
-    color: var(--theme-a-link-visited);
-}
+/* a:visited {
+    
+} */
 
 .raw {
     font-family: 'Courier New', Courier, monospace;
