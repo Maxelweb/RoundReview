@@ -217,17 +217,17 @@ def project_users_list(project_id: str):
 
 @api_blueprint.route("/api/projects/<project_id>/join", methods=["POST"])
 def project_join(project_id:str):
-    """ Add a new member using their email to a project (only for project owners) """
+    """ Add a new member using their username to a project (only for project owners) """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
     data = request.json
-    if not data or "email" not in data or "role" not in data:
-        return {"error": "Missing required fields 'email' and 'role'"}, 400
+    if not data or "username" not in data or "role" not in data:
+        return {"error": "Missing required fields 'username' and 'role'"}, 400
 
-    email = data["email"]
+    username = data["username"]
     role = data["role"]
 
     if role not in Role.values():
@@ -248,18 +248,18 @@ def project_join(project_id:str):
         if not owner_check:
             return {"error": "Forbidden: Only project owners can add members"}, 403
 
-        # Check if the user with the given email exists
+        # Check if the user with the given username exists
         user_row = db.c.execute(
             '''
             SELECT id
             FROM user
-            WHERE email = ? AND deleted = 0
+            WHERE name = ? AND deleted = 0
             ''',
-            (email,)
+            (username,)
         ).fetchone()
 
         if not user_row:
-            return {"error": "User with the given email does not exist"}, 404
+            return {"error": "User with the given username does not exist"}, 404
 
         new_user_id = user_row[0]
 
@@ -296,32 +296,32 @@ def project_join(project_id:str):
 
 @api_blueprint.route("/api/projects/<project_id>/unjoin", methods=["DELETE"])
 def project_unjoin(project_id:str):
-    """ Remove a member using their email from a project (only for project owners or the member themselves) """
+    """ Remove a member using their username from a project (only for project owners or the member themselves) """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
     data = request.json
-    if not data or "email" not in data:
-        return {"error": "Missing required field 'email'"}, 400
+    if not data or "username" not in data:
+        return {"error": "Missing required field 'username'"}, 400
 
-    email = data["email"]
+    username = data["username"]
 
     db = Database()
     try:
-        # Check if the user with the given email exists
+        # Check if the user with the given username exists
         user_row = db.c.execute(
             '''
             SELECT id
             FROM user
-            WHERE email = ? AND deleted = 0
+            WHERE name = ? AND deleted = 0
             ''',
-            (email,)
+            (username,)
         ).fetchone()
 
         if not user_row:
-            return {"error": "User with the given email does not exist"}, 404
+            return {"error": "User with the given name does not exist"}, 404
 
         target_user_id = user_row[0]
 

@@ -4,7 +4,7 @@
     <h3><i class="fas fa-file primary my-1"></i> Project Resources</h3>
     <p>Click on a resource to explore more.
     {% if project_role == role.OWNER %}
-        Go to <a href="{{ url_for('project.view_users', project_id=project.id) }}">User Project Management.</a>
+        Go to <a href="{{ url_for('project.manage_users', project_id=project.id) }}">User Project Management.</a>
     {% endif %}
     </p>
     

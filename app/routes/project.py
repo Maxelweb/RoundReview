@@ -4,7 +4,15 @@ from .utils import is_logged, is_logged_admin, build_object_tree
 from ..config import VERSION, log
 from ..database import Database
 from ..models import Project, Object, ObjectStatus, Role, ProjectUser
-from .api import project_list, project_create, project_objects_list, project_objects_create, project_users_list
+from .api import (
+    project_list, 
+    project_create, 
+    project_objects_list, 
+    project_objects_create, 
+    project_users_list,
+    project_join,
+    project_unjoin,
+)
 
 def get_user_role_in_project(project_id:str) -> Role:
     """ Get the role of the current logged user in a specific project """
@@ -122,17 +130,30 @@ def create_object(project_id:str):
         project_role=get_user_role_in_project(project_id),
     )
 
-@project_blueprint.route('/projects/<project_id>/users', methods=["GET"])
-def view_users(project_id:str):
-    """ Show the users of a specific project with the roles """
+@project_blueprint.route('/projects/<project_id>/users', methods=["GET", "POST"])
+def manage_users(project_id:str):
+    """ Show and update the users of a specific project with the roles """
     output = ()
     users = []
+
+    action = request.args.get("action", None)
+    if request.method == "POST":
+        if action == "join":
+            res, status = project_join(project_id=project_id)
+        elif action == "unjoin":
+            res, status = project_unjoin(project_id=project_id)
+        else:
+            res, status = {"error": "Wrong action"}, 400
+        
+        output = ("error", res["error"])
+
 
     res, status = project_users_list(project_id)
     if status == 200:
         users = [elem for elem in res["users"]]
     else:
         output = ("error", res["error"])
+
     return render_template(
         "project/manage.html",
         title="Project Users",
@@ -147,27 +168,3 @@ def view_users(project_id:str):
         project_role=get_user_role_in_project(project_id),
     )
 
-@project_blueprint.route('/projects/<project_id>/users/<user_id>', methods=["POST"])
-def update_user(project_id:str):
-    """ TODO: Add / Remove users or update their roles """
-    output = ()
-    users = []
-
-    res, status = project_users_list(project_id)
-    if status == 200:
-        users = [ProjectUser.from_dict(elem) for elem in res["users"]]
-    else:
-        output = ("error", res["error"])
-    return render_template(
-        "project/manage.html",
-        title="Project Users",
-        user=session["user"],
-        users=users,
-        project_id=project_id,
-        output=output,
-        version=VERSION,
-        logged=is_logged(),
-        admin=is_logged_admin(),
-        project_role=get_user_role_in_project(project_id),
-        role=Role,
-    )

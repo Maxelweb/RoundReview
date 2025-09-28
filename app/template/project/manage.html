@@ -3,30 +3,43 @@
 {% block inner_content %}
     <h3><i class="fas fa-users primary my-1"></i> User Project Management</h3>
     
-    <h3>View users</h3>
-
-    {{
-        users
-    }}
+    <h3>View users in project</h3>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        {% for puser in users %}
+        <tr>
+            <td><span title="User ID: {{ user.id }}">{{ puser.name }}</span></td>
+            <td>{{ puser.role }}</td>
+            <td>
+                {% if puser.id != user.id %}
+                <a href="{{ url_for('project.manage_users', project_id=project_id) }}?action=unjoin" title="Remove user from project"><i class="fas fa-trash-alt"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
     
 
-    <h3>Join new user to project</h3>
-
-    <form action="{{ url_for('project.create') }}" method="post">
+    <h3>Add user to project</h3>
+    <form action="{{ url_for('project.manage_users', project_id=project_id) }}?action=join" method="post">
         <table>
             <tr>
-                <th><label for="projectTitle">Username</label></th>
+                <th><label for="projectUserName">Username</label></th>
                 <td>
-                    <input type="text" id="projectTitle" name="user_name" placeholder="Enter username" required class="my-1">
+                    <input type="text" id="projectUserName" name="username" placeholder="Enter username" required class="my-1">
                 </td>
             </tr>
             <tr>
-                <th><label for="projectRole">Role</label></th>
+                <th><label for="projectUserRole">Role</label></th>
                 <td>
-                    <select id="projectRole" name="user_role" required class="my-1">
-                        {% for role in role.values() %}
-                            <option>{{ role }}</option>
-                        {% endfor %}
+                    <select id="projectUserRole" name="role" required class="my-1">
+                        <option value="{{ role.MEMBER.value }}">{{ role.MEMBER.value }} - Can add and edit files</option>
+                        <option value="{{ role.REVIEWER.value }}">{{ role.REVIEWER.value }} - Can add, edit and comment files</option>
+                        <option value="{{ role.OWNER.value }}">{{ role.OWNER.value }} - Can add, edit and comment files; Can manage users</option>
                     </select>
                 </td>
             </tr>
