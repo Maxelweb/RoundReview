@@ -1,7 +1,7 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
-    <p>Click on a project to view the resources inside of it</p>
+    <p class="muted">Click on a project to view the resources inside of it</p>
 
     <div class="my-2">
         <a href="{{ url_for('project.create') }}"><button><i class="fas fa-plus-circle"></i> New Project</button></a>

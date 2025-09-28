@@ -2,7 +2,7 @@
 
 {% block inner_content %}
     <div class="container">
-        <a href="{{ url_for('project.view_objects', project_id=project.id) }}">&larr; Back to project</a>
+        <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
         <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}</h3>
         <p class="muted">
             Project: {{ project.title }} - v{{ object.version }} - {{ object.description if object.description else "No description" }}

@@ -1,6 +1,8 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
+    <a href="{{ url_for('project.view_objects', project_id=project_id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
+    
     <p>Fill the form below to create a new document.</p>
 
     <form action="{{ url_for('project.create_object', project_id=project_id) }}" method="post" enctype="multipart/form-data">

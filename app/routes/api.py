@@ -132,7 +132,7 @@ def project_update(project_id:str):
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
+    data = request.form or request.json
     if not data or "title" not in data:
         return {"error": "Missing required field 'title'"}, 400
 
@@ -223,7 +223,7 @@ def project_join(project_id:str):
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
+    data = request.form or request.json
     if not data or "username" not in data or "role" not in data:
         return {"error": "Missing required fields 'username' and 'role'"}, 400
 
@@ -302,7 +302,7 @@ def project_unjoin(project_id:str):
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
+    data = request.form or request.json
     if not data or "username" not in data:
         return {"error": "Missing required field 'username'"}, 400
 
@@ -448,11 +448,11 @@ def project_objects_create(project_id: str):
         return {"error": "Invalid file type. Only 'application/pdf' is allowed"}, 400
 
     # Extract metadata from the request
-    name = request.form.get("name")
-    description = request.form.get("description", "")
-    path = request.form.get("path", "/")
-    version = request.form.get("version", "")
-    status = request.form.get("status", ObjectStatus.NO_REVIEW.value)
+    name = request.form.get("name") or request.json.get("name")
+    description = request.form.get("description", "")  or request.json.get("description", "") 
+    path = request.form.get("path", "/") or request.json.get("path", "/")
+    version = request.form.get("version", "") or request.json.get("version", "")
+    status = request.form.get("status", ObjectStatus.NO_REVIEW.value) or request.json.get("status", ObjectStatus.NO_REVIEW.value)
 
     if not path.startswith("/"):
         return {"error": "Invalid path. Path must start with '/'."}, 400
@@ -640,7 +640,7 @@ def object_update(object_id: str):
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    data = request.json
+    data = request.form or request.json
     if not data:
         return {"error": "Missing request body"}, 400
 

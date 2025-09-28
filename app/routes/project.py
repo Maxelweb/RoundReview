@@ -140,13 +140,21 @@ def manage_users(project_id:str):
     if request.method == "POST":
         if action == "join":
             res, status = project_join(project_id=project_id)
+            if status == 201:
+                output = ("success", f"User '{ request.form.get("username") }' ({request.form.get("role")}) added in the project")
+            else:
+                print(res)
+                output = ("error", res["error"])
         elif action == "unjoin":
+            log.debug(request.form)
             res, status = project_unjoin(project_id=project_id)
+            if status == 200:
+                output = ("success", f"User '{ request.form.get("username") }' removed from the project")
+            else:
+                output = ("error", res["error"])
         else:
             res, status = {"error": "Wrong action"}, 400
-        
-        output = ("error", res["error"])
-
+            output = ("error", res["error"])
 
     res, status = project_users_list(project_id)
     if status == 200:
@@ -154,12 +162,16 @@ def manage_users(project_id:str):
     else:
         output = ("error", res["error"])
 
+    res, status = project_list()
+    if status == 200:
+        project = [Project.from_dict(elem) for elem in res["projects"] if elem["id"] == int(project_id)][0]
+
     return render_template(
         "project/manage.html",
-        title="Project Users",
+        title="Project Management",
         user=session["user"],
         users=users,
-        project_id=project_id,
+        project=project,
         output=output,
         version=VERSION,
         logged=is_logged(),

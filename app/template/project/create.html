@@ -1,6 +1,8 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
+    <a href="{{ url_for('project.list') }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to projects</a>
+
     <p>Fill the form below to create a new project.</p>
 
     <form action="{{ url_for('project.create') }}" method="post">

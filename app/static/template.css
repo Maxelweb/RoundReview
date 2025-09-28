@@ -118,6 +118,7 @@ footer {
 
 .nav-user-item {
     display: block;
+    margin: 0 10px;
 }
 
 .nav a {

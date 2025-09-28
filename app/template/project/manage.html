@@ -1,8 +1,16 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
-    <h3><i class="fas fa-users primary my-1"></i> User Project Management</h3>
+    <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
     
+    <h3><i class="fas fa-rocket primary my-1"></i> Information</h3>
+
+    <p><span class="muted">Project title:</span> <strong>{{ project.title }}</strong></p>
+
+    <h3><i class="fas fa-users primary my-1"></i> User Management</h3>
+    
+    <p class="muted">To change the role of a user, remove the user from the project and re-add with the chosen role.</p>
+
     <h3>View users in project</h3>
     <table>
         <tr>
@@ -16,7 +24,10 @@
             <td>{{ puser.role }}</td>
             <td>
                 {% if puser.id != user.id %}
-                <a href="{{ url_for('project.manage_users', project_id=project_id) }}?action=unjoin" title="Remove user from project"><i class="fas fa-trash-alt"></i></a>
+                <form action="{{ url_for('project.manage_users', project_id=project.id) }}?action=unjoin" method="post">
+                    <input type="hidden" name="username" value="{{ puser.name }}">
+                    <button type="submit" title="Remove user from project"><i class="fas danger fa-trash-alt"></i></button>
+                </form>
                 {% endif %}
             </td>
         </tr>
@@ -25,7 +36,7 @@
     
 
     <h3>Add user to project</h3>
-    <form action="{{ url_for('project.manage_users', project_id=project_id) }}?action=join" method="post">
+    <form action="{{ url_for('project.manage_users', project_id=project.id) }}?action=join" method="post">
         <table>
             <tr>
                 <th><label for="projectUserName">Username</label></th>
