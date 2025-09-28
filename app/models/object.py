@@ -18,7 +18,7 @@ class Object:
     DATE_FORMAT = "%Y-%m-%d, %H:%M"
 
     def __init__(self, id: str, path: int, user_id: int, project_id: int, name: str, 
-                 description: str, comments: str, version: str, status: str, raw: bytes | None = None) -> None:
+                 description: str, comments: str, version: str, status: str, upload_date:str, update_date:str, raw: bytes | None = None) -> None:
         self.id = id
         self.path = path
         self.user_id = user_id
@@ -28,11 +28,13 @@ class Object:
         self.comments = comments
         self.version = version
         self.status = ObjectStatus(status) if status in ObjectStatus.values() else None
+        self.upload_date = upload_date
+        self.update_date = update_date
         self.raw:bytes|None = raw  # Placeholder for raw data, to be loaded separately if needed
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "Object":
-        if len(db_row) != 9:
+        if len(db_row) != 11:
             raise ValueError("Unable to unserialize db row into an Object instance")
         return cls(
             id=db_row[0],
@@ -43,13 +45,16 @@ class Object:
             description=db_row[5],
             comments=db_row[6],
             version=db_row[7],
-            status=db_row[8]
+            status=db_row[8],
+            upload_date=db_row[9],
+            update_date=db_row[10],
         )
     
     @classmethod
     def from_dict(cls, data: dict) -> "Object":
         required_keys = {"id", "path", "user_id", "project_id", "name", 
-                         "description", "comments", "version", "status"}
+                         "description", "comments", "version", "status", 
+                         "update_date", "upload_date"}
         if not required_keys.issubset(data.keys()):
             raise ValueError(f"Missing required keys: {required_keys - data.keys()}")
         
@@ -63,7 +68,9 @@ class Object:
             comments=data["comments"],
             version=data["version"],
             status=data["status"],
-            raw=data.get("raw", None)
+            raw=data.get("raw", None),
+            upload_date=data["upload_date"],
+            update_date=data["update_date"],
         )
 
     def load_raw(self, db:Database) -> bool:
@@ -86,7 +93,9 @@ class Object:
             "description": self.description,
             "comments": self.comments,
             "version": self.version,
-            "status": self.status.value if self.status else None
+            "status": self.status.value if self.status else None,
+            "upload_date": self.upload_date,
+            "update_date": self.update_date,
         }
         if self.raw is not None:
             output["raw"] = self.raw

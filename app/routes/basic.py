@@ -15,7 +15,8 @@ def index():
         title="Welcome",
         version=VERSION,
         logged=is_logged(),
-        admin=is_logged_admin()
+        admin=is_logged_admin(),
+        user=session["user"] if is_logged() else None,
     )
 
 @basic_blueprint.route("/login", methods=["POST", "GET"])

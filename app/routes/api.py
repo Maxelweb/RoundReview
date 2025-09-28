@@ -412,7 +412,7 @@ def project_objects_list(project_id:str):
         # Fetch all objects inside the project
         rows = db.c.execute(
             '''
-            SELECT id, path, user_id, project_id, name, description, comments, version, status
+            SELECT id, path, user_id, project_id, name, description, comments, version, status, upload_date, update_date
             FROM object
             WHERE project_id = ? AND status IS NOT NULL
             ''',
@@ -545,7 +545,7 @@ def object_get(object_id: str, load_raw: bool=False):
         # Fetch the object details
         object_row = db.c.execute(
             '''
-            SELECT id, path, user_id, project_id, name, description, comments, version, status
+            SELECT id, path, user_id, project_id, name, description, comments, version, status, upload_date, update_date
             FROM object
             WHERE id = ?
             ''',
@@ -691,7 +691,7 @@ def object_update(object_id: str):
             return {"error": "Forbidden: Only the object owner or a project owner can update the object"}, 403
 
         # Build the update query dynamically
-        update_query = "UPDATE object SET " + ", ".join(f"{key} = ?" for key in updates.keys()) + " WHERE id = ?"
+        update_query = "UPDATE object SET update_date = CURRENT_TIMESTAMP, " + ", ".join(f"{key} = ?" for key in updates.keys()) + " WHERE id = ?"
         db.c.execute(update_query, (*updates.values(), object_id))
         db.commit()
 

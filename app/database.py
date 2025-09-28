@@ -104,7 +104,7 @@ class Database:
         self.c.execute('''                        
             CREATE TABLE IF NOT EXISTS "user" (
                 "id"	INTEGER,
-                "name"	VARCHAR(32) NOT NULL,
+                "name"	VARCHAR(32) UNIQUE,
                 "email"	VARCHAR(64) UNIQUE,
                 "password"	TEXT NOT NULL,
                 "admin"	INTEGER DEFAULT 0,
@@ -149,7 +149,9 @@ class Database:
                 "raw" BLOB DEFAULT NULL,
                 "comments" TEXT DEFAULT NULL,
                 "version" VARCHAR(64) DEFAULT NULL,
-                "status" VARCHAR(32) DEFAULT NULL
+                "status" VARCHAR(32) DEFAULT NULL,
+                "upload_date" TEXT DEFAULT CURRENT_TIMESTAMP,
+                "update_date" TEXT DEFAULT CURRENT_TIMESTAMP
             );
         ''')
         self.commit()

@@ -16,25 +16,27 @@
         <div class="container header-container">
             <div class="nav">
             {% if logged %}
-                <a href="{{ url_for('project.list') }}" class="current"><i class="fas fa-rocket"></i> Projects</a>
+                <a href="{{ url_for('project.list') }}" {% if current_nav == "projects" %} class="current" {% endif %}><i class="fas fa-rocket"></i> Projects</a>
                 {% if admin %}
-                    <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
-                    <a href="{{ url_for('admin.logs') }}"><i class="fas fa-rectangle-list"></i> Logs</a>
+                    <a href="{{ url_for('admin.users') }}" {% if current_nav == "users" %} class="current" {% endif %}><i class="fas fa-users"></i> Users</a>
+                    <a href="{{ url_for('admin.logs') }}" {% if current_nav == "logs" %} class="current" {% endif %}><i class="fas fa-rectangle-list"></i> Logs</a>
                 {% endif %}
-                <a href="{{ url_for('settings.settings') }}"><i class="fas fa-gears"></i> Settings</a>
+                <a href="{{ url_for('settings.settings') }}"{% if current_nav == "settings" %} class="current" {% endif %}><i class="fas fa-gears"></i> Settings</a>
                 <a href="{{ url_for('basic.logout') }}"><i class="fas fa-arrow-right-from-bracket"></i> Logout</a>
             {% else %}
-                <a href="{{ url_for('basic.login') }}"><i class="fas fa-arrow-right-to-bracket"></i> Login</a>
+                <a href="{{ url_for('basic.login') }}" {% if current_nav == "login" %} class="current" {% endif %}><i class="fas fa-arrow-right-to-bracket"></i> Login</a>
             {% endif %}
             </div>
             <div class="nav-user">
-                <span class="nav-user-item">
-                    <i class="fas fa-user"></i>
-                    <strong>{{ user.name }}</strong></span>
-                {% if project %}
-                    <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
-                {% else %}
-                    <span class="nav-user-item">&nbsp;</span>
+                {% if logged %}
+                    <span class="nav-user-item">
+                        <i class="fas fa-user"></i>
+                        <strong>{{ user.name }}</strong></span>
+                    {% if project %}
+                        <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
+                    {% else %}
+                        <span class="nav-user-item">&nbsp;</span>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
