@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from .user import User
 from ..database import Database
 
 class ObjectStatus(Enum):
@@ -31,6 +32,7 @@ class Object:
         self.upload_date = upload_date
         self.update_date = update_date
         self.raw:bytes|None = raw  # Placeholder for raw data, to be loaded separately if needed
+        self.user:User = None
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "Object":
@@ -81,6 +83,16 @@ class Object:
         if result is None:
             return False
         self.raw = result[0]
+        return True
+    
+    def load_user(self, db:Database) -> bool:
+        result = db.c.execute(
+            "SELECT * FROM user WHERE id = ?;",
+            (self.user_id,)
+        ).fetchone()
+        if result is None:
+            return False
+        self.user = User(db_row=result)
         return True
 
     def to_dict(self) -> dict:

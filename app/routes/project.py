@@ -86,7 +86,6 @@ def view_objects(project_id:str):
         objects = [Object.from_dict(elem) for elem in res["objects"]]
         tree = build_object_tree(objects)
         log.debug("view_objects - tree: %s", tree)
-
     else:
         output = ("error", res["error"])
     return render_template(

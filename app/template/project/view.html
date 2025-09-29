@@ -59,7 +59,6 @@
             {% endif %}
             {% endfor %}
 
-
             {% for obj in tree['_objects'] %}
             <tr>
                 <td>
@@ -69,6 +68,10 @@
                     </a>
                 </td>
                 <td colspan="3" class="file-infos">
+                    <span class="info-item">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <span class="object-last-update" data-timestamp="{{ obj.update_date }}" title="Last update: {{ obj.update_date }}"></span>
+                    </span>
                     <span class="info-item status-label" style="background-color: 
                     {% if obj.status.value == 'No Review' %}gray
                     {% elif obj.status.value == 'Pending Review' %}orange
@@ -88,6 +91,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
+            const allObjectLastUpdates = document.querySelectorAll('.object-last-update');
+            allObjectLastUpdates.forEach(el => {
+                const isoTimestamp = el.getAttribute('data-timestamp');
+                if (isoTimestamp) {
+                    el.textContent = formatRelativeDate(isoTimestamp);
+                }
+            });
+
             const folderLinks = document.querySelectorAll('.folder-link');
             folderLinks.forEach(link => {
                 link.addEventListener('click', function (event) {
@@ -102,6 +114,32 @@
                 });
             });
         });
+
+
+        function formatRelativeDate(isoTimestamp) {
+            const inputDate = new Date(isoTimestamp);
+            const now = new Date();
+
+            const inputMidnight = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate());
+            const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const diffTime = nowMidnight - inputMidnight;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            const hours = inputDate.getHours().toString().padStart(2, '0');
+            const minutes = inputDate.getMinutes().toString().padStart(2, '0');
+
+            if (diffDays === 0) {
+                return `today, ${hours}:${minutes}`;
+            } else if (diffDays === 1) {
+                return `yesterday, ${hours}:${minutes}`;
+            } else if (isNaN(diffDays)) {
+                return ``;
+            } else {
+                return `${diffDays} days ago`;
+            }
+        }
+
     </script>
 
 

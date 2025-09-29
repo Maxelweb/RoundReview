@@ -5,7 +5,7 @@
         <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
         <h3><i class="fas fa-file primary my-1"></i> {{ object.name }}</h3>
         <p class="muted">
-            Project: {{ project.title }} - v{{ object.version }} - {{ object.description if object.description else "No description" }}
+            {{ object.description if object.description else "No description" }}
         </p>
     </div>
 
@@ -266,6 +266,18 @@
             document.getElementById("page-zoom-in").addEventListener("click", updateResetButtonVisibility);
             document.getElementById("page-zoom-out").addEventListener("click", updateResetButtonVisibility);
         </script>
+    </div>
+
+    <div class="container">
+        <h3><i class="fas fa-file primary my-1"></i> Information</h3>
+        
+        <p><span class="muted">Project title:</span> <strong>{{ project.title }}</strong></p>
+        <p><span class="muted">Document version:</span> <strong>v{{ object.version }}</strong></p>
+        <p><span class="muted">Path:</span> <code>{{ object.path }}</code> &raquo; <a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}">Go to folder</a></p>
+        <p><span class="muted">Author:</span> <strong>{{ object.user.name }}</strong></p>
+        <p><span class="muted">Upload date:</span> <strong>{{ object.upload_date }}</strong></p>
+        <p><span class="muted">Last update date:</span> <strong>{{ object.update_date }}</strong></p>
+        </p>
     </div>
 
 {% endblock %}

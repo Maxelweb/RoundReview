@@ -448,11 +448,12 @@ def project_objects_create(project_id: str):
         return {"error": "Invalid file type. Only 'application/pdf' is allowed"}, 400
 
     # Extract metadata from the request
-    name = request.form.get("name") or request.json.get("name")
-    description = request.form.get("description", "")  or request.json.get("description", "") 
-    path = request.form.get("path", "/") or request.json.get("path", "/")
-    version = request.form.get("version", "") or request.json.get("version", "")
-    status = request.form.get("status", ObjectStatus.NO_REVIEW.value) or request.json.get("status", ObjectStatus.NO_REVIEW.value)
+    data = request.form or request.json
+    name = data.get("name")
+    description = data.get("description", "") 
+    path = data.get("path", "/")
+    version = data.get("version", "")
+    status = data.get("status", ObjectStatus.NO_REVIEW.value)
 
     if not path.startswith("/"):
         return {"error": "Invalid path. Path must start with '/'."}, 400

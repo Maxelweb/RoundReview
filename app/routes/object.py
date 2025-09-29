@@ -28,6 +28,11 @@ def view_object(project_id: str, object_id: str):
     else:
         output = ("error", res["error"])
 
+    db = Database()
+    res = obj.load_user(db=db)
+    log.debug("User loading in object: %s", res)
+    db.close()
+
     return render_template(
         "project/object/view.html",
         title="Document Review",
@@ -48,7 +53,7 @@ def get_file(project_id: str, object_id: str):
     """ Serve the file associated with the object """
     # Fetch object details with raw data
     res, status = object_get(object_id, load_raw=True)
-    log.debug("get_file - object details: ", status)
+    # log.debug("get_file - object details: ", status)
     if status == 200:
         obj = Object.from_dict(res["object"])
         # print(obj.raw)
