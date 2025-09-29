@@ -151,7 +151,9 @@
                         input.value = "";
                         input.style.display = "none";
                         input.removeEventListener("keydown", onKeyDown);
-                        loadAnnotations();
+                        setTimeout(() => {
+                            loadAnnotations();
+                        }, 100);
                     } else if (e.key === "Escape") {
                         input.value = "";
                         input.style.display = "none";
@@ -164,15 +166,63 @@
             });
 
             function saveAnnotation(text, x, y, page) {
-                let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                const id = `comment-${Date.now()}`;
-                const authorName = document.getElementById("author-info").getAttribute("data-author-name");
-                const authorId = document.getElementById("author-info").getAttribute("data-author-id");
-                const resolved = false;
-                x = x / pdfscale;
-                y = y / pdfscale;
-                data.push({ id, text, x, y, page, authorName, authorId, resolved });
-                localStorage.setItem("annotations", JSON.stringify(data));
+                // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+                getObjectComments("/api/objects/{{ object.id }}", function (err, res) {
+                    if (res || res == null) {
+                        let data = JSON.parse(res || "[]")
+                        const id = `comment-${Date.now()}`;
+                        const authorName = document.getElementById("author-info").getAttribute("data-author-name");
+                        const authorId = document.getElementById("author-info").getAttribute("data-author-id");
+                        const resolved = false;
+                        x = x / pdfscale;
+                        y = y / pdfscale;
+                        data.push({ id, text, x, y, page, authorName, authorId, resolved });
+                        // localStorage.setItem("annotations", JSON.stringify(data));
+                        updateObjectComments("/api/objects/{{ object.id }}", {"comments": data})
+                    }
+                });
+            }
+
+            function updateObjectComments(url, data) {
+                const xhttp = new XMLHttpRequest();
+                xhttp.open("PUT", url, true);
+                xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState === 4) {
+                        if (xhttp.status === 200) {
+                            console.log("OK: ", xhttp.responseText);
+                        } else {
+                            console.error("Error: ", xhttp.status, xhttp.statusText);
+                        }
+                    }
+                };
+                const jsonData = JSON.stringify(data);
+                xhttp.send(jsonData);
+            }
+            
+            
+            function getObjectComments(url, callback) {
+                let comments;
+                const xhttp = new XMLHttpRequest();
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader("Accept", "application/json");
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState === 4) {
+                        if (xhttp.status === 200) {
+                            try {
+                                const responseJson = JSON.parse(xhttp.responseText);
+                                console.log("JSON response: ", responseJson);
+                                callback(null, responseJson["object"]["comments"]);
+                            } catch (e) {
+                                console.error("Error in JSON: ", e);
+                                callback(e, null);
+                            }
+                        } else {
+                            callback(new Error("Error HTTP: " + xhttp.status), null);
+                        }
+                    }
+                };
+                xhttp.send();
             }
 
             function loadAnnotations() {
@@ -180,56 +230,66 @@
                 commentsList.innerHTML = "";
                 counter = 1;
                 totalAnnotations = 0;
-                let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
-                    // Yellow sphere marker on document
-                    const marker = document.createElement("div");
-                    marker.className = "marker";
-                    marker.style.left = `${x*pdfscale}px`;
-                    marker.style.top = `${y*pdfscale}px`;
-                    marker.dataset.commentId = id;
-                    marker.addEventListener("click", () => focusComment(id));
-                    marker.innerText = counter;
-                    markers.appendChild(marker);
+                getObjectComments("/api/objects/{{ object.id }}", function (err, res) {
+                    if (res) {
+                        let data = JSON.parse(res || "[]");
+                        // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+                        data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
+                            // Yellow sphere marker on document
+                            const marker = document.createElement("div");
+                            marker.className = "marker";
+                            marker.style.left = `${x*pdfscale}px`;
+                            marker.style.top = `${y*pdfscale}px`;
+                            marker.dataset.commentId = id;
+                            marker.addEventListener("click", () => focusComment(id));
+                            marker.innerText = counter;
+                            markers.appendChild(marker);
 
-                    // Comment on sidebar 
-                    const comment = document.createElement("div");
-                    comment.className = "comment";
-                    comment.id = id;
-                    comment.innerHTML = "<span class='comment-number'>("+counter+")</span> <span class='comment-author'>" + authorName + ":</span> " + text;
-                    
-                    const commentControl = document.createElement("div");
-                    commentControl.className = "comment-control";
-                    
-                    const goToBtn = document.createElement("span");
-                    goToBtn.title = "Find in document";
-                    goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
-                    commentControl.appendChild(goToBtn);
+                            // Comment on sidebar 
+                            const comment = document.createElement("div");
+                            comment.className = "comment";
+                            comment.id = id;
+                            comment.innerHTML = "<span class='comment-number'>("+counter+")</span> <span class='comment-author'>" + authorName + ":</span> " + text;
+                            
+                            const commentControl = document.createElement("div");
+                            commentControl.className = "comment-control";
+                            
+                            const goToBtn = document.createElement("span");
+                            goToBtn.title = "Find in document";
+                            goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
+                            commentControl.appendChild(goToBtn);
 
-                    const deleteBtn = document.createElement("span");
-                    deleteBtn.title = "Delete comment";
-                    deleteBtn.innerHTML = "<i class='fas danger fa-trash-alt'></i>";
-                    deleteBtn.addEventListener("click", () => {
-                        if (confirm("Are you sure you want to delete this comment?")) {
-                            let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                            data = data.filter(a => a.id !== id);
-                            localStorage.setItem("annotations", JSON.stringify(data));
-                            loadAnnotations();
+                            const deleteBtn = document.createElement("span");
+                            deleteBtn.title = "Delete comment";
+                            deleteBtn.innerHTML = "<i class='fas danger fa-trash-alt'></i>";
+                            deleteBtn.addEventListener("click", () => {
+                                if (confirm("Are you sure you want to delete this comment?")) {
+                                    // TODO: UPDATE THIS!!!!
+                                    // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
+                                    data = data.filter(a => a.id !== id);
+                                    // localStorage.setItem("annotations", JSON.stringify(data));
+                                    updateObjectComments("/api/objects/{{ object.id }}",{"comments": data})
+                                    setTimeout(() => {
+                                        loadAnnotations();
+                                    }, 100);
+                                }
+                            });
+                            commentControl.appendChild(deleteBtn);
+
+                            comment.appendChild(commentControl);
+                            goToBtn.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
+                            commentsList.appendChild(comment);
+                            
+                            counter++;
+                            totalAnnotations++;
+                        });
+                        totalPageComments.textContent = totalAnnotations;
+                        if (totalAnnotations === 0) {
+                            commentsList.innerHTML = "<p class='muted'>No comments on this page.</p>";
                         }
-                    });
-                    commentControl.appendChild(deleteBtn);
-
-                    comment.appendChild(commentControl);
-                    goToBtn.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
-                    commentsList.appendChild(comment);
-                    
-                    counter++;
-                    totalAnnotations++;
+                    }
                 });
-                totalPageComments.textContent = totalAnnotations;
-                if (totalAnnotations === 0) {
-                    commentsList.innerHTML = "<p class='muted'>No comments on this page.</p>";
-                }
+                
             }
 
             function focusCommentFromSidebarToPDF(id) {

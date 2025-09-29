@@ -1,4 +1,4 @@
-import uuid
+import uuid, json
 from flask import request, session, Blueprint
 from .utils import is_logged
 from ..config import VERSION, log
@@ -645,8 +645,15 @@ def object_update(object_id: str):
     if not data:
         return {"error": "Missing request body"}, 400
 
+    log.debug(data.items())
+
     allowed_fields = {"name", "description", "comments", "version", "status", "path"}
+    allowed_fields_for_member  = {"name", "description", "path"}
+    allowed_fields_for_reviewer = {"name", "description", "comments", "status", "path"}
     updates = {key: value for key, value in data.items() if key in allowed_fields}
+
+    if "comments" in updates.keys():
+        updates["comments"] = json.dumps(updates["comments"])
 
     if "status" in updates and updates["status"] not in ObjectStatus.values():
         return {"error": f"Invalid status. Valid statuses are: {', '.join(ObjectStatus.values())}"}, 400
@@ -687,12 +694,21 @@ def object_update(object_id: str):
 
         user_role = member_check[0]
 
-        # Only the object owner or a project owner can update the object
-        if user_id != object_user_id and user_role != Role.OWNER.value:
-            return {"error": "Forbidden: Only the object owner or a project owner can update the object"}, 403
+        # Allowed fields update for member
+        if user_role == Role.MEMBER.value and not all([key in allowed_fields_for_member for key in updates.keys()]):
+            return {"error": "Forbidden: Only the project owner or reviewer can update those object fields"}, 403
+        
+        # Allowed fields update for reviewer
+        if user_role == Role.REVIEWER.value and not all([key in allowed_fields_for_reviewer for key in updates.keys()]):
+            return {"error": "Forbidden: Only the project owner can update those object fields"}, 403
+        
+        # Allowed fields update for owner
+        if user_role == Role.OWNER.value and not all([key in allowed_fields for key in updates.keys()]):
+            return {"error": "Forbidden: You cannot update those object fields"}, 403
 
         # Build the update query dynamically
         update_query = "UPDATE object SET update_date = CURRENT_TIMESTAMP, " + ", ".join(f"{key} = ?" for key in updates.keys()) + " WHERE id = ?"
+
         db.c.execute(update_query, (*updates.values(), object_id))
         db.commit()
 
