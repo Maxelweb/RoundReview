@@ -56,7 +56,7 @@
 
         <div class="pdf-sidebar" id="sidebar">
             <h3><span class="badge-total" id="total-page-comments">0</span> Comments on this page</h3>
-            <div id="comments-list"></div>
+            <div id="comments-list" data-current-author="{{ user.name }}"></div>
         </div>
 
         <script>
@@ -132,7 +132,7 @@
                 const x = event.clientX - rect.left;
                 const y = event.clientY - rect.top;
 
-                lastClick = { x, y }; // Salva le coordinate dell'ultimo click
+                lastClick = { x, y }; // Save the last click coords
 
                 input.style.left = `${x}px`;
                 input.style.top = `${y}px`;
@@ -158,12 +158,12 @@
             });
 
             function saveAnnotation(text, x, y, page) {
-                // TODO: add name of the author
                 let data = JSON.parse(localStorage.getItem("annotations") || "[]");
                 const id = `comment-${Date.now()}`;
+                const author = document.getElementById("comments-list").getAttribute("data-current-author");
                 x = x / pdfscale;
                 y = y / pdfscale;
-                data.push({ id, text, x, y, page});
+                data.push({ id, text, x, y, page, author });
                 localStorage.setItem("annotations", JSON.stringify(data));
             }
 
@@ -173,8 +173,8 @@
                 counter = 1;
                 totalAnnotations = 0;
                 let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                data.filter(a => a.page === currentPage).forEach(({ id, text, x, y}) => {
-                    // Quadrato giallo
+                data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, author }) => {
+                    // Yellow sphere marker on document
                     const marker = document.createElement("div");
                     marker.className = "marker";
                     marker.style.left = `${x*pdfscale}px`;
@@ -184,11 +184,11 @@
                     marker.innerText = counter;
                     markers.appendChild(marker);
 
-                    // Commento nella sidebar
+                    // Comment on sidebar 
                     const comment = document.createElement("div");
                     comment.className = "comment";
                     comment.id = id;
-                    comment.innerText = "(#"+counter+") " + text;
+                    comment.innerHTML = "<span class='comment-number'>("+counter+")</span> <span class='comment-author'>"+author+":</span> " + text;
                     
                     const commentControl = document.createElement("div");
                     commentControl.className = "comment-control";
