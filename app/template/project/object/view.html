@@ -56,7 +56,7 @@
 
         <div class="pdf-sidebar" id="sidebar">
             <h3><span class="badge-total" id="total-page-comments">0</span> Comments on this page</h3>
-            <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-can-comment="{{ can_comment }}"></span>
+            <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-comment="{{ can_comment }}"></span>
             <div id="comments-list"></div>
         </div>
 
@@ -132,6 +132,11 @@
                 const rect = canvas.getBoundingClientRect();
                 const x = event.clientX - rect.left;
                 const y = event.clientY - rect.top;
+                const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
+
+                if (!commentsEnabled){
+                    return false;
+                }
 
                 lastClick = { x, y }; // Save the last click coords
 
@@ -163,9 +168,10 @@
                 const id = `comment-${Date.now()}`;
                 const authorName = document.getElementById("author-info").getAttribute("data-author-name");
                 const authorId = document.getElementById("author-info").getAttribute("data-author-id");
+                const resolved = false;
                 x = x / pdfscale;
                 y = y / pdfscale;
-                data.push({ id, text, x, y, page, authorName, authorId });
+                data.push({ id, text, x, y, page, authorName, authorId, resolved });
                 localStorage.setItem("annotations", JSON.stringify(data));
             }
 
@@ -175,7 +181,7 @@
                 counter = 1;
                 totalAnnotations = 0;
                 let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, authorName, authorId }) => {
+                data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
                     // Yellow sphere marker on document
                     const marker = document.createElement("div");
                     marker.className = "marker";
