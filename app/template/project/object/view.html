@@ -19,9 +19,6 @@
         {% endif %}
     </div>
     
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-
     <div class="pdf-container">
         <div class="pdf-navbar container" id="controls">
             <div class="pdf-control">
@@ -48,7 +45,7 @@
                 Scale: <span class="bold" id="page-scale"></span>
             </div>
         </div>
-        <div class="pdf-viewer" id="pdf-container">
+        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}">
             <canvas id="pdf-canvas"></canvas>
             <div id="markers"></div>
             <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
@@ -59,281 +56,6 @@
             <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-comment="{{ can_comment }}"></span>
             <div id="comments-list"></div>
         </div>
-
-        <script>
-            const url = "{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}";
-            let pdfscale = 1.35; // Scala per posizionare i marker correttamente
-            const pdfscaleDefault = 1.35;
-            let pdfInstance = null;
-            let currentPage = 1;
-            let lastClick = { x: 0, y: 0 };
-            const canvas = document.getElementById("pdf-canvas");
-            const context = canvas.getContext("2d");
-            const input = document.getElementById("comment-input");
-            const markers = document.getElementById("markers");
-            const commentsList = document.getElementById("comments-list");
-            const pageNumDisplay = document.getElementById("page-num");
-            const totalPageNumDisplay = document.getElementById("total-pages-num");
-            const pageScaleDisplay = document.getElementById("page-scale");
-            const totalPageComments = document.getElementById("total-page-comments");
-
-            pdfjsLib.getDocument(url).promise.then(pdf => {
-                pdfInstance = pdf;
-                totalPageNumDisplay.textContent = pdf.numPages;
-                pageScaleDisplay.textContent = (pdfscale * 100).toFixed(0) + "%";
-                renderPage(currentPage);
-            });
-
-            function renderPage(pageNumber, scale = pdfscale) {
-                pdfInstance.getPage(pageNumber).then(page => {
-                    // const scale = 1.60; // window.innerHeight / page.getViewport({ scale: 1 }).height; // Previous: 1.75
-                    const viewport = page.getViewport({ scale });
-                    canvas.width =  viewport.width;
-                    canvas.height = viewport.height;
-                    const renderContext = { canvasContext: context, viewport };
-                    return page.render(renderContext).promise;
-                }).then(() => {
-                    pageNumDisplay.textContent = pageNumber;
-                    loadAnnotations();
-                });
-            }
-
-            document.getElementById("next-page").addEventListener("click", () => {
-                if (currentPage < pdfInstance.numPages) {
-                    currentPage++;
-                    renderPage(currentPage);
-                }
-            });
-
-            document.getElementById("prev-page").addEventListener("click", () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPage(currentPage);
-                }
-            });
-            
-            // Event listeners for zooming in and out
-            document.getElementById("page-zoom-in").addEventListener("click", () => {
-                pdfscale = Math.min(pdfscale + 0.25, 3); // Ensure pdfscale does not exceed 3
-                pageScaleDisplay.textContent = (pdfscale * 100).toFixed(0) + "%";
-                renderPage(currentPage);
-            });
-
-            // Event listeners for zooming in and out
-            document.getElementById("page-zoom-out").addEventListener("click", () => {
-                if (pdfscale > 0.5) {
-                    pdfscale = Math.max(pdfscale - 0.25, 0.5); // Ensure pdfscale does not go below 0.5
-                    pageScaleDisplay.textContent = (pdfscale * 100).toFixed(0) + "%";
-                    renderPage(currentPage);
-                }
-            });
-
-            canvas.addEventListener("click", event => {
-                const rect = canvas.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
-
-                if (!commentsEnabled){
-                    return false;
-                }
-
-                lastClick = { x, y }; // Save the last click coords
-
-                input.style.left = `${x}px`;
-                input.style.top = `${y}px`;
-                input.style.display = "block";
-                input.focus();
-
-                const onKeyDown = (e) => {
-                    if (e.key === "Enter" && input.value !== "") {
-                        saveAnnotation(input.value, lastClick.x, lastClick.y, currentPage);
-                        input.value = "";
-                        input.style.display = "none";
-                        input.removeEventListener("keydown", onKeyDown);
-                        setTimeout(() => {
-                            loadAnnotations();
-                        }, 100);
-                    } else if (e.key === "Escape") {
-                        input.value = "";
-                        input.style.display = "none";
-                        input.removeEventListener("keydown", onKeyDown);
-                    }
-                };
-
-                input.removeEventListener("keydown", onKeyDown); // prevent duplicates
-                input.addEventListener("keydown", onKeyDown);
-            });
-
-            function saveAnnotation(text, x, y, page) {
-                // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                getObjectComments("/api/objects/{{ object.id }}", function (err, res) {
-                    if (res || res == null) {
-                        let data = JSON.parse(res || "[]")
-                        const id = `comment-${Date.now()}`;
-                        const authorName = document.getElementById("author-info").getAttribute("data-author-name");
-                        const authorId = document.getElementById("author-info").getAttribute("data-author-id");
-                        const resolved = false;
-                        x = x / pdfscale;
-                        y = y / pdfscale;
-                        data.push({ id, text, x, y, page, authorName, authorId, resolved });
-                        // localStorage.setItem("annotations", JSON.stringify(data));
-                        updateObjectComments("/api/objects/{{ object.id }}", {"comments": data})
-                    }
-                });
-            }
-
-            function updateObjectComments(url, data) {
-                const xhttp = new XMLHttpRequest();
-                xhttp.open("PUT", url, true);
-                xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhttp.onreadystatechange = function () {
-                    if (xhttp.readyState === 4) {
-                        if (xhttp.status === 200) {
-                            console.log("OK: ", xhttp.responseText);
-                        } else {
-                            console.error("Error: ", xhttp.status, xhttp.statusText);
-                        }
-                    }
-                };
-                const jsonData = JSON.stringify(data);
-                xhttp.send(jsonData);
-            }
-            
-            
-            function getObjectComments(url, callback) {
-                let comments;
-                const xhttp = new XMLHttpRequest();
-                xhttp.open("GET", url, true);
-                xhttp.setRequestHeader("Accept", "application/json");
-                xhttp.onreadystatechange = function () {
-                    if (xhttp.readyState === 4) {
-                        if (xhttp.status === 200) {
-                            try {
-                                const responseJson = JSON.parse(xhttp.responseText);
-                                console.log("JSON response: ", responseJson);
-                                callback(null, responseJson["object"]["comments"]);
-                            } catch (e) {
-                                console.error("Error in JSON: ", e);
-                                callback(e, null);
-                            }
-                        } else {
-                            callback(new Error("Error HTTP: " + xhttp.status), null);
-                        }
-                    }
-                };
-                xhttp.send();
-            }
-
-            function loadAnnotations() {
-                markers.innerHTML = "";
-                commentsList.innerHTML = "";
-                counter = 1;
-                totalAnnotations = 0;
-                getObjectComments("/api/objects/{{ object.id }}", function (err, res) {
-                    if (res) {
-                        let data = JSON.parse(res || "[]");
-                        // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                        data.filter(a => a.page === currentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
-                            // Yellow sphere marker on document
-                            const marker = document.createElement("div");
-                            marker.className = "marker";
-                            marker.style.left = `${x*pdfscale}px`;
-                            marker.style.top = `${y*pdfscale}px`;
-                            marker.dataset.commentId = id;
-                            marker.addEventListener("click", () => focusComment(id));
-                            marker.innerText = counter;
-                            markers.appendChild(marker);
-
-                            // Comment on sidebar 
-                            const comment = document.createElement("div");
-                            comment.className = "comment";
-                            comment.id = id;
-                            comment.innerHTML = "<span class='comment-number'>("+counter+")</span> <span class='comment-author'>" + authorName + ":</span> " + text;
-                            
-                            const commentControl = document.createElement("div");
-                            commentControl.className = "comment-control";
-                            
-                            const goToBtn = document.createElement("span");
-                            goToBtn.title = "Find in document";
-                            goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
-                            commentControl.appendChild(goToBtn);
-
-                            const deleteBtn = document.createElement("span");
-                            deleteBtn.title = "Delete comment";
-                            deleteBtn.innerHTML = "<i class='fas danger fa-trash-alt'></i>";
-                            deleteBtn.addEventListener("click", () => {
-                                if (confirm("Are you sure you want to delete this comment?")) {
-                                    // TODO: UPDATE THIS!!!!
-                                    // let data = JSON.parse(localStorage.getItem("annotations") || "[]");
-                                    data = data.filter(a => a.id !== id);
-                                    // localStorage.setItem("annotations", JSON.stringify(data));
-                                    updateObjectComments("/api/objects/{{ object.id }}",{"comments": data})
-                                    setTimeout(() => {
-                                        loadAnnotations();
-                                    }, 100);
-                                }
-                            });
-                            commentControl.appendChild(deleteBtn);
-
-                            comment.appendChild(commentControl);
-                            goToBtn.addEventListener("click", () => focusCommentFromSidebarToPDF(id));
-                            commentsList.appendChild(comment);
-                            
-                            counter++;
-                            totalAnnotations++;
-                        });
-                        totalPageComments.textContent = totalAnnotations;
-                        if (totalAnnotations === 0) {
-                            commentsList.innerHTML = "<p class='muted'>No comments on this page.</p>";
-                        }
-                    }
-                });
-                
-            }
-
-            function focusCommentFromSidebarToPDF(id) {
-                document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
-                const target = document.getElementById(id);
-                if (target) {
-                    target.classList.add("focused");
-                    setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
-                    const marker = document.querySelector(`.marker[data-comment-id='${id}']`);
-                    if (marker) {
-                        marker.scrollIntoView({ behavior: "smooth", block: "center" });
-                        marker.classList.add("focused");
-                        setTimeout(() => marker.classList.remove("focused"), 1500); // Remove highlight
-                    }
-                }
-            }
-
-            function focusComment(id) {
-                document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
-                const target = document.getElementById(id);
-                if (target) {
-                    target.classList.add("focused");
-                    target.scrollIntoView({ behavior: "smooth", block: "center" });
-                    setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
-                }
-            }
-
-
-            const resetScaleButton = document.getElementById("reset-scale");
-            resetScaleButton.addEventListener("click", () => {
-                pdfscale = pdfscaleDefault;
-                pageScaleDisplay.textContent = (pdfscale * 100).toFixed(0) + "%";
-                renderPage(currentPage);
-                updateResetButtonVisibility();
-            });
-
-            function updateResetButtonVisibility() {
-                resetScaleButton.style.display = (pdfscale !== pdfscaleDefault) ? "inline-block" : "none";
-            }
-
-            // Update visibility of reset button on zoom in/out
-            document.getElementById("page-zoom-in").addEventListener("click", updateResetButtonVisibility);
-            document.getElementById("page-zoom-out").addEventListener("click", updateResetButtonVisibility);
-        </script>
     </div>
 
     <div class="container">
@@ -347,5 +69,8 @@
         <p><span class="muted">Last update date:</span> <strong>{{ object.update_date }}</strong></p>
         </p>
     </div>
+
+
+    <script src="{{ url_for('static', filename='js/object.js') }}"></script>
 
 {% endblock %}
