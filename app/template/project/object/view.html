@@ -27,7 +27,8 @@
                 Page: <span class="bold" id="page-num">1</span> / 
                 <span id="total-pages-num"></span>
             </div>
-                <div class="pdf-control pdf-status"><span class="status-label" style="background-color: 
+                <div class="pdf-control pdf-status">
+                    <span class="status-label" style="background-color: 
                     {% if object.status.value == 'No Review' %}gray
                     {% elif object.status.value == 'Pending Review' %}orange
                     {% elif object.status.value == 'Under Review' %}blue
@@ -37,6 +38,12 @@
                     {% endif %};">
                         {{ object.status.value }}
                     </span>
+                    <!-- TODO: -->
+                    <select>
+                        {% for status in object_statuses.values() %}
+                            <option>{{ status }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             <div class="pdf-control">
                 <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>

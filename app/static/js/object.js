@@ -102,7 +102,7 @@ function saveComments(text, x, y, page) {
             x = x / pdfCurrentScale;
             y = y / pdfCurrentScale;
             data.push({ id, text, x, y, page, authorName, authorId, resolved });
-            putObjectComments("/api/objects/" + pdfObjectId, {"comments": data})
+            putObject("/api/objects/" + pdfObjectId, {"comments": data})
         }
     });
 }
@@ -132,14 +132,14 @@ function getObjectComments(url, callback) {
 }
 
 // Apply comments update via xhttp
-function putObjectComments(url, data) {
+function putObject(url, data) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("PUT", url, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 200) {
-                // avviso
+                // TODO: 
                 console.log("OK: ", xhttp.responseText);
             } else {
                 console.error("Error: ", xhttp.status, xhttp.statusText);
@@ -198,7 +198,7 @@ function loadAnnotations() {
                 deleteBtn.addEventListener("click", () => {
                     if (confirm("Are you sure you want to delete this comment?")) {
                         data = data.filter(a => a.id !== id);
-                        putObjectComments("/api/objects/" + pdfObjectId, {"comments": data})
+                        putObject("/api/objects/" + pdfObjectId, {"comments": data})
                         setTimeout(() => {
                             loadAnnotations();
                         }, 100);

@@ -46,6 +46,7 @@ def view_object(project_id: str, object_id: str):
         can_edit=can_edit,
         can_comment=can_comment,
         project_role=get_user_role_in_project(project_id),
+        object_statuses=ObjectStatus,
     )
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>/file', methods=["GET"])
