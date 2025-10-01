@@ -240,16 +240,27 @@ table.nested-table td {
     border: none;
 }
 
-.status-label {
+span.status-label {
     font-size: 80% !important;
     font-weight: bold;
-    padding: 1px 4px;
+    padding: 0px 4px 2px;
     border-radius: 4px;
     color: #FFF;
     border: 1px solid #2c2c2f;
     text-transform: lowercase;
 }
 
+select.status-label {
+    width: auto;
+    margin-left: 10px;
+    padding: 3px;
+    font-weight: bold;
+    text-transform: lowercase;
+}
+
+select.status-label option {
+    background-color: var(--theme-input-tables-bg);
+}
 
 /* FIXME: refactor this */
 

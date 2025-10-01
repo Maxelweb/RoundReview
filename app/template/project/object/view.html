@@ -28,20 +28,10 @@
                 <span id="total-pages-num"></span>
             </div>
                 <div class="pdf-control pdf-status">
-                    <span class="status-label" style="background-color: 
-                    {% if object.status.value == 'No Review' %}gray
-                    {% elif object.status.value == 'Pending Review' %}orange
-                    {% elif object.status.value == 'Under Review' %}blue
-                    {% elif object.status.value == 'Require Changes' %}red
-                    {% elif object.status.value == 'Approved' %}green
-                    {% else %}black
-                    {% endif %};">
-                        {{ object.status.value }}
-                    </span>
-                    <!-- TODO: -->
-                    <select>
-                        {% for status in object_statuses.values() %}
-                            <option>{{ status }}</option>
+                    <select class="status-label" id="status-label" data-current-status="{{ object.status.value }}">
+                        {% for status in object_statuses.keys() %}
+                            <option {% if object.status == status %}selected{%endif%}
+                            data-color="{{ object_statuses.get_color(status) }}">{{ status.value }}</option>
                         {% endfor %}
                     </select>
                 </div>

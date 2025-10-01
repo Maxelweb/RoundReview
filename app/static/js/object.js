@@ -1,11 +1,11 @@
+// View Object detail JS Logic for RoundReview
+// ===========================================
 
-// Object JS Logic for RoundReview
-// ===============================
-
-let pdfCurrentScale = 1.35;
+let pdfCurrentScale = 1.30;
 let pdfInstance = null;
 let pdfCurrentPage = 1;
 let lastClick = { x: 0, y: 0 };
+let objectCurrentStatusIndex;
 
 const pdfscaleDefault = 1.35;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
@@ -20,6 +20,7 @@ const totalPageNumDisplay = document.getElementById("total-pages-num");
 
 const pageScaleDisplay = document.getElementById("page-scale");
 const totalPageComments = document.getElementById("total-page-comments");
+const selectStatusElement = document.getElementById("status-label");
 
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
@@ -28,6 +29,7 @@ pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
     pageScaleDisplay.textContent = (pdfCurrentScale * 100).toFixed(0) + "%";
     renderPage(pdfCurrentPage);
 });
+
 
 // Render page with annotations
 function renderPage(pageNumber, scale = pdfCurrentScale) {
@@ -43,7 +45,7 @@ function renderPage(pageNumber, scale = pdfCurrentScale) {
         return page.render(renderContext).promise;
     }).then(() => {
         currentPageNumDisplay.textContent = pageNumber;
-        loadAnnotations();
+        loadComments();
     });
 }
 
@@ -76,7 +78,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
             commentTextarea.style.display = "none";
             commentTextarea.removeEventListener("keydown", onKeyDown);
             setTimeout(() => {
-                loadAnnotations();
+                loadComments();
             }, 100);
         } else if (e.key === "Escape") {
             commentTextarea.value = "";
@@ -102,7 +104,7 @@ function saveComments(text, x, y, page) {
             x = x / pdfCurrentScale;
             y = y / pdfCurrentScale;
             data.push({ id, text, x, y, page, authorName, authorId, resolved });
-            putObject("/api/objects/" + pdfObjectId, {"comments": data})
+            putObject("/api/objects/" + pdfObjectId, {"comments": data}, () => {});
         }
     });
 }
@@ -124,7 +126,7 @@ function getObjectComments(url, callback) {
                     callback(e, null);
                 }
             } else {
-                callback(new Error("Error HTTP: " + xhttp.status), null);
+                callback(new Error(xhttp.status), null);
             }
         }
     };
@@ -132,17 +134,16 @@ function getObjectComments(url, callback) {
 }
 
 // Apply comments update via xhttp
-function putObject(url, data) {
+function putObject(url, data, callback) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("PUT", url, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 200) {
-                // TODO: 
-                console.log("OK: ", xhttp.responseText);
+                callback(null, xhttp.responseText);
             } else {
-                console.error("Error: ", xhttp.status, xhttp.statusText);
+                callback(new Error(xhttp.status), null);
             }
         }
     };
@@ -151,7 +152,7 @@ function putObject(url, data) {
 }
 
 // Load comments as markers and comments list
-function loadAnnotations() {
+function loadComments() {
     
     pdfMarkers.innerHTML = "";
     commentsList.innerHTML = "";
@@ -198,9 +199,9 @@ function loadAnnotations() {
                 deleteBtn.addEventListener("click", () => {
                     if (confirm("Are you sure you want to delete this comment?")) {
                         data = data.filter(a => a.id !== id);
-                        putObject("/api/objects/" + pdfObjectId, {"comments": data})
+                        putObject("/api/objects/" + pdfObjectId, {"comments": data}, () => {});
                         setTimeout(() => {
-                            loadAnnotations();
+                            loadComments();
                         }, 100);
                     }
                 });
@@ -210,13 +211,10 @@ function loadAnnotations() {
                 commentControl.appendChild(deleteBtn);
                 comment.appendChild(commentControl);
                 commentsList.appendChild(comment);
- 
-                
+
                 commentPageId++;
                 totalComments++;
-   
             });
-
 
             totalPageComments.textContent = totalComments;
    
@@ -302,4 +300,30 @@ document.getElementById("page-zoom-out").addEventListener("click", updateResetBu
 
 function updateResetButtonVisibility() {
     document.getElementById("reset-scale").style.display = (pdfCurrentScale !== pdfscaleDefault) ? "inline-block" : "none";
+}
+
+// Event listener status label
+document.getElementById("status-label").addEventListener("change", () => {
+    
+    putObject("/api/objects/" + pdfObjectId, {"status": document.getElementById("status-label").value}, (error, res) => {
+        if (res){
+            updateStatusColor();
+        } else {
+            console.warn(objectCurrentStatusIndex)
+            selectStatusElement.selectedIndex = objectCurrentStatusIndex;
+            alert(error);
+        }
+            
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    updateStatusColor();
+});
+
+function updateStatusColor() {
+    objectCurrentStatusIndex = selectStatusElement.selectedIndex; // Save initial status
+    const selectedOption = selectStatusElement.options[selectStatusElement.selectedIndex];
+    const color = selectedOption.getAttribute('data-color');
+    selectStatusElement.style.backgroundColor = color || 'black';
 }

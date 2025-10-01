@@ -13,6 +13,18 @@ class ObjectStatus(Enum):
     @staticmethod
     def values() -> list:
         return list(map(lambda t: t.value, ObjectStatus))
+    
+    @staticmethod
+    def keys() -> list:
+        return list(map(lambda t: t, ObjectStatus))
+    
+    @staticmethod
+    def get_color(status:'ObjectStatus') -> str:
+        if status == status.NO_REVIEW: return "#868b99"
+        if status == status.PENDING_REVIEW: return "#3958b6"
+        if status == status.UNDER_REVIEW: return "#ba863a"
+        if status == status.REQUIRE_CHANGES: return "#b43939"
+        if status == status.APPROVED: return "#60a531"
 
 class Object:
 
