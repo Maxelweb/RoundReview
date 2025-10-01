@@ -22,6 +22,10 @@ const pageScaleDisplay = document.getElementById("page-scale");
 const totalPageComments = document.getElementById("total-page-comments");
 const selectStatusElement = document.getElementById("status-label");
 
+const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
+
+const editingEnabled = document.getElementById("author-info").getAttribute("data-author-can-edit") == "True";
+
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
     pdfInstance = pdf;
@@ -58,7 +62,6 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
     const y = event.clientY - rect.top;
 
     // Check user permission
-    const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
     if (!commentsEnabled){
         return false;
     }
@@ -305,6 +308,11 @@ function updateResetButtonVisibility() {
 // Event listener status label
 document.getElementById("status-label").addEventListener("change", () => {
     
+    // Check user permission
+    if (!editingEnabled){
+        return false;
+    }
+
     putObject("/api/objects/" + pdfObjectId, {"status": document.getElementById("status-label").value}, (error, res) => {
         if (res){
             updateStatusColor();
@@ -319,6 +327,9 @@ document.getElementById("status-label").addEventListener("change", () => {
 
 document.addEventListener('DOMContentLoaded', function () {
     updateStatusColor();
+    if (!editingEnabled){
+        selectStatusElement.disabled = true;
+    }
 });
 
 function updateStatusColor() {
