@@ -1,0 +1,53 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <a href="{{ url_for('project.view_objects', project_id=project_id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
+    <br>
+    <a href="{{ url_for('object.view_object', project_id=project_id, object_id=object.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to object</a>
+    
+    <p>Edit the fields below as needed.</p>
+
+    <form action="{{ url_for('object.edit_object', project_id=project_id, object_id=object.id) }}" method="post">
+        <table>
+            <tr>
+                <th><label for="objectPdf">Location</label></th>
+                <td width="75%">
+                    <div id="locationInput" class="location-input" tabindex="0" style="display: flex; align-items: center; flex-wrap: wrap; padding: 4px; min-height: 26px;">
+                        <code>/</code> &nbsp;
+                        <input type="hidden" name="path" id="locationHidden" value="{{ object.path }}">
+                        <span id="locationSegments" style="display: flex; align-items: center; flex-wrap: wrap;">
+                            <span style="margin: 0px 2px;">/</span>
+                        </span>
+                        <input type="text" id="locationText" style="border: none; outline: none; min-width: 40px; flex: 1;">
+                    </div>
+                    <p class="small block muted">Use <code>/</code> to add new folders (max 3 folders).</p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="objectName">Document name</label></th>
+                <td>
+                    <input type="text" id="objectName" name="name" placeholder="Enter object name" required class="my-1" value="{{ object.name }}">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="objectDescription">Description (optional)</label></th>
+                <td>
+                    <textarea id="objectDescription" name="description" placeholder="Enter description" maxlength="256" class="my-1">{{ object.description }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="objectVersion">Version</label></th>
+                <td>
+                    <input type="text" id="objectVersion" name="version" placeholder="e.g. 1.0.0" pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?$" required class="my-1" title="Version must follow semantic versioning (e.g. 1.0.0)" value="{{ object.version }}">
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="hidden" name="object_id" value="{{ object.id }}">
+            <input type="submit" value="Apply update">
+        </div>
+    </form>
+
+    <script src="{{ url_for('static', filename='js/create_object.js') }}"></script>
+
+{% endblock %}

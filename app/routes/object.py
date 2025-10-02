@@ -4,7 +4,7 @@ from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
 from ..models import Project, Object, ObjectStatus, Role
-from .api import project_list, object_get
+from .api import project_list, object_get, object_update
 from .project import get_user_role_in_project
 
 object_blueprint = Blueprint('object', __name__)
@@ -71,3 +71,39 @@ def get_file(project_id: str, object_id: str):
             return "PDF content not found", 404
     else:
         return f"Error fetching object: {res['error']}", status
+
+
+@object_blueprint.route('/projects/<project_id>/objects/<object_id>/edit', methods=["GET", "POST"])
+def edit_object(project_id: str, object_id: str):
+    """ Edit and handle the object of a specific project """
+    output = ()
+    obj:Object = None
+    can_edit = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER, Role.MEMBER] else False
+        
+    if request.method == "POST":
+        res, status = object_update(request.form.get('object_id', None))
+        if status == 200:
+            output = ("success", "Document information updated successfully!")
+        else:
+            output = ("error", res["error"])
+
+    res, status = object_get(object_id, load_raw=False)
+    if status == 200:
+        obj = Object.from_dict(res["object"])
+    else:
+        output = ("error", res["error"])
+
+    return render_template(
+        "project/object/edit.html",
+        title="Update document",
+        user=session["user"],
+        object=obj,
+        project_id=project_id,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
+        can_edit=can_edit,
+        project_role=get_user_role_in_project(project_id),
+        object_statuses=ObjectStatus,
+    )

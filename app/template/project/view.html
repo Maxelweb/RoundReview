@@ -26,7 +26,8 @@
             {% for key, value in tree.items() %}
             {% if key != '_objects' %}
                 {% set current_path = parent_path + '/' + key %}
-                <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %}>
+                <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %} id="folder-{{ key | replace('/', '_') }}"
+                >
                 <td colspan="3" class="folder-link">
                     <i class="fas fa-folder"></i>
                     <a href="#" class="folder-link-key">{{ key }}</a> 
@@ -60,7 +61,7 @@
             {% endfor %}
 
             {% for obj in tree['_objects'] %}
-            <tr>
+            <tr id="file-{{ obj.id }}">
                 <td>
                     <i class="fas fa-file-alt"></i>
                     <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">

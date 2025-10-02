@@ -10,7 +10,6 @@
             <tr>
                 <th><label for="objectPdf">Location</label></th>
                 <td width="75%">
-                    
                     <div id="locationInput" class="location-input" tabindex="0" style="display: flex; align-items: center; flex-wrap: wrap; padding: 4px; min-height: 26px;">
                         <code>/</code> &nbsp;
                         <input type="hidden" name="path" id="locationHidden" value="{{ folder_path }}">
@@ -20,81 +19,6 @@
                         <input type="text" id="locationText" style="border: none; outline: none; min-width: 40px; flex: 1;">
                     </div>
                     <p class="small block muted">Use <code>/</code> to add new folders (max 3 folders).</p>
-                    <script>
-                    // TODO: to refactor somewhere else
-                    const locationInput = document.getElementById('locationInput');
-                    const locationText = document.getElementById('locationText');
-                    const locationSegments = document.getElementById('locationSegments');
-                    const locationHidden = document.getElementById('locationHidden');
-                    let segments = [];
-
-                    // Initialize segments if locationHidden has a value
-                    if (locationHidden.value && locationHidden.value.trim() !== '') {
-                        segments = locationHidden.value.split('/').filter(Boolean);
-                    }
-
-                    function renderSegments() {
-                        // Limit depth to 3
-                        if (segments.length > 3) {
-                            segments = segments.slice(0, 3);
-                        }
-                        locationSegments.innerHTML = '';
-                        segments.forEach((seg, idx) => {
-                            const span = document.createElement('span');
-                            span.textContent = seg;
-                            span.style.border = '1px solid #007bff';
-                            span.style.borderRadius = '4px';
-                            span.style.padding = '2px 8px';
-                            span.style.marginRight = '2px';
-                            span.style.background = 'transparent';
-                            span.style.marginBottom = '2px';
-                            span.style.display = 'flex';
-                            span.style.alignItems = 'center';
-                            locationSegments.appendChild(span);
-                            if (idx < segments.length - 1) {
-                                const slash = document.createElement('span');
-                                slash.textContent = '/';
-                                slash.style.margin = '0 2px';
-                                locationSegments.appendChild(slash);
-                            }
-                        });
-                        locationHidden.value = '/' + segments.join('/');
-                    }
-
-                    locationText.addEventListener('keydown', function(e) {
-                        if (e.key === '/' && locationText.value.trim() !== '') {
-                            if (segments.length < 3) {
-                                segments.push(locationText.value.trim());
-                                locationText.value = '';
-                                renderSegments();
-                            }
-                            e.preventDefault();
-                        } else if ((e.key === 'Backspace' || e.key === 'Delete') && locationText.value === '') {
-                            if (segments.length > 0) {
-                                segments.pop();
-                                renderSegments();
-                                e.preventDefault();
-                            }
-                        }
-                    });
-
-                    locationText.addEventListener('blur', function() {
-                        if (locationText.value.trim() !== '') {
-                            if (segments.length < 3) {
-                                segments.push(locationText.value.trim());
-                                locationText.value = '';
-                                renderSegments();
-                            }
-                        }
-                    });
-
-                    locationInput.addEventListener('click', function() {
-                        locationText.focus();
-                    });
-
-                    // If there's a value in the hidden input (e.g. from server), render segments
-                    renderSegments();
-                    </script>
                 </td>
             </tr>
             <tr>
@@ -139,5 +63,6 @@
         </div>
     </form>
 
+    <script src="{{ url_for('static', filename='js/create_object.js') }}"></script>
 
 {% endblock %}

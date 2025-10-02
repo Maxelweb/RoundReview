@@ -21,6 +21,7 @@ const totalPageNumDisplay = document.getElementById("total-pages-num");
 const pageScaleDisplay = document.getElementById("page-scale");
 const totalPageComments = document.getElementById("total-page-comments");
 const selectStatusElement = document.getElementById("status-label");
+const buttonEditElement = document.getElementById("edit-object-button");
 
 const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
 
@@ -329,6 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateStatusColor();
     if (!editingEnabled){
         selectStatusElement.disabled = true;
+        buttonEditElement.hidden = true;
     }
 });
 
