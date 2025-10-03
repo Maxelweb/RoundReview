@@ -33,18 +33,6 @@
                     <input type="text" id="objectName" name="name" placeholder="Enter object name" required class="my-1">
                 </td>
             </tr>
-            <script>
-                const objectPdf = document.getElementById('objectPdf');
-                const objectName = document.getElementById('objectName');
-
-                objectPdf.addEventListener('change', function() {
-                    if (objectName.value.trim() === '' && objectPdf.files.length > 0) {
-                        const fileName = objectPdf.files[0].name;
-                        const nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-                        objectName.value = nameWithoutExtension;
-                    }
-                });
-            </script>
             <tr>
                 <th><label for="objectDescription">Description (optional)</label></th>
                 <td>

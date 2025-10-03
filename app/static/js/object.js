@@ -27,13 +27,76 @@ const commentsEnabled = document.getElementById("author-info").getAttribute("dat
 
 const editingEnabled = document.getElementById("author-info").getAttribute("data-author-can-edit") == "True";
 
+const buttonToggleOutline = document.getElementById("toggle-outline");
+const outlineList = document.getElementById("pdf-outline");
+
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
     pdfInstance = pdf;
     totalPageNumDisplay.textContent = pdf.numPages;
     pageScaleDisplay.textContent = (pdfCurrentScale * 100).toFixed(0) + "%";
     renderPage(pdfCurrentPage);
+
+
+    // Get the outline
+    pdfInstance.getOutline().then(function(outline) {
+        const outlineContainer = document.getElementById('pdf-outline-list');
+        if (!Array.isArray(outline)) {
+            outlineContainer.innerHTML = '<li>No outline available</li>';
+            return;
+        }
+        buildOutlineList(outline, outlineContainer);
+    });
+
 });
+
+
+// Outline list
+function buildOutlineList(items, container) {
+
+  Array.from(items).forEach(item => {
+    const li = document.createElement('li');
+    li.classList.add('pdf-outline-item');
+
+    const toggle = document.createElement('span');
+    toggle.textContent = item.items && item.items.length > 0 ? '+' : '';
+    toggle.classList.add('toggle-icon');
+
+    const title = document.createElement('span');
+    title.textContent = item.title;
+    title.style.cursor = 'pointer';
+
+    // Click to navigate to page
+    title.addEventListener('click', () => {
+      pdfInstance.getDestination(item.dest).then(dest => {
+        const ref = dest[0];
+        pdfInstance.getPageIndex(ref).then(pageIndex => {
+          const pageNumber = pageIndex + 1;
+          renderPage(pageNumber); 
+        });
+      });
+    });
+
+    li.appendChild(toggle);
+    li.appendChild(title);
+
+    // Handle nested items
+    if (item.items && item.items.length > 0) {
+      const subList = document.createElement('ul');
+      subList.classList.add('pdf-outline-list', 'hidden');
+
+      buildOutlineList(item.items, subList);
+      li.appendChild(subList);
+
+      toggle.addEventListener('click', () => {
+        subList.classList.toggle('hidden');
+        toggle.textContent = subList.classList.contains('hidden') ? '+' : '−';
+      });
+    }
+
+    container.appendChild(li);
+  });
+}
 
 
 // Render page with annotations
@@ -50,6 +113,7 @@ function renderPage(pageNumber, scale = pdfCurrentScale) {
         return page.render(renderContext).promise;
     }).then(() => {
         currentPageNumDisplay.textContent = pageNumber;
+        pdfCurrentPage = pageNumber;
         loadComments();
     });
 }
@@ -258,19 +322,52 @@ function focusCommentFromPdfToSidebar(id) {
 }
 
 
+// Handle toggle outline event
+buttonToggleOutline.addEventListener("click", event => {
+    if (outlineList.classList.contains("hidden")){
+        outlineList.classList.remove("hidden");
+    } else {
+        outlineList.classList.add("hidden");
+    }
+});
+
 // Event listener to handle the rendering of the next page
 document.getElementById("next-page").addEventListener("click", () => {
+    pdfNextPage();
+});
+
+function pdfNextPage() {
     if (pdfCurrentPage < pdfInstance.numPages) {
         pdfCurrentPage++;
         renderPage(pdfCurrentPage);
     }
-});
+}
 
 // Event listener to handle the rendering of the previous page
 document.getElementById("prev-page").addEventListener("click", () => {
+    pdfPrevPage();
+});
+
+function pdfPrevPage() {
     if (pdfCurrentPage > 1) {
         pdfCurrentPage--;
         renderPage(pdfCurrentPage);
+    }
+}
+
+// Handle with left / right keys
+document.addEventListener('keydown', function(event) {
+    
+    if (commentTextarea.style.display != 'none')
+        return;
+
+    switch (event.key) {
+        case 'ArrowLeft':
+            pdfPrevPage();
+            break;
+        case 'ArrowRight':
+            pdfNextPage();
+            break;
     }
 });
 

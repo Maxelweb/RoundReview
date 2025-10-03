@@ -22,8 +22,10 @@
     <div class="pdf-container">
         <div class="pdf-navbar container" id="controls">
             <div class="pdf-control">
-                <button id="prev-page"><i class="fas fa-arrow-left"></i></button>
-                <button id="next-page"><i class="fas fa-arrow-right"></i></button>
+                <button id="toggle-outline" title="Toggle index"><i class="fas fa-list-ol"></i></button>
+                &nbsp;
+                <button id="prev-page" title="Previous page"><i class="fas fa-arrow-left"></i></button>
+                <button id="next-page" title="Next page"><i class="fas fa-arrow-right"></i></button>
                 Page: <span class="bold" id="page-num">1</span> / 
                 <span id="total-pages-num"></span>
             </div>
@@ -37,11 +39,17 @@
                 </div>
             <div class="pdf-control">
                 <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
-                <button id="page-zoom-in"><i class="fas fa-search-plus"></i></button>
-                <button id="page-zoom-out"><i class="fas fa-search-minus"></i></button>
+                <button id="page-zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
+                <button id="page-zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
                 Scale: <span class="bold" id="page-scale"></span>
             </div>
         </div>
+
+        <div class="pdf-outline hidden" id="pdf-outline">
+            <h3>Index</h3>
+            <ul class="pdf-outline-list" id="pdf-outline-list"></ul>
+        </div>
+
         <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}">
             <canvas id="pdf-canvas"></canvas>
             <div id="markers"></div>
@@ -68,7 +76,6 @@
         <p><span class="muted">Last update date:</span> <strong>{{ object.update_date }}</strong></p>
         </p>
     </div>
-
 
     <script src="{{ url_for('static', filename='js/object.js') }}"></script>
 

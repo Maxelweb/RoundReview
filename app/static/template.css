@@ -264,12 +264,6 @@ select.status-label option {
 
 /* FIXME: refactor this */
 
-.dropzone {
-    background-color: transparent !important;
-    border: 4px dashed var(--primary) !important;
-}
-
-
 .pdf-container{
     text-align: center;
 }
@@ -312,6 +306,40 @@ select.status-label option {
 
 .pdf-control:nth-last-child(1) {
     text-align: right;
+}
+
+.pdf-outline {
+    display: block;
+    background: #222;
+    color: var(--theme-body-text);
+    border: 2px solid #333;
+    text-align: left;
+    border-radius: 4px;
+    margin: 10px 0 15px;
+    padding: 0 10px;
+}
+
+.pdf-outline h3 {
+    margin: 0.5em 0;
+}
+
+.pdf-outline-list {
+    list-style: none;
+    padding-left: 1em;
+}
+
+.pdf-outline-item {
+    margin: 0.3em 0;
+}
+
+.toggle-icon {
+    cursor: pointer;
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
 }
 
 .pdf-sidebar {

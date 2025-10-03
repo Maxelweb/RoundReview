@@ -20,9 +20,9 @@
         <tr>
             <th colspan="4">Resources</th>
         </tr>
+        
         {% macro render_tree(tree, parent_path='') %}
             
-        
             {% for key, value in tree.items() %}
             {% if key != '_objects' %}
                 {% set current_path = parent_path + '/' + key %}
