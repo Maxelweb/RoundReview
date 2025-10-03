@@ -1,3 +1,4 @@
+from datetime import datetime
 from types import SimpleNamespace
 from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin, build_object_tree
@@ -85,6 +86,7 @@ def view_objects(project_id:str):
     if status == 200:
         objects = [Object.from_dict(elem) for elem in res["objects"]]
         tree = build_object_tree(objects)
+        last_objects = sorted(objects, key=lambda obj: obj.update_date, reverse=True)[:5]
         log.debug("view_objects - tree: %s", tree)
     else:
         output = ("error", res["error"])
@@ -92,7 +94,7 @@ def view_objects(project_id:str):
         "project/view.html",
         title=project.title,
         user=session["user"],
-        objects=objects,
+        last_objects=last_objects,
         tree=tree,
         path=path,
         project=project,

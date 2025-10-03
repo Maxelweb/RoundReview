@@ -152,7 +152,6 @@ footer {
 /* == PROJECTS == */
 
 
-
 td.nested-table-cell {
     padding-top: 0 !important;
     padding-right: 0 !important;
@@ -229,6 +228,7 @@ table.resource-table {
 table.resource-table td,
 table.resource-table th {
     padding: 10px 14px;
+    transition: 0.05s;
 }
 
 table.nested-table {
@@ -261,6 +261,64 @@ select.status-label {
 select.status-label option {
     background-color: var(--theme-input-tables-bg);
 }
+
+
+.document-widgets {
+    display: flex;
+}
+
+a.document-widget {
+    display: block;
+    flex-grow: 1;
+    border: 2px solid var(--theme-input-tables-border);
+    border-radius: 8px;
+    margin: 0 15px 0 0;
+    width: 20%;
+    background-color: #272729;
+    height: min-content;
+    padding: 5px;
+    transition: 0.1s;
+}
+
+a.document-widget:hover {
+    border-color: var(--theme-a-link-hover);
+}
+
+a.document-widgets:nth-last-child(1) {
+    margin-right: 0;
+}
+
+.widget-title,
+.widget-icon,
+.widget-info {
+    display: block;
+    text-align: center;
+    font-size: 90%;
+}
+
+.widget-info {
+    color: var(--muted);
+}
+
+.widget-info .status-label {
+    display: inline;
+    margin: 0px auto;
+}
+
+.widget-icon {
+    font-size: 35px;
+    padding: 5px 0 0;
+    color: var(--theme-body-text);
+}
+
+.widget-title {
+    word-wrap: break-word;
+    line-break: loose;
+    margin: 5px 0 5px;
+    font-size: 110%;
+    font-weight: bold;
+}
+
 
 /* FIXME: refactor this */
 

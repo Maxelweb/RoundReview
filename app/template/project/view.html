@@ -9,7 +9,28 @@
     <p class="muted">&raquo; Go to <a href="{{ url_for('project.manage_users', project_id=project.id) }}">Project Management</a> to manage users (only for project owners).</p>
     {% endif %}
 
-    <h3><i class="fas fa-file primary my-1"></i> Project Resources</h3>
+    <h3><i class="fas fa-newspaper muted my-1"></i> Recent documents</h3>
+
+    <div class="document-widgets">
+        {% for obj in last_objects %}
+        <a class="document-widget" href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}">
+            <span class="widget-info my-1">
+                <span class="status-label" style="background-color: {{ obj.status.get_color(obj.status) }};">
+                    {{ obj.status.value }}
+                </span>
+            </span>
+            <span class="widget-info">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span class="object-last-update" data-timestamp="{{ obj.update_date }}" title="Last update: {{ obj.update_date }}"></span>
+            </span>
+            <span class="widget-icon"><i class="fas fa-file-alt"></i></span>
+            
+            <span class="widget-title">{{ obj.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <h3><i class="fas fa-file muted my-1"></i> All documents</h3>
     <p class="muted">Click on a resource to explore more.</p>
     
     <div class="my-2">
@@ -20,7 +41,7 @@
         <tr>
             <th colspan="4">Resources</th>
         </tr>
-        
+
         {% macro render_tree(tree, parent_path='') %}
             
             {% for key, value in tree.items() %}
