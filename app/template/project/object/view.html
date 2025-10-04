@@ -60,7 +60,12 @@
         </div>
 
         <div class="pdf-sidebar" id="sidebar">
-            <h3><span class="badge-total" id="total-page-comments">0</span> Comments on this page</h3>
+            <h3><span class="badge-total" id="total-page-comments">0</span> Comments 
+                <select class="comments-mode" id="comments-mode">
+                    <option value="per_page">on this page</option>
+                    <option value="all">total</option>
+                </select>
+            </h3>
             <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-comment="{{ can_comment }}" data-author-can-edit="{{ can_edit }}"></span>
             <div id="comments-list"></div>
         </div>

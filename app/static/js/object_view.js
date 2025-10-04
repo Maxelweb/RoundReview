@@ -6,6 +6,7 @@ let pdfInstance = null;
 let pdfCurrentPage = 1;
 let lastClick = { x: 0, y: 0 };
 let objectCurrentStatusIndex;
+let commentsModePerPage = true;
 
 const pdfDefaultScale = 1.20;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
@@ -33,6 +34,8 @@ const outlineList = document.getElementById("pdf-outline");
 const buttonToggleInformation = document.getElementById("toggle-information");
 const buttonCloseInformation = document.getElementById("close-information");
 const informationMenu = document.getElementById('information-menu');
+
+const selectCommentsMode = document.getElementById('comments-mode');
 
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
@@ -118,7 +121,7 @@ function renderPage(pageNumber, scale = pdfCurrentScale) {
     }).then(() => {
         currentPageNumDisplay.textContent = pageNumber;
         pdfCurrentPage = pageNumber;
-        loadComments();
+        loadComments(commentsModePerPage);
     });
 }
 
@@ -150,7 +153,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
             commentTextarea.style.display = "none";
             commentTextarea.removeEventListener("keydown", onKeyDown);
             setTimeout(() => {
-                loadComments();
+                loadComments(commentsModePerPage);
             }, 100);
         } else if (e.key === "Escape") {
             commentTextarea.value = "";
@@ -224,7 +227,7 @@ function putObject(url, data, callback) {
 }
 
 // Load comments as markers and comments list
-function loadComments() {
+function loadComments(per_page = true) {
     
     pdfMarkers.innerHTML = "";
     commentsList.innerHTML = "";
@@ -235,17 +238,26 @@ function loadComments() {
         
         if (res) {    
             let data = JSON.parse(res || '{"inlineComments": []}');
-            data.inlineComments.filter(a => a.page === pdfCurrentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
+            let clearData;
 
-                // Yellow sphere marker on document
-                const marker = document.createElement("div");
-                marker.className = "marker";
-                marker.style.left = `${x*pdfCurrentScale}px`;
-                marker.style.top = `${y*pdfCurrentScale}px`;
-                marker.dataset.commentId = id;
-                marker.addEventListener("click", () => focusCommentFromPdfToSidebar(id));
-                marker.innerText = commentPageId;
-                pdfMarkers.appendChild(marker);
+            if (per_page)
+                clearData = data.inlineComments.filter(a => a.page === pdfCurrentPage);
+            else 
+                clearData = data.inlineComments;
+
+            clearData.forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
+            
+                if (per_page || page == pdfCurrentPage) {
+                    // Yellow sphere marker on document
+                    const marker = document.createElement("div");
+                    marker.className = "marker";
+                    marker.style.left = `${x*pdfCurrentScale}px`;
+                    marker.style.top = `${y*pdfCurrentScale}px`;
+                    marker.dataset.commentId = id;
+                    marker.addEventListener("click", () => focusCommentFromPdfToSidebar(id));
+                    marker.innerText = commentPageId;
+                    pdfMarkers.appendChild(marker);
+                }
 
                 // Create comment on sidebar 
                 const comment = document.createElement("div");
@@ -261,7 +273,7 @@ function loadComments() {
                 goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
                 
                 // Event listener for comment focus
-                goToBtn.addEventListener("click", () => focusCommentFromSidebarToPdf(id));
+                goToBtn.addEventListener("click", () => focusCommentFromSidebarToPdf(id, page));
 
                 const deleteBtn = document.createElement("span");
                 deleteBtn.title = "Delete comment";
@@ -273,7 +285,7 @@ function loadComments() {
                         data = data.filter(a => a.id !== id);
                         putObject("/api/objects/" + pdfObjectId, {"comments": data}, () => {});
                         setTimeout(() => {
-                            loadComments();
+                            loadComments(per_page);
                         }, 100);
                     }
                 });
@@ -299,7 +311,11 @@ function loadComments() {
 
 
 // Highlight comment handler
-function focusCommentFromSidebarToPdf(id) {
+function focusCommentFromSidebarToPdf(id, page) {
+    if (page != pdfCurrentPage){
+        pdfCurrentPage = page;
+        renderPage(pdfCurrentPage);
+    }
     document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
     const target = document.getElementById(id);
     if (target) {
@@ -324,6 +340,12 @@ function focusCommentFromPdfToSidebar(id) {
         setTimeout(() => target.classList.remove("focused"), 1500); // Remove highlight
     }
 }
+
+// Handle comments mode
+selectCommentsMode.addEventListener("change", event => {
+    commentsModePerPage = true ? event.target.value == "per_page" : false;
+    loadComments(commentsModePerPage);
+});
 
 
 // Handle toggle outline event

@@ -426,6 +426,20 @@ a.document-widgets:nth-last-child(1) {
     display: inline-block;
 }
 
+select.comments-mode {
+    width: auto;
+    font-size: 18px;
+    background: transparent;
+    font-weight: bold;
+    border: 1px solid transparent;
+    padding: 0 5px 0 0;
+}
+
+select.comments-mode {
+    color: var(--theme-body-text);
+    background-color: var(--theme-body-bg);
+}
+
 .comment::before {
     font-family: "Font Awesome 5 Free";
     content: "\f075";
