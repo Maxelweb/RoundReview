@@ -168,14 +168,14 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
 function saveComments(text, x, y, page) {
     getObjectComments("/api/objects/" + pdfObjectId, function (err, res) {
         if (res || res == null) {
-            let data = JSON.parse(res || "[]")
+            let data = JSON.parse(res || '{"inlineComments": []}')
             const id = `comment-${Date.now()}`;
             const authorName = document.getElementById("author-info").getAttribute("data-author-name");
             const authorId = document.getElementById("author-info").getAttribute("data-author-id");
             const resolved = false;
             x = x / pdfCurrentScale;
             y = y / pdfCurrentScale;
-            data.push({ id, text, x, y, page, authorName, authorId, resolved });
+            data.inlineComments.push({ id, text, x, y, page, authorName, authorId, resolved });
             putObject("/api/objects/" + pdfObjectId, {"comments": data}, () => {});
         }
     });
@@ -234,8 +234,8 @@ function loadComments() {
     getObjectComments("/api/objects/" + pdfObjectId, function (err, res) {
         
         if (res) {    
-            let data = JSON.parse(res || "[]");
-            data.filter(a => a.page === pdfCurrentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
+            let data = JSON.parse(res || '{"inlineComments": []}');
+            data.inlineComments.filter(a => a.page === pdfCurrentPage).forEach(({ id, text, x, y, page, authorName, authorId, resolved }) => {
 
                 // Yellow sphere marker on document
                 const marker = document.createElement("div");
