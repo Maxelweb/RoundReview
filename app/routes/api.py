@@ -88,14 +88,13 @@ def project_list():
         db.close()
 
 @api_blueprint.route("/api/projects", methods=["POST"])
-def project_create(args:dict=None):
+def project_create():
     """ Create a new project """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
     user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
 
-    #data = args if args is not None else request.json
     data = request.form or request.json
     log.debug(data)
     if not data or "title" not in data:
@@ -115,7 +114,7 @@ def project_create(args:dict=None):
             (project_id, user_id, Role.OWNER.value)
         )
         db.commit()
-
+        db.log(user_id, f"project add (project_id={project_id})")
         return {"message": "Project created successfully", "project_id": project_id}, 201
     except Exception as e:
         log.error(f"Error creating project: {e}")
@@ -163,6 +162,7 @@ def project_update(project_id:str):
             (title, project_id)
         )
         db.commit()
+        db.log(user_id, f"project update (project_id={project_id}, keys=title)")
         return {"message": "Project updated successfully"}, 200
     
     except Exception as e:
@@ -174,6 +174,7 @@ def project_update(project_id:str):
 @api_blueprint.route("/api/projects/<project_id>/users", methods=["GET"])
 def project_users_list(project_id: str):
     """ Retrieve a list of all users who are members of the project """
+
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
@@ -285,7 +286,7 @@ def project_join(project_id:str):
             (project_id, new_user_id, role)
         )
         db.commit()
-
+        db.log(user_id, f"project user join (project_id={project_id}, user_id={new_user_id}, role={role})")
         return {"message": "User added to the project successfully"}, 201
 
     except Exception as e:
@@ -377,7 +378,7 @@ def project_unjoin(project_id:str):
             (project_id, target_user_id)
         )
         db.commit()
-
+        db.log(user_id, f"project user join (project_id={project_id}, user_id={target_user_id})")
         return {"message": "User removed from the project successfully"}, 200
 
     except Exception as e:
@@ -492,8 +493,7 @@ def project_objects_create(project_id: str):
             (object_id, path, user_id, project_id, name, description, version, status, file_blob)
         )
         db.commit()
-
-        object_id = db.c.lastrowid
+        db.log(user_id, f"project object add (project_id={project_id}, object_id={object_id})")
         return {"message": "Object created successfully", "object_id": object_id}, 201
 
     except Exception as e:
@@ -624,7 +624,7 @@ def object_delete(object_id: str):
             (object_id,)
         )
         db.commit()
-
+        db.log(user_id, f"project object delete (project_id={project_id}, object_id={object_id})")
         return {"message": "Object deleted successfully"}, 200
 
     except Exception as e:
@@ -711,7 +711,7 @@ def object_update(object_id: str):
 
         db.c.execute(update_query, (*updates.values(), object_id))
         db.commit()
-
+        db.log(user_id, f"project object update (project_id={project_id}, keys={"|".join(f"{key}" for key in updates.keys())})")
         return {"message": "Object updated successfully"}, 200
 
     except Exception as e:
