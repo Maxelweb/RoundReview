@@ -83,7 +83,7 @@ class Database:
                 ("PROJECT_CREATE_DISABLED", "FALSE", USER_SYSTEM_ID),
                 ("OBJECT_DELETE_DISABLED", "FALSE", USER_SYSTEM_ID),
                 ("USER_LOGIN_DISABLED", "FALSE", USER_SYSTEM_ID),
-                ("OBJECT_MAX_UPLOAD_SIZE", SYSTEM_MAX_UPLOAD_SIZE_MB, USER_SYSTEM_ID)
+                ("OBJECT_MAX_UPLOAD_SIZE_MB", SYSTEM_MAX_UPLOAD_SIZE_MB, USER_SYSTEM_ID)
             ])
         self.commit()
 
@@ -99,7 +99,7 @@ class Database:
 
     def __create_tables(self) -> bool:
 
-        tables_to_create = ["log", "user", "project", "project_user", "object"]
+        tables_to_create = ["log", "user", "user_property", "project", "project_user", "object"]
 
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS "log" (
@@ -162,7 +162,8 @@ class Database:
                 "version" VARCHAR(64) DEFAULT NULL,
                 "status" VARCHAR(32) DEFAULT NULL,
                 "upload_date" TEXT DEFAULT CURRENT_TIMESTAMP,
-                "update_date" TEXT DEFAULT CURRENT_TIMESTAMP
+                "update_date" TEXT DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY("id")
             );
         ''')
         self.commit()
