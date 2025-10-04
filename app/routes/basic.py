@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
-from ..config import VERSION, log
+from ..config import VERSION, log, USER_SYSTEM_ID
 from ..database import Database
-from ..models import User, Log
+from ..models import User, Log, SystemProperty
 
 basic_blueprint = Blueprint('basic', __name__)
 
@@ -35,7 +35,21 @@ def login():
             )
         ).fetchone()
         if res:
-            session["user"] = User(res)
+            user = User(res)
+
+            # Check if user login is disabled across the system
+            if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.USER_LOGIN_DISABLED.value )).fetchone() == ("TRUE",):
+                output = ("error", "User login is disabled across the system")
+                db.close()
+                return render_template(
+                    "login.html",
+                    output=output,
+                    version=VERSION,
+                    logged=False,
+                    title="Login",
+                )
+
+            session["user"] = user
             session["user"].load_properties_from_db(db)
             db.log(session["user"].id, "login")
             return redirect("/")

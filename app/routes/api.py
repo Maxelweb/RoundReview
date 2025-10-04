@@ -1,9 +1,9 @@
 import uuid, json
 from flask import request, session, Blueprint
 from .utils import is_logged
-from ..config import VERSION, log
+from ..config import VERSION, log, USER_SYSTEM_ID, SYSTEM_MAX_UPLOAD_SIZE_MB
 from ..database import Database
-from ..models import User, Project, Property, Role, Object, ObjectStatus
+from ..models import User, Project, Property, Role, Object, ObjectStatus, SystemProperty
 
 api_blueprint = Blueprint('api', __name__)
 
@@ -104,17 +104,24 @@ def project_create():
 
     db = Database()
     try:
+        # Check if project creation is disabled across the system
+        if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.PROJECT_CREATE_DISABLED.value)).fetchone() == ("TRUE",):
+            return {"error": "Project creation is disabled across the system"}, 403
+
+        # Create the new project
         db.c.execute("INSERT INTO project (title, deleted) VALUES (?, ?)",
             (title, 0)
         )
         db.commit()
-
         project_id = db.c.lastrowid
+        db.log(user_id, f"project add (project_id={project_id})")
+
+        # Add the creator as the owner of the project
         db.c.execute("INSERT INTO project_user (project_id, user_id, role) VALUES (?, ?, ?)",
             (project_id, user_id, Role.OWNER.value)
         )
         db.commit()
-        db.log(user_id, f"project add (project_id={project_id})")
+        db.log(user_id, f"project user add (project_id={project_id}, user_id={user_id}, role={Role.OWNER.value})")
         return {"message": "Project created successfully", "project_id": project_id}, 201
     except Exception as e:
         log.error(f"Error creating project: {e}")
@@ -448,6 +455,19 @@ def project_objects_create(project_id: str):
     if file.content_type != "application/pdf":
         return {"error": "Invalid file type. Only 'application/pdf' is allowed"}, 400
 
+    # Block if max file size across the system exceeded
+    max_file_size_row = SYSTEM_MAX_UPLOAD_SIZE_MB
+    db = Database()
+    try:
+        max_file_size_row = db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.OBJECT_MAX_UPLOAD_SIZE_MB.value)).fetchone()
+    except Exception as e:
+        log.error(f"Error fetching max file size system property: {e}")
+    finally:
+        db.close()
+
+    if file.content_length is not None and file.content_length > max_file_size_row * 1024 * 1024: 
+        return {"error": f"File size exceeds the maximum allowed limit of {max_file_size_row} MB"}, 400
+
     # Extract metadata from the request
     data = request.form or request.json
     name = data.get("name")
@@ -580,6 +600,10 @@ def object_delete(object_id: str):
 
     db = Database()
     try:
+        # Check if object delete is disabled across the system
+        if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.OBJECT_DELETE_DISABLED.value)).fetchone() == ("TRUE",):
+            return {"error": "Object deletion is disabled across the system"}, 403
+
         # Check if the object exists
         object_row = db.c.execute(
             '''

@@ -10,6 +10,7 @@ USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
 USER_DEFAULT_PASSWORD = os.environ.get('RR_DEFAULT_USER_PASSWORD') or "changeme!"
 WEBSITE_URL = os.environ.get('RR_WEBSITE_URL') or "localhost"
+SYSTEM_MAX_UPLOAD_SIZE_MB = 5  # Max upload size for objects in Megabytes
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.DEBUG if DEBUG else logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
 log = logging.getLogger("roundreview-logs")

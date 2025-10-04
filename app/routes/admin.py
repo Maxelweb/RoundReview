@@ -3,7 +3,7 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID, WEBSITE_URL
 from ..database import Database
-from ..models import User, Log
+from ..models import User, Log, SystemPropertyInfo
 
 admin_blueprint = Blueprint('admin', __name__)
 
@@ -99,4 +99,47 @@ def logs():
         logged=is_logged(),
         admin=is_logged_admin(),
         user=session["user"],
+    )
+
+@admin_blueprint.route("/admin/global_settings", methods=["GET", "POST"])
+def settings():
+    """ Global Settings page """
+    if not is_logged():
+        return redirect("/")
+    db = Database()
+    res = db.c.execute(
+        'SELECT * FROM user WHERE id = ? AND admin = -1 LIMIT 1', 
+        (
+            USER_SYSTEM_ID,
+        )
+    ).fetchone()
+    if res:
+        sys_user = User(res)
+        sys_user.load_properties_from_db(db)
+    db.close()
+
+    if request.method == "POST":
+        # For each request form key, update the system user property
+        for key in request.form:
+            value = request.form.get(key)
+            if value is not None:
+                sys_user.properties[key] = value
+                db = Database()
+                db.c.execute(
+                    'REPLACE INTO user_property (user_id, key, value) VALUES (?,?,?)',
+                    (sys_user.id, key, value)
+                )
+                db.commit()
+                db.log(session["user"].id, f"system property update (key={key}, value={value})")
+                db.close()
+
+    return render_template(
+        "admin/settings.html",
+        title="Global Settings",
+        user=session["user"],
+        syspropinfo=SystemPropertyInfo,
+        sys_user=sys_user,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
     )

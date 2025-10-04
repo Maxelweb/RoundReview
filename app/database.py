@@ -9,7 +9,8 @@ from .config import (
     USER_SYSTEM_EMAIL,
     USER_ADMIN_NAME,
     USER_ADMIN_EMAIL,
-    USER_DEFAULT_PASSWORD
+    USER_DEFAULT_PASSWORD,
+    SYSTEM_MAX_UPLOAD_SIZE_MB
 )
 
 class Database:
@@ -67,6 +68,7 @@ class Database:
         self.commit()
 
     def __create_user_system(self) -> None:
+        # Add system user
         self.c.execute(
             'INSERT INTO user (name, email, password, admin) VALUES (?, ?, ?, ?);', 
             (USER_SYSTEM_NAME,
@@ -74,6 +76,15 @@ class Database:
             Database.hash(random.randbytes(16).hex()),
             -1)
         )
+        self.commit()
+        # Add default properties for system user
+        self.c.executemany(
+            'INSERT INTO user_property (key, value, user_id) VALUES (?, ?, ?);', [
+                ("PROJECT_CREATE_DISABLED", "FALSE", USER_SYSTEM_ID),
+                ("OBJECT_DELETE_DISABLED", "FALSE", USER_SYSTEM_ID),
+                ("USER_LOGIN_DISABLED", "FALSE", USER_SYSTEM_ID),
+                ("OBJECT_MAX_UPLOAD_SIZE", SYSTEM_MAX_UPLOAD_SIZE_MB, USER_SYSTEM_ID)
+            ])
         self.commit()
 
     def __create_user_admin(self) -> None:

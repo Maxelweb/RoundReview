@@ -21,6 +21,7 @@
                 {% if admin %}
                     <a href="{{ url_for('admin.users') }}" {% if current_nav == "users" %} class="current" {% endif %}><i class="fas fa-users"></i> Users</a>
                     <a href="{{ url_for('admin.logs') }}" {% if current_nav == "logs" %} class="current" {% endif %}><i class="fas fa-rectangle-list"></i> Logs</a>
+                    <a href="{{ url_for('admin.settings') }}" {% if current_nav == "global_settings" %} class="current" {% endif %}><i class="fas fa-globe"></i> Global Settings</a>
                 {% endif %}
                 <a href="{{ url_for('settings.settings') }}"{% if current_nav == "settings" %} class="current" {% endif %}><i class="fas fa-gears"></i> Settings</a>
                 <a href="{{ url_for('basic.logout') }}"><i class="fas fa-arrow-right-from-bracket"></i> Logout</a>
