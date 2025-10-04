@@ -11,12 +11,12 @@
         <fieldset>
             <div class="my-2">
                 <table class="my-2">
-                    {% for key, value in sys_user.properties %}
+                    {% for key, value in sys_user.properties.items() %}
                     <tr>
                         <th>{{ key }}</th>
                         <td>
                             <input type="text" class="my-1" name="{{ key }}" value="{{ value }}">
-                            <p class="small block muted">{{ syspropinfo(key) }}</p>
+                            <p class="small block muted">{{ syspropinfo[key].description() }}</p>
                         </td>
                     </tr>
                     {% endfor %}

@@ -104,7 +104,7 @@ def project_create():
 
     db = Database()
     try:
-        # Check if project creation is disabled across the system
+        # FIXME: Check if project creation is disabled across the system
         if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.PROJECT_CREATE_DISABLED.value)).fetchone() == ("TRUE",):
             return {"error": "Project creation is disabled across the system"}, 403
 

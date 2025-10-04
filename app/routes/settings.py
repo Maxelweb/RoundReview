@@ -26,7 +26,7 @@ def settings():
     return render_template(
         "settings.html",
         user=session["user"],
-        title="Settings",
+        title="Your Settings",
         version=VERSION,
         logged=is_logged(),
         admin=is_logged_admin(),
