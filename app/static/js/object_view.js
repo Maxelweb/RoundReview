@@ -1,7 +1,7 @@
 // View Object detail JS Logic for RoundReview
 // ===========================================
 
-let pdfCurrentScale = 1.30;
+let pdfCurrentScale = 1.20;
 let pdfInstance = null;
 let pdfCurrentPage = 1;
 let lastClick = { x: 0, y: 0 };
@@ -29,6 +29,10 @@ const editingEnabled = document.getElementById("author-info").getAttribute("data
 
 const buttonToggleOutline = document.getElementById("toggle-outline");
 const outlineList = document.getElementById("pdf-outline");
+
+const buttonToggleInformation = document.getElementById("toggle-information");
+const buttonCloseInformation = document.getElementById("close-information");
+const informationMenu = document.getElementById('information-menu');
 
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
@@ -324,11 +328,7 @@ function focusCommentFromPdfToSidebar(id) {
 
 // Handle toggle outline event
 buttonToggleOutline.addEventListener("click", event => {
-    if (outlineList.classList.contains("hidden")){
-        outlineList.classList.remove("hidden");
-    } else {
-        outlineList.classList.add("hidden");
-    }
+    outlineList.classList.toggle("open");
 });
 
 // Event listener to handle the rendering of the next page
@@ -354,6 +354,20 @@ function pdfPrevPage() {
         renderPage(pdfCurrentPage);
     }
 }
+
+// Event listener to handle open/close information
+buttonToggleInformation.addEventListener("click", () => {
+    toggleInformation();
+});
+
+buttonCloseInformation.addEventListener("click", () => {
+    toggleInformation();
+});
+
+function toggleInformation() {
+  informationMenu.classList.toggle('open');
+}
+
 
 // Handle with left / right keys
 document.addEventListener('keydown', function(event) {
