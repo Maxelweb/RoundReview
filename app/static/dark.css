@@ -28,4 +28,20 @@
     --theme-input-focus-secondary: #2e2f30;
     --theme-a-link: #5c7de1;
     --theme-a-link-hover: #5c6ea6;
+
+    --theme-resources-folder-bg: #39393d;
+    --theme-resources-folder-border: #333;
+    --theme-resources-folder-bg-hover: #45454e;
+
+    --theme-document-widget-bg: #272729;
+
+    --theme-toolbars-bg: #222;
+    --theme-toolbars-border: #212123;
+    --theme-toolbars-alt-border: #333;
+    --theme-toolbars-outline-border: #212123;
+    --theme-toolbars-shadow: rgba(0,0,0,0.3);
+
+    --theme-comment-bg: #333;
+    --theme-comment-border: #333;
+    --theme-comment-control: #ffff44;
 }

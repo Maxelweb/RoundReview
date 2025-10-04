@@ -82,6 +82,8 @@
             <p><span class="muted my-1">Actions</span> 
             <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
             &nbsp;
+            <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-arrow-down"></i> Download</button></a>
+            &nbsp;
             <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
                 <input type="hidden" name="object_id" value="{{ object.id }}">
                 <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>

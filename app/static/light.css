@@ -27,4 +27,20 @@
     --theme-input-focus-secondary: #d1d1d1;
     --theme-a-link: #37519d;
     --theme-a-link-hover: #2755df;
+
+    --theme-resources-folder-bg: #f5f5f7;
+    --theme-resources-folder-border: #ebebeb;
+    --theme-resources-folder-bg-hover: #ebebef;
+
+    --theme-document-widget-bg: #eeeef5;
+
+    --theme-toolbars-bg: #f0f0f0;
+    --theme-toolbars-border: #e0e0e4;
+    --theme-toolbars-alt-border: #e0e0e0;
+    --theme-toolbars-outline-border: #fff;
+    --theme-toolbars-shadow: rgba(196, 196, 196, 0.3);
+
+    --theme-comment-bg: #ebebeb;
+    --theme-comment-border: #ebebeb;
+    --theme-comment-control: #ffff4a;
 }
