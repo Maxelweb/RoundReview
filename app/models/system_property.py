@@ -24,7 +24,7 @@ class SystemProperty(Enum):
         return False
 
 class SystemPropertyInfo(Enum):
-    PROJECT_CREATE_DISABLED = "If TRUE, project creation is disabled for any user."
-    OBJECT_DELETE_DISABLED = "If TRUE, object delete is disabled for any user."
-    USER_LOGIN_DISABLED = "If TRUE, only admins can sign in."
+    PROJECT_CREATE_DISABLED = "If TRUE, project creation is disabled for any user, FALSE by default."
+    OBJECT_DELETE_DISABLED = "If TRUE, object delete is disabled for any user. FALSE by default"
+    USER_LOGIN_DISABLED = "If TRUE, only admins can sign in. FALSE by default"
     OBJECT_MAX_UPLOAD_SIZE_MB = "Set the max upload size for objects in Megabytes. Maximum size: 16 (MB)."

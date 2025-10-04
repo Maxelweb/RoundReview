@@ -122,10 +122,15 @@ def settings():
 
     log.debug(sys_user.properties)
     if request.method == "POST":
+        error = False
         # For each request form key, update the system user property
         for key in request.form:
             value = request.form.get(key)
             if value is not None:
+                if not SystemProperty[key].check_value(value):
+                    output = ("error", f"Invalid value for {key}: {value} (see description below the field)")
+                    error = True
+                    break
                 sys_user.properties[key] = value
                 db.c.execute(
                     'REPLACE INTO user_property (user_id, key, value) VALUES (?,?,?)',
@@ -133,9 +138,8 @@ def settings():
                 )
                 db.commit()
                 db.log(session["user"].id, f"system property update (key={key}, value={value})")
-
-        output = ("success", "Settings updated!")
-    
+        if not error:
+            output = ("success", "Global settings updated!")
     db.close()
 
     return render_template(
