@@ -7,6 +7,7 @@ from ..database import Database
 from ..models import Project, Object, ObjectStatus, Role, ProjectUser
 from .api import (
     project_list, 
+    project_update,
     project_create, 
     project_objects_list, 
     project_objects_create, 
@@ -145,9 +146,9 @@ def create_object(project_id:str):
         project_role=get_user_role_in_project(project_id),
     )
 
-@project_blueprint.route('/projects/<project_id>/users', methods=["GET", "POST"])
-def manage_users(project_id:str):
-    """ Show and update the users of a specific project with the roles """
+@project_blueprint.route('/projects/<project_id>/manage', methods=["GET", "POST"])
+def manage_project(project_id:str):
+    """ Show and update project infos and users of a specific project with the roles """
     output = ()
     users = []
 
@@ -161,10 +162,15 @@ def manage_users(project_id:str):
                 print(res)
                 output = ("error", res["error"])
         elif action == "unjoin":
-            log.debug(request.form)
             res, status = project_unjoin(project_id=project_id)
             if status == 200:
                 output = ("success", f"User '{ request.form.get("username") }' removed from the project")
+            else:
+                output = ("error", res["error"])
+        elif action == "rename_project":
+            res, status = project_update(project_id=project_id)
+            if status == 200:
+                output = ("success", f"Project renamed successfully")
             else:
                 output = ("error", res["error"])
         else:

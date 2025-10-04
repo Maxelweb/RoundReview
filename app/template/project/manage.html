@@ -3,9 +3,22 @@
 {% block inner_content %}
     <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
     
-    <h3><i class="fas fa-rocket primary my-1"></i> Information</h3>
+    <h3><i class="fas fa-rocket primary my-1"></i> Project Information</h3>
 
-    <p><span class="muted">Project title:</span> <strong>{{ project.title }}</strong></p>
+    <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=rename_project" method="post">
+        <table>
+            <tr>
+                <th><label for="projectTitle">Title</label></th>
+                <td>
+                    <input type="text" id="projectTitle" name="title" placeholder="Enter a project title" required class="my-1" value="{{ project.title }}">
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="submit" value="Update">
+        </div>
+    </form>
+
 
     <h3><i class="fas fa-users primary my-1"></i> User Management</h3>
     
@@ -24,7 +37,7 @@
             <td>{{ puser.role }}</td>
             <td>
                 {% if puser.id != user.id %}
-                <form action="{{ url_for('project.manage_users', project_id=project.id) }}?action=unjoin" method="post">
+                <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=unjoin" method="post">
                     <input type="hidden" name="username" value="{{ puser.name }}">
                     <button type="submit" title="Remove user from project"><i class="fas danger fa-trash-alt"></i></button>
                 </form>
@@ -36,7 +49,7 @@
     
 
     <h3>Add user to project</h3>
-    <form action="{{ url_for('project.manage_users', project_id=project.id) }}?action=join" method="post">
+    <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=join" method="post">
         <table>
             <tr>
                 <th><label for="projectUserName">Username</label></th>
