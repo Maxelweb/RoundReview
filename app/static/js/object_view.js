@@ -7,7 +7,7 @@ let pdfCurrentPage = 1;
 let lastClick = { x: 0, y: 0 };
 let objectCurrentStatusIndex;
 
-const pdfscaleDefault = 1.35;
+const pdfDefaultScale = 1.20;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
 const pdfObjectId = document.getElementById("pdf-container").getAttribute("data-pdf-object-id");
 
@@ -403,7 +403,7 @@ document.getElementById("page-zoom-out").addEventListener("click", () => {
 
 // Event listener for resetting scale
 document.getElementById("reset-scale").addEventListener("click", () => {
-    pdfCurrentScale = pdfscaleDefault;
+    pdfCurrentScale = pdfDefaultScale;
     pageScaleDisplay.textContent = (pdfCurrentScale * 100).toFixed(0) + "%";
     renderPage(pdfCurrentPage);
     updateResetButtonVisibility();
@@ -414,7 +414,7 @@ document.getElementById("page-zoom-in").addEventListener("click", updateResetBut
 document.getElementById("page-zoom-out").addEventListener("click", updateResetButtonVisibility);
 
 function updateResetButtonVisibility() {
-    document.getElementById("reset-scale").style.display = (pdfCurrentScale !== pdfscaleDefault) ? "inline-block" : "none";
+    document.getElementById("reset-scale").style.display = (pdfCurrentScale !== pdfDefaultScale) ? "inline-block" : "none";
 }
 
 // Event listener status label

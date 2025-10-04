@@ -13,6 +13,7 @@ from .api import (
     project_users_list,
     project_join,
     project_unjoin,
+    object_delete,
 )
 
 def get_user_role_in_project(project_id:str) -> Role:
@@ -72,13 +73,25 @@ def create():
         admin=is_logged_admin()
     )
 
-@project_blueprint.route('/projects/<project_id>/', methods=["GET"])
+@project_blueprint.route('/projects/<project_id>/', methods=["GET", "POST"])
 def view_objects(project_id:str):
-    """ View the objects of a specific project """
+    """ View the objects of a specific project or Delete an object from the same project """
+
     path = request.args.get('path', '/') # Default to root if no path is provided
+    object_id = request.form.get("object_id", None)
     output = ()
     objects = {}
     project = None
+
+    # Object deletion
+    if request.args.get("delete", None) == "1" and object_id is not None:
+        res, status = object_delete(object_id)
+        if status == 200:
+            output = ("success", res["message"])
+        else:
+            output = ("error", res["error"])
+
+    # Project Objects
     res, status = project_list()
     if status == 200:
         project = [Project.from_dict(elem) for elem in res["projects"] if elem["id"] == int(project_id)][0]
@@ -90,6 +103,7 @@ def view_objects(project_id:str):
         log.debug("view_objects - tree: %s", tree)
     else:
         output = ("error", res["error"])
+
     return render_template(
         "project/view.html",
         title=project.title,

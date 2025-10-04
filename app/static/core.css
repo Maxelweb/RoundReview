@@ -164,6 +164,7 @@ input[type=number] {
 
 code {
     color: rebeccapurple;
+    word-wrap: break-word;
 }
 
 table {

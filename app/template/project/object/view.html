@@ -25,6 +25,7 @@
                 &nbsp;
                 <button id="prev-page" title="Previous page"><i class="fas fa-arrow-left"></i></button>
                 <button id="next-page" title="Next page"><i class="fas fa-arrow-right"></i></button>
+                &nbsp;
                 Page: <span class="bold" id="page-num">1</span> / 
                 <span id="total-pages-num"></span>
             </div>
@@ -38,11 +39,12 @@
                 </div>
             <div class="pdf-control">
                 <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
-                <button id="page-zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
-                <button id="page-zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
                 Scale: <span class="bold" id="page-scale"></span>
                 &nbsp;
-                <button id="toggle-information" onclick="toggleMenu()" title="Show/Hide Document information"><i class="fas fa-info-circle"></i></button>
+                <button id="page-zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
+                <button id="page-zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                &nbsp;
+                <button id="toggle-information" title="Show/Hide Document information"><i class="fas fa-info-circle"></i></button>
             </div>
         </div>
 
@@ -67,17 +69,23 @@
     <div id="information-menu" class="information-menu">
         <div class="menu-header">
             <h3><i class="fas fa-file primary my-1"></i> Document information </h3>
-            <span onclick="toggleMenu()" id="close-information" class="close-btn"><i class="fas fa-close"></i></span>
+            <span id="close-information" class="close-btn"><i class="fas fa-close"></i></span>
         </div>
         <div class="menu-content">
-            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
-
-            <p><span class="muted">Project title:</span> <strong>{{ project.title }}</strong></p>
-            <p><span class="muted">Document version:</span> <strong>v{{ object.version }}</strong></p>
-            <p><span class="muted">Path:</span> <code>{{ object.path }}</code> &raquo; <a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}">Go to folder</a></p>
+            <p><span class="muted">Project title</span> <strong>{{ project.title }}</strong></p>
+            <p><span class="muted">Document version</span> <strong>v{{ object.version }}</strong></p>
+            <p><span class="muted">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <code>{{ object.path }}</code></p>
             <p><span class="muted">Author:</span> <strong>{{ object.user.name }}</strong></p>
-            <p><span class="muted">Upload date:</span> <strong>{{ object.upload_date }}</strong></p>
-            <p><span class="muted">Last update date:</span> <strong>{{ object.update_date }}</strong></p>
+            <p><span class="muted">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
+            <p><span class="muted">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+
+            <p><span class="muted my-1">Actions</span> 
+            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
+            &nbsp;
+            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
+                <input type="hidden" name="object_id" value="{{ object.id }}">
+                <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>
+            </form>
             </p>
         </div>
     </div>

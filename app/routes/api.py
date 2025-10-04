@@ -613,7 +613,7 @@ def object_delete(object_id: str):
 
         # Only the object owner or a project owner can delete the object
         if user_id != object_user_id and user_role != Role.OWNER.value:
-            return {"error": "Forbidden: Only the object owner or a project owner can delete the object"}, 403
+            return {"error": "Forbidden: Only the object author or a project owner can delete the object"}, 403
 
         # Delete the object
         db.c.execute(
@@ -648,8 +648,8 @@ def object_update(object_id: str):
     log.debug(data.items())
 
     allowed_fields = {"name", "description", "comments", "version", "status", "path"}
-    allowed_fields_for_member  = {"name", "description", "path"}
-    allowed_fields_for_reviewer = {"name", "description", "comments", "status", "path"}
+    allowed_fields_for_member  = {"name", "description", "version", "path"}
+    allowed_fields_for_reviewer = {"name", "description", "comments", "version", "status", "path"}
     updates = {key: value for key, value in data.items() if key in allowed_fields}
 
     if "comments" in updates.keys():
@@ -696,7 +696,7 @@ def object_update(object_id: str):
 
         # Allowed fields update for member
         if user_role == Role.MEMBER.value and not all([key in allowed_fields_for_member for key in updates.keys()]):
-            return {"error": "Forbidden: Only the project owner or reviewer can update those object fields"}, 403
+            return {"error": "Forbidden: Only the project owner or reviewer can update those fields"}, 403
         
         # Allowed fields update for reviewer
         if user_role == Role.REVIEWER.value and not all([key in allowed_fields_for_reviewer for key in updates.keys()]):

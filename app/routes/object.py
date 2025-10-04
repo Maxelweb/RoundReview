@@ -107,3 +107,25 @@ def edit_object(project_id: str, object_id: str):
         project_role=get_user_role_in_project(project_id),
         object_statuses=ObjectStatus,
     )
+
+@object_blueprint.route('/projects/<project_id>/objects/<object_id>/delete', methods=["GET"])
+def delete_object(project_id: str, object_id: str):
+    """ Delete the object of a specific project """
+    output = ()
+    
+
+
+    return render_template(
+        "project/object/edit.html",
+        title="Update document",
+        user=session["user"],
+        object=obj,
+        project_id=project_id,
+        output=output,
+        version=VERSION,
+        logged=is_logged(),
+        admin=is_logged_admin(),
+        can_edit=can_edit,
+        project_role=get_user_role_in_project(project_id),
+        object_statuses=ObjectStatus,
+    )
