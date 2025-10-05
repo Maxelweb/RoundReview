@@ -125,3 +125,7 @@
 .inline {
     display: inline !important;
 }
+
+.pointer {
+    cursor: pointer;
+}

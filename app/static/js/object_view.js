@@ -36,6 +36,7 @@ const buttonCloseInformation = document.getElementById("close-information");
 const informationMenu = document.getElementById('information-menu');
 
 const selectCommentsMode = document.getElementById('comments-mode');
+const buttonNightMode = document.getElementById('night-mode')
 
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
@@ -347,6 +348,18 @@ selectCommentsMode.addEventListener("change", event => {
     loadComments(commentsModePerPage);
 });
 
+
+buttonNightMode.addEventListener("click", event => {
+    if (event.target.classList.contains("fa-sun")) {
+        document.getElementById('pdf-canvas').style.filter = 'invert(64%) contrast(228%) brightness(80%) hue-rotate(180deg)';
+        event.target.classList.remove("fa-sun")
+        event.target.classList.add("fa-moon")
+    } else {
+        document.getElementById('pdf-canvas').style.filter = null;
+        event.target.classList.remove("fa-moon")
+        event.target.classList.add("fa-sun")
+    }
+});
 
 // Handle toggle outline event
 buttonToggleOutline.addEventListener("click", event => {

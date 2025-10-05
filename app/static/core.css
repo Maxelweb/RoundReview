@@ -130,7 +130,7 @@ input[type=reset].secondary:focus {
 textarea {
     max-width: 98% !important;
     resize: vertical;
-    border: 0;
+    /* border: 0; */
 }
 
 input::-webkit-outer-spin-button,

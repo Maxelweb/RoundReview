@@ -364,6 +364,17 @@ a.document-widgets:nth-last-child(1) {
     flex-grow: 1;
 }
 
+.pdf-night-mode {
+    padding-left: 5px;
+    width: 30px;
+    transition: 0.3s;
+}
+
+.pdf-night-mode:hover {
+    color: var(--primary);
+    transition: 0.3s;
+}
+
 .pdf-status {
     text-align: center;
     margin: 5px 0 0 0;
@@ -424,6 +435,7 @@ a.document-widgets:nth-last-child(1) {
     min-height: 20vh;
     color: var(--theme-body-text);
     display: inline-block;
+    margin-left: 20px;
 }
 
 select.comments-mode {
@@ -500,6 +512,7 @@ select.comments-mode {
 canvas {
     display: block;
     box-shadow: 0 0 20px var(--theme-toolbars-shadow);
+    border-radius: 8px;
 }
 
 .marker {
