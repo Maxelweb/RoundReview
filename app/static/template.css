@@ -482,15 +482,15 @@ select.comments-mode {
 .comment.resolved::before {
     content: "\f058";
     color: var(--success);
-    font-weight: bold;
 }
 
 span.comment-author {
+    color: var(--muted);
     font-weight: bold;
 }
 
 span.comment-number {
-    color: var(--warning);
+    color: var(--muted);
     font-weight: bold;
 }
 
@@ -553,6 +553,7 @@ canvas {
 
 .marker.resolved {
     background-color: var(--success);
+    border-color: var(--theme-body-text);
     color: var(--theme-body-text);
 }
 
