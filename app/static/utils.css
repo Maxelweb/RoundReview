@@ -5,11 +5,6 @@
 
 /* ========================================== */
 
-
-.muted, .gray {
-    color: #7c7b7b;
-}
-
 .bold {
     font-weight: bold;
 }
@@ -27,7 +22,7 @@
 }
 
 .bg-error {
-    background-color: var(--error);
+    background-color: var(--danger);
     color: white;
     font-weight: bold;
 }
@@ -49,19 +44,23 @@
 }
 
 .error, .red, .danger{
-    color: rgb(168, 7, 7);
+    color: var(--danger) !important;
 }
 
 .success, .green {
-    color: #339b30;
+    color: var(--success) !important;
 }
 
 .warning, .orange {
-    color: #d1a037;
+    color: var(--warning) !important;
 }
 
 .black {
     color: black !important;
+}
+
+.muted, .gray {
+    color: var(--muted) !important; /* #7c7b7b */
 }
 
 .my-0 {

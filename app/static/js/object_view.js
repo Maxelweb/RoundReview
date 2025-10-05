@@ -7,6 +7,7 @@ let pdfCurrentPage = 1;
 let lastClick = { x: 0, y: 0 };
 let objectCurrentStatusIndex;
 let commentsModePerPage = true;
+let nightModeEnabled = false;
 
 const pdfDefaultScale = 1.20;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
@@ -148,7 +149,9 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
     commentTextarea.focus();
 
     const onKeyDown = (e) => {
-        if (e.key === "Enter" && commentTextarea.value !== "") {
+        if (e.key === 'Enter' && e.shiftKey) {
+            return;
+        } else if (e.key === "Enter" && commentTextarea.value !== "") {
             saveComments(commentTextarea.value, lastClick.x, lastClick.y, pdfCurrentPage);
             commentTextarea.value = "";
             commentTextarea.style.display = "none";
@@ -237,10 +240,16 @@ function loadComments(per_page = true) {
 
     getObjectComments("/api/objects/" + pdfObjectId, function (err, res) {
         
-        if (res) {    
+        if (err) {
+            commentsList.innerHTML = "<p class='danger'>Error loading comments, please try again</p>";
+            return;
+        }
+
+        if (res || res == null) {
+
             let data = JSON.parse(res || '{"inlineComments": []}');
             let clearData;
-
+            
             if (per_page)
                 clearData = data.inlineComments.filter(a => a.page === pdfCurrentPage);
             else 
@@ -257,6 +266,9 @@ function loadComments(per_page = true) {
                     marker.dataset.commentId = id;
                     marker.addEventListener("click", () => focusCommentFromPdfToSidebar(id));
                     marker.innerText = commentPageId;
+                    if (resolved) {
+                        marker.classList.add("resolved");
+                    }
                     pdfMarkers.appendChild(marker);
                 }
 
@@ -264,7 +276,7 @@ function loadComments(per_page = true) {
                 const comment = document.createElement("div");
                 comment.className = "comment";
                 comment.id = id;
-                comment.innerHTML = "<span class='comment-number'>("+commentPageId+")</span> <span class='comment-author'>" + authorName + ":</span> " + text;
+                comment.innerHTML = "<span class='comment-number'>("+commentPageId+")</span> <span class='comment-author'>" + authorName + ":</span> " + renderText(text);
 
                 const commentControl = document.createElement("div");
                 commentControl.className = "comment-control";
@@ -282,18 +294,57 @@ function loadComments(per_page = true) {
 
                 // Event listener for comment delete
                 deleteBtn.addEventListener("click", () => {
-                    if (confirm("Are you sure you want to delete this comment?")) {
-                        data = data.filter(a => a.id !== id);
-                        putObject("/api/objects/" + pdfObjectId, {"comments": data}, () => {});
+                    if (confirm("Are you sure to delete this comment?")) {
+                        clearData = data.inlineComments.filter(a => a.id !== id);
+                        data.inlineComments = clearData;
+                        putObject("/api/objects/" + pdfObjectId, {"comments": data}, (err, res) => {
+                            if (err) {
+                                alert("Error removing comment: " + err);
+                            }
+                        });
                         setTimeout(() => {
-                            loadComments(per_page);
-                        }, 100);
+                            return loadComments(per_page);
+                        }, 100); 
+                    }
+                });
+
+                const resolveBtn = document.createElement("span");
+                if (!resolved) {
+                    resolveBtn.title = "Resolve comment";
+                    resolveBtn.innerHTML = "<i class='fas success fa-check'></i>";
+                } else {
+                    resolveBtn.title = "Undo resolve comment";
+                    resolveBtn.innerHTML = "<i class='fas muted fa-rotate-right'></i>";
+                    comment.classList.add("resolved");
+                }
+
+                // Event listener for comment resolve
+                resolveBtn.addEventListener("click", () => {
+                    if (!resolved || (resolved && confirm("Are you sure to UNDO resolving this comment?"))) {
+                        clearData = data.inlineComments.map(a => {
+                            if (a.id === id) {
+                                a.resolved = !resolved;
+                            }
+                            return a;
+                        });
+                        data.inlineComments = clearData;
+                        putObject("/api/objects/" + pdfObjectId, {"comments": data}, (err, res) => {
+                            if (err) {
+                                alert("Error resolving comment: " + err);
+                            }
+                        });
+                        setTimeout(() => {
+                            return loadComments(per_page);
+                        }, 100); 
                     }
                 });
                 
                 // Create object
                 commentControl.appendChild(goToBtn);
-                commentControl.appendChild(deleteBtn);
+                if (commentsEnabled) {
+                    commentControl.appendChild(resolveBtn);
+                    commentControl.appendChild(deleteBtn);
+                }
                 comment.appendChild(commentControl);
                 commentsList.appendChild(comment);
 
@@ -302,12 +353,11 @@ function loadComments(per_page = true) {
             });
 
             totalPageComments.textContent = totalComments;
-   
+            
             if (totalComments === 0) 
                 commentsList.innerHTML = "<p class='muted'>No comments on this page.</p>";
         }
-    });
-    
+    });    
 }
 
 
@@ -348,18 +398,26 @@ selectCommentsMode.addEventListener("change", event => {
     loadComments(commentsModePerPage);
 });
 
-
+// Handle night mode
 buttonNightMode.addEventListener("click", event => {
-    if (event.target.classList.contains("fa-sun")) {
+    toggleNightMode();
+});
+
+function toggleNightMode() {
+    const target = buttonNightMode;
+    if (target.classList.contains("fa-sun")) {
         document.getElementById('pdf-canvas').style.filter = 'invert(64%) contrast(228%) brightness(80%) hue-rotate(180deg)';
-        event.target.classList.remove("fa-sun")
-        event.target.classList.add("fa-moon")
+        target.classList.remove("fa-sun");
+        target.classList.add("fa-moon");
+        nightModeEnabled = true;
     } else {
         document.getElementById('pdf-canvas').style.filter = null;
-        event.target.classList.remove("fa-moon")
-        event.target.classList.add("fa-sun")
+        target.classList.remove("fa-moon");
+        target.classList.add("fa-sun");
+        nightModeEnabled = false;
     }
-});
+    saveLocalSettings()
+}
 
 // Handle toggle outline event
 buttonToggleOutline.addEventListener("click", event => {
@@ -478,6 +536,14 @@ document.addEventListener('DOMContentLoaded', function () {
         selectStatusElement.disabled = true;
         buttonEditElement.hidden = true;
     }
+    
+    // Handle night mode from local storage
+    const settings_night_mode = localStorage.getItem("rr-pdf-night-mode");
+    if (settings_night_mode == null) {
+        localStorage.setItem("rr-pdf-night-mode", nightModeEnabled);
+    } else if (settings_night_mode != nightModeEnabled.toString()) {
+        toggleNightMode();
+    }
 });
 
 function updateStatusColor() {
@@ -485,4 +551,21 @@ function updateStatusColor() {
     const selectedOption = selectStatusElement.options[selectStatusElement.selectedIndex];
     const color = selectedOption.getAttribute('data-color');
     selectStatusElement.style.backgroundColor = color || 'black';
+}
+
+function saveLocalSettings() {
+    localStorage.setItem("rr-pdf-night-mode", nightModeEnabled);
+}
+
+function renderText(rawText) {
+  const safeText = rawText
+    .replace(/&/g, "&amp;")       // Escape HTML
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/\n/g, "<br>")       // Convert newlines to <br>
+    .replace(/ {2}/g, " &nbsp;"); // Preserve double spaces
+
+  return safeText;
 }

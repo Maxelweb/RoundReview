@@ -5,7 +5,7 @@
         <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
         <h3><i class="fas fa-file primary my-1"></i> Document Review</h3>
         <p class="muted">
-            {{ object.description if object.description else "No description" }}
+            {{ object.description | e if object.description else "No description" }}
         </p>
         <div class="object-details">
             {% if object.status == 'Approved' %}
@@ -64,11 +64,11 @@
             <h3><span class="badge-total" id="total-page-comments">0</span> Comments 
                 <select class="comments-mode" id="comments-mode">
                     <option value="per_page">on this page</option>
-                    <option value="all">total</option>
+                    <option value="all">in total</option>
                 </select>
             </h3>
             <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-comment="{{ can_comment }}" data-author-can-edit="{{ can_edit }}"></span>
-            <div id="comments-list"></div>
+            <div id="comments-list" class="comment-list"></div>
         </div>
     </div>
 

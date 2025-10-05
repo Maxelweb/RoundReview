@@ -338,6 +338,8 @@ a.document-widgets:nth-last-child(1) {
     position: relative;
     display: inline-block;
     vertical-align: top;
+    box-shadow: -2px 0 5px var(--theme-toolbars-shadow);
+    border-radius: 8px;
 }
 
 .pdf-navbar {
@@ -452,6 +454,22 @@ select.comments-mode {
     background-color: var(--theme-body-bg);
 }
 
+.comment-list {
+    max-height: calc(100vh - 100px);
+    overflow: auto;
+}
+
+.comment {
+    background: var(--theme-comment-bg);
+    border: 2px solid var(--theme-comment-border);
+    padding: 6px;
+    margin: 5px 0;
+    border-radius: 4px;
+    color: var(--theme-body-text);
+    transition: 0.5s;
+    text-align: left !important;
+}
+
 .comment::before {
     font-family: "Font Awesome 5 Free";
     content: "\f075";
@@ -461,15 +479,19 @@ select.comments-mode {
     color: #555;
 }
 
-.comment {
-    background: var(--theme-comment-bg);
-    border: 1px solid var(--theme-comment-border);
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 4px;
-    color: var(--theme-body-text);
-    transition: 0.5s;
-    text-align: left !important;
+.comment.resolved::before {
+    content: "\f058";
+    color: var(--success);
+    font-weight: bold;
+}
+
+span.comment-author {
+    font-weight: bold;
+}
+
+span.comment-number {
+    color: var(--warning);
+    font-weight: bold;
 }
 
 .comment.focused {
@@ -511,7 +533,7 @@ select.comments-mode {
 
 canvas {
     display: block;
-    box-shadow: 0 0 20px var(--theme-toolbars-shadow);
+    /* box-shadow: 0 0 20px var(--theme-toolbars-shadow); */
     border-radius: 8px;
 }
 
@@ -526,6 +548,12 @@ canvas {
     color: #82643f;
     animation: pulse 1s infinite;
     transition: 0.5s;
+    font-weight: bold;
+}
+
+.marker.resolved {
+    background-color: var(--success);
+    color: var(--theme-body-text);
 }
 
 .marker:hover {
