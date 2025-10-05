@@ -18,7 +18,7 @@ class SystemProperty(Enum):
         elif self == SystemProperty.OBJECT_MAX_UPLOAD_SIZE_MB:
             try:
                 size = int(value)
-                return 1 <= size <= 16
+                return 0 <= size <= 16
             except ValueError:
                 return False
         return False

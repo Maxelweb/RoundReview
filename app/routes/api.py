@@ -54,8 +54,24 @@ def check_authentication() -> bool:
     # Check if the user is logged in via session
     if is_logged() and session["user"].id is not None:
         return True
-
     return False
+
+def get_system_property(key: SystemProperty) -> str | None:
+    """ Get a system property value by key """
+    db = Database()
+    try:
+        row = db.c.execute(
+            'SELECT value FROM user_property WHERE user_id = ? AND key = ? LIMIT 1',
+            (USER_SYSTEM_ID, key.value)
+        ).fetchone()
+        if row:
+            return row[0]
+        return None
+    except Exception as e:
+        log.error(f"Error fetching system property {key}: {e}")
+        return None
+    finally:
+        db.close()
 
 @api_blueprint.route("/api/projects", methods=["GET"])
 def project_list():
@@ -104,8 +120,8 @@ def project_create():
 
     db = Database()
     try:
-        # FIXME: Check if project creation is disabled across the system
-        if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.PROJECT_CREATE_DISABLED.value)).fetchone() == ("TRUE",):
+        # Check if project creation is disabled across the system
+        if get_system_property(SystemProperty.PROJECT_CREATE_DISABLED) == "TRUE":
             return {"error": "Project creation is disabled across the system"}, 403
 
         # Create the new project
@@ -440,6 +456,7 @@ def project_objects_list(project_id:str):
 @api_blueprint.route("/api/projects/<project_id>/objects", methods=["POST"])
 def project_objects_create(project_id: str):
     """ Create a new object inside the project, accepting application/pdf and storing file as blob """
+
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
@@ -455,18 +472,21 @@ def project_objects_create(project_id: str):
     if file.content_type != "application/pdf":
         return {"error": "Invalid file type. Only 'application/pdf' is allowed"}, 400
 
-    # Block if max file size across the system exceeded
-    max_file_size_row = SYSTEM_MAX_UPLOAD_SIZE_MB
-    db = Database()
-    try:
-        max_file_size_row = db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.OBJECT_MAX_UPLOAD_SIZE_MB.value)).fetchone()
-    except Exception as e:
-        log.error(f"Error fetching max file size system property: {e}")
-    finally:
-        db.close()
+    # Check if file is in fact a PDF (basic check)
+    if not file.read(4) == b"%PDF":
+        return {"error": "Invalid file content. The file is not a valid PDF."}, 400
+    file.seek(0)  # Reset file pointer after reading
 
-    if file.content_length is not None and file.content_length > max_file_size_row * 1024 * 1024: 
-        return {"error": f"File size exceeds the maximum allowed limit of {max_file_size_row} MB"}, 400
+    # Read the file content as blob
+    file_blob = file.read()
+
+    # Block if max file size across the system exceeded
+    max_file_size = SYSTEM_MAX_UPLOAD_SIZE_MB
+    system_max_file_size = get_system_property(SystemProperty.OBJECT_MAX_UPLOAD_SIZE_MB)
+    if system_max_file_size is not None:
+        max_file_size = int(system_max_file_size)
+    if len(file_blob) is not None and len(file_blob) > max_file_size * 1024 * 1024: 
+        return {"error": f"File size exceeds the maximum allowed limit of {max_file_size} MB"}, 400
 
     # Extract metadata from the request
     data = request.form or request.json
@@ -499,9 +519,6 @@ def project_objects_create(project_id: str):
 
         if not member_check:
             return {"error": "Forbidden: You are not a member of this project"}, 403
-
-        # Read the file content as blob
-        file_blob = file.read()
 
         # Insert the new object into the database
         object_id = str(uuid.uuid4())
@@ -601,7 +618,7 @@ def object_delete(object_id: str):
     db = Database()
     try:
         # Check if object delete is disabled across the system
-        if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.OBJECT_DELETE_DISABLED.value)).fetchone() == ("TRUE",):
+        if get_system_property(SystemProperty.OBJECT_DELETE_DISABLED) == "TRUE":
             return {"error": "Object deletion is disabled across the system"}, 403
 
         # Check if the object exists

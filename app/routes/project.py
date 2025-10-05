@@ -126,8 +126,9 @@ def create_object(project_id:str):
     """ Create a new object in project """
     folder_path = request.args.get('folder_path', '/') # Default to root if no path is provided
     output = ()
-
+    data = None
     if request.method == "POST":
+        data = request.form
         res, status = project_objects_create(project_id=project_id)
         if status == 201:
             return redirect(f"/projects/{project_id}/")
@@ -141,6 +142,7 @@ def create_object(project_id:str):
         folder_path=folder_path,
         project_id=project_id,
         version=VERSION,
+        data=data,
         logged=is_logged(),
         admin=is_logged_admin(),
         project_role=get_user_role_in_project(project_id),

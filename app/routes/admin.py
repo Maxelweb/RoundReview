@@ -104,23 +104,17 @@ def logs():
 @admin_blueprint.route("/admin/settings", methods=["GET", "POST"])
 def settings():
     """ Global Settings page """
-    if not is_logged():
+    if not is_logged_admin():
         return redirect("/")
-    
     output = None
-
     db = Database()
     res = db.c.execute(
         'SELECT * FROM user WHERE id = ? AND admin = -1 LIMIT 1', 
-        (
-            USER_SYSTEM_ID,
-        )
+        (USER_SYSTEM_ID,)
     ).fetchone()
     if res:
         sys_user = User(res)
         sys_user.load_properties_from_db(db)
-
-    log.debug(sys_user.properties)
     if request.method == "POST":
         error = False
         # For each request form key, update the system user property
@@ -133,23 +127,22 @@ def settings():
                     break
                 sys_user.properties[key] = value
                 db.c.execute(
-                    'REPLACE INTO user_property (user_id, key, value) VALUES (?,?,?)',
-                    (sys_user.id, key, value)
+                    'UPDATE user_property SET value = ? WHERE user_id = ? AND key = ?',
+                    (value, sys_user.id, key)
                 )
                 db.commit()
                 db.log(session["user"].id, f"system property update (key={key}, value={value})")
         if not error:
             output = ("success", "Global settings updated!")
     db.close()
-
     return render_template(
         "admin/settings.html",
         title="Global Settings",
-        user=session["user"],
         syspropinfo=SystemProperty,
         sys_user=sys_user,
         version=VERSION,
         output=output,
         logged=is_logged(),
         admin=is_logged_admin(),
+        user=session["user"],
     )

@@ -37,7 +37,7 @@ def login():
         if res:
             user = User(res)
 
-            # Check if user login is disabled across the system
+            # FIXME: Check if user login is disabled across the system
             if db.c.execute("SELECT value FROM user_property WHERE user_id = ? AND key = ?", (USER_SYSTEM_ID, SystemProperty.USER_LOGIN_DISABLED.value )).fetchone() == ("TRUE",):
                 output = ("error", "User login is disabled across the system")
                 db.close()
