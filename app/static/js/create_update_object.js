@@ -7,11 +7,6 @@ const locationSegments = document.getElementById('locationSegments');
 const locationHidden = document.getElementById('locationHidden');
 let segments = [];
 
-// Initialize segments if locationHidden has a value
-if (locationHidden.value && locationHidden.value.trim() !== '') {
-    segments = locationHidden.value.split('/').filter(Boolean);
-}
-
 function renderSegments() {
     // Limit depth to 3
     if (segments.length > 3) {
@@ -71,20 +66,30 @@ locationInput.addEventListener('click', function() {
     locationText.focus();
 });
 
-// If there's a value in the hidden input (e.g. from server), render segments
-renderSegments();
+
+// Handle name of object based on filename during loading
+function fileNameLoadingAsName() {
+    const objectPdf = document.getElementById('objectPdf');
+    const objectName = document.getElementById('objectName');
+
+    objectPdf.addEventListener('change', function() {
+        if (objectName.value.trim() === '' && objectPdf.files.length > 0) {
+            const fileName = objectPdf.files[0].name;
+            const nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+            objectName.value = nameWithoutExtension;
+        }
+    });
+}
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Apply if objectPdf is present
+    if (document.getElementById('objectPdf') != null)
+        fileNameLoadingAsName();
 
-// Object PDF
-// FIXME: do not include in edit
-const objectPdf = document.getElementById('objectPdf');
-const objectName = document.getElementById('objectName');
-
-objectPdf.addEventListener('change', function() {
-    if (objectName.value.trim() === '' && objectPdf.files.length > 0) {
-        const fileName = objectPdf.files[0].name;
-        const nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-        objectName.value = nameWithoutExtension;
+    // Initialize segments if locationHidden has a value
+    if (locationHidden.value && locationHidden.value.trim() !== '') {
+        segments = locationHidden.value.split('/').filter(Boolean);
     }
+    renderSegments();
 });
