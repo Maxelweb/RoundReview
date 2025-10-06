@@ -1,77 +1,11 @@
 import uuid, json
 from flask import request, session, Blueprint
-from .utils import is_logged
-from ..config import VERSION, log, USER_SYSTEM_ID, SYSTEM_MAX_UPLOAD_SIZE_MB
-from ..database import Database
-from ..models import User, Project, Property, Role, Object, ObjectStatus, SystemProperty
+from ..utils import is_logged, get_system_property, get_user_from_api_key, check_authentication
+from ...config import log, USER_SYSTEM_ID, SYSTEM_MAX_UPLOAD_SIZE_MB
+from ...database import Database
+from ...models import Project, Role, Object, ObjectStatus, SystemProperty
 
 api_blueprint = Blueprint('api', __name__)
-
-def get_user_from_api_key(api_key:str) -> User:
-    """ Get user from API key """
-    db = Database()
-    try:
-        # Fetch the user associated with the given API key
-        user_row = db.c.execute(
-            '''
-            SELECT *
-            FROM user
-            WHERE id IN (
-                SELECT user_id
-                FROM user_property
-                WHERE key = ? AND value = ?
-            ) AND deleted = 0
-            LIMIT 1
-            ''',
-            (Property.API_KEY.value, api_key)
-        ).fetchone()
-        if user_row:
-            return User(user_row)
-        return None
-    except Exception as e:
-        log.error(f"Error fetching user by API key: {e}")
-        return None
-    finally:
-        db.close()
-
-def check_authentication() -> bool:
-    """ Check the authentication of the user.
-        Could be flask session or via API Key in header x-api-key"""
-
-    api_key = request.headers.get("x-api-key")
-    if api_key:
-        # Validate the API key by checking user properties in the database
-        db = Database()
-        user_row = db.c.execute(
-            'SELECT id, name, email, password, admin, deleted FROM user WHERE id IN (SELECT user_id FROM user_property WHERE key = ? AND value = ?) AND deleted = 0 LIMIT 1',
-            (User.Property.API_KEY.value, api_key)
-        ).fetchone()
-        if user_row:
-            db.close()
-            user = User(user_row)
-            return True
-        
-    # Check if the user is logged in via session
-    if is_logged() and session["user"].id is not None:
-        return True
-    return False
-
-def get_system_property(key: SystemProperty) -> str | None:
-    """ Get a system property value by key """
-    db = Database()
-    try:
-        row = db.c.execute(
-            'SELECT value FROM user_property WHERE user_id = ? AND key = ? LIMIT 1',
-            (USER_SYSTEM_ID, key.value)
-        ).fetchone()
-        if row:
-            return row[0]
-        return None
-    except Exception as e:
-        log.error(f"Error fetching system property {key}: {e}")
-        return None
-    finally:
-        db.close()
 
 @api_blueprint.route("/api/projects", methods=["GET"])
 def project_list():
