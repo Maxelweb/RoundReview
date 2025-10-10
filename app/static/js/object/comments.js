@@ -19,10 +19,10 @@ export function saveComment(getFunction, putFunction, pdfObjectId, pdfCurrentSca
 
 
 // Highlight comment handler
-export function focusCommentFromSidebarToPdf(id, page, pdfCurrentPage) {
+export function focusCommentFromSidebarToPdf(id, page, pdfCurrentPage, renderPageFunction) {
     if (page != pdfCurrentPage){
         pdfCurrentPage = page;
-        renderPage(pdfCurrentPage);
+        renderPageFunction(pdfCurrentPage);
     }
     document.querySelectorAll(".comment").forEach(el => el.classList.remove("focused"));
     const target = document.getElementById(id);

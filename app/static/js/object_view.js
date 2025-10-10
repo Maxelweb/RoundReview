@@ -330,7 +330,7 @@ function loadComments(per_page = true) {
                 goToBtn.innerHTML = "<i class='fas fa-location-arrow'></i>";
                 
                 // Event listener for comment focus
-                goToBtn.addEventListener("click", () => focusCommentFromSidebarToPdf(id, page, pdfCurrentPage));
+                goToBtn.addEventListener("click", () => focusCommentFromSidebarToPdf(id, page, pdfCurrentPage, renderPage));
 
                 const deleteBtn = document.createElement("span");
                 deleteBtn.title = "Delete comment";
