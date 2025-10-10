@@ -1,4 +1,4 @@
-from flask import Flask, session, request
+from flask import session, request
 from ..models import Object, User, Property, SystemProperty
 from ..config import USER_SYSTEM_ID, log
 from ..database import Database
