@@ -70,7 +70,7 @@ function renderPage(pageNumber, scale = pdfCurrentScale) {
 // Get document and render PDF
 pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
     pdfInstance = pdf;
-    totalPageNumDisplay.textContent = pdf.numPages;
+    totalPageNumDisplay.textContent = pdfInstance.numPages;
     pageScaleDisplay.textContent = (pdfCurrentScale * 100).toFixed(0) + "%";
     renderPage(pdfCurrentPage);
 

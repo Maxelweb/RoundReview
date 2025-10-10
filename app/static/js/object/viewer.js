@@ -34,7 +34,7 @@ export function buildOutlineList(items, container, pdfInstance, renderPageFuncti
       const subList = document.createElement('ul');
       subList.classList.add('pdf-outline-list', 'hidden');
 
-      buildOutlineList(item.items, subList);
+      buildOutlineList(item.items, subList, pdfInstance, renderPageFunction);
       li.appendChild(subList);
 
       toggle.addEventListener('click', () => {
