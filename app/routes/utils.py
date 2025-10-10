@@ -61,11 +61,12 @@ def check_authentication() -> bool:
         db = Database()
         user_row = db.c.execute(
             'SELECT id, name, email, password, admin, deleted FROM user WHERE id IN (SELECT user_id FROM user_property WHERE key = ? AND value = ?) AND deleted = 0 LIMIT 1',
-            (User.Property.API_KEY.value, api_key)
+            (Property.API_KEY.value, api_key)
         ).fetchone()
+        db.close()
         if user_row:
-            db.close()
             user = User(user_row)
+            log.debug(f"API Key authentication successful for user ID {user.id}")
             return True
         
     # Check if the user is logged in via session

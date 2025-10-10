@@ -1,21 +1,21 @@
-import uuid, json
+import uuid
 from flask import request, session, Blueprint
 from ..utils import is_logged, check_authentication, get_user_from_api_key
-from ...config import VERSION, log, USER_SYSTEM_ID, SYSTEM_MAX_UPLOAD_SIZE_MB
+from ...config import log
 from ...database import Database
-from ...models import User, Project, Property, Role, Review
+from ...models import Role, Review
 
 api_integration_bp = Blueprint('api_integration', __name__)
 
 # TODO: only reviewers or owners of that object can interact with these APIs
 
-@api_integration_bp.route("/api/projects/<project_id>/objects/<object_id>/integration/reviews", methods=["GET"])
+@api_integration_bp.route("/api/projects/<project_id>/objects/<object_id>/integrations/reviews", methods=["GET"])
 def object_review_get(project_id: str, object_id: str):
     """ Get all integration reviews for an object from a project """
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
-
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     db = Database()
     try:
@@ -32,26 +32,26 @@ def object_review_get(project_id: str, object_id: str):
         if not member_check:
             return {"error": "Forbidden: You are not a member of this project"}, 403
         
-        if member_check["Role"] not in [Role.OWNER.value, Role.REVIEWER.value]:
+        if member_check[0] not in [Role.OWNER.value, Role.REVIEWER.value]:
             return {"error": "Forbidden: You do not have permission to view reviews"}, 403
 
-        # Check if the object exists in the project and has a status (i.e., is not deleted)
+        # Check if the object exists in the project
         object_check = db.c.execute(
             '''
             SELECT 1
             FROM object
-            WHERE project_id = ? AND status IS NOT NULL AND id = ?
+            WHERE project_id = ? AND id = ?
             ''',
             (project_id, object_id)
         ).fetchone()
 
         if not object_check:
-            return {"error": "Forbidden: You are not a member of this project"}, 403
+            return {"error": "Forbidden: This object does not exist in this project"}, 403
 
         # Fetch all reviews for the object
         rows = db.c.execute(
             '''
-            SELECT *
+            SELECT id, name, icon, url, url_text, value, created_at, user_id, object_id
             FROM object_integration_review
             WHERE object_id = ?
             ORDER BY created_at DESC
@@ -61,6 +61,7 @@ def object_review_get(project_id: str, object_id: str):
 
         # Convert rows to Object instances and then to dictionaries
         reviews = [Review.from_db_row(row).to_dict() for row in rows]
+        log.debug("AAAAAAAAAAAAAAAAAAAAA")
         return {"reviews": reviews}, 200
 
     except Exception as e:
@@ -75,7 +76,7 @@ def object_review_create(project_id:str, object_id: str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     db = Database()
     try:
@@ -94,6 +95,7 @@ def object_review_create(project_id:str, object_id: str):
         if not required_keys.issubset(data.keys()):
             return {"error": f"Bad Request: Missing required keys: {required_keys - data.keys()}"}, 400
 
+        
         # Validate input types and lengths
         name = data["name"]
         value = data["value"]
@@ -132,7 +134,7 @@ def object_review_create(project_id:str, object_id: str):
         if not member_check:
             return {"error": "Forbidden: You are not a member of this project"}, 403
         
-        if member_check["Role"] not in [Role.OWNER.value, Role.REVIEWER.value]:
+        if member_check[0] not in [Role.OWNER.value, Role.REVIEWER.value]:
             return {"error": "Forbidden: You do not have permission to view reviews"}, 403
 
         # Check if the object exists in the project
@@ -140,13 +142,13 @@ def object_review_create(project_id:str, object_id: str):
             '''
             SELECT 1
             FROM object
-            WHERE project_id = ? AND status IS NOT NULL AND id = ?
+            WHERE project_id = ? AND id = ?
             ''',
             (project_id, object_id)
         ).fetchone()
 
         if not object_check:
-            return {"error": "Forbidden: You are not a member of this project"}, 403
+            return {"error": "Forbidden: This object does not belong to this project"}, 403
         
         # Check if a review has been already created by this user for this object
         existing_review = db.c.execute(
@@ -169,7 +171,7 @@ def object_review_create(project_id:str, object_id: str):
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''',
             (review_id, name, icon, url, url_text, value, user_id, object_id)
-        ).execute()
+        )
         db.commit()
         db.log(user_id, f"project object review add (project_id={project_id}, object_id={object_id}, review_id={review_id})")
         return {"message": "Review created successfully", "review_id": review_id }, 201
@@ -186,7 +188,7 @@ def integration_review_read_all(load_values: bool=True):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     if request.args.get("value", "0") == "1":
         load_values = True
@@ -196,7 +198,7 @@ def integration_review_read_all(load_values: bool=True):
         # Fetch all reviews for the user
         rows = db.c.execute(
             '''
-            SELECT *
+            SELECT id, name, icon, url, url_text, value, created_at, user_id, object_id
             FROM object_integration_review
             WHERE user_id = ?
             ORDER BY created_at DESC
@@ -228,7 +230,7 @@ def integration_review_delete(review_id: str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     db = Database()
     try:

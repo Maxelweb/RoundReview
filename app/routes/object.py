@@ -1,10 +1,10 @@
 from types import SimpleNamespace
-from flask import render_template, request, session, redirect, Blueprint
+from flask import render_template, request, session, Blueprint
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
-from ..models import Project, Object, ObjectStatus, Role
-from .api import project_list, object_get, object_update
+from ..models import Project, Object, ObjectStatus, Role, Review
+from .api import project_list, object_get, object_update, object_review_get
 from .project import get_user_role_in_project
 
 object_blueprint = Blueprint('object', __name__)
@@ -28,6 +28,13 @@ def view_object(project_id: str, object_id: str):
     else:
         output = ("error", res["error"])
 
+    res, status = object_review_get(project_id=project_id, object_id=object_id)
+    reviews = []
+    if status == 200:
+        reviews = [Review.from_dict(data=review) for review in res["reviews"]] 
+    else:
+        output = ("error", res["error"])
+
     db = Database()
     res = obj.load_user(db=db)
     log.debug("User loading in object: %s", res)
@@ -47,6 +54,7 @@ def view_object(project_id: str, object_id: str):
         can_comment=can_comment,
         project_role=get_user_role_in_project(project_id),
         object_statuses=ObjectStatus,
+        reviews=reviews,
     )
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>/file', methods=["GET"])

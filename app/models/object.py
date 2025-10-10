@@ -65,9 +65,7 @@ class Object:
     
     @classmethod
     def from_dict(cls, data: dict) -> "Object":
-        required_keys = {"id", "path", "user_id", "project_id", "name", 
-                         "description", "comments", "version", "status", 
-                         "update_date", "upload_date"}
+        required_keys = {"id", "path", "user_id", "project_id", "name", "description", "comments", "version", "status", "update_date", "upload_date"}
         if not required_keys.issubset(data.keys()):
             raise ValueError(f"Missing required keys: {required_keys - data.keys()}")
         

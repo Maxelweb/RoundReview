@@ -1,7 +1,3 @@
-from datetime import datetime
-from enum import Enum
-from .user import User
-from ..database import Database
 
 class Review:
 
@@ -28,7 +24,7 @@ class Review:
 
     @classmethod
     def from_db_row(cls, db_row: tuple) -> "Review":
-        if len(db_row) != 11:
+        if len(db_row) != 9:
             raise ValueError("Unable to unserialize db row into an Object Integration Review instance")
         return cls(
             id=db_row[0],
@@ -55,6 +51,22 @@ class Review:
             "object_id": self.object_id,
         }
         return output
-                
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "Review":
+        required_keys = ["id", "name", "value", "created_at", "user_id", "object_id"]
+        if not all(key in data for key in required_keys):
+            raise ValueError("Unable to unserialize dict into an Object Integration Review instance")
+        return cls(
+            id=data["id"],
+            name=data["name"],
+            icon=data.get("icon"),
+            url=data.get("url"),
+            url_text=data.get("url_text"),
+            value=data["value"],
+            created_at=data["created_at"],
+            user_id=data["user_id"],
+            object_id=data["object_id"],
+        )
     
     
