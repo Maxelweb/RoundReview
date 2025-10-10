@@ -99,7 +99,7 @@ class Database:
 
     def __create_tables(self) -> bool:
 
-        tables_to_create = ["log", "user", "user_property", "project", "project_user", "object"]
+        tables_to_create = ["log", "user", "user_property", "project", "project_user", "object", "object_integration_review"]
 
         self.c.execute('''
             CREATE TABLE IF NOT EXISTS "log" (
@@ -163,6 +163,21 @@ class Database:
                 "status" VARCHAR(32) DEFAULT NULL,
                 "upload_date" TEXT DEFAULT CURRENT_TIMESTAMP,
                 "update_date" TEXT DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY("id")
+            );
+        ''')
+        self.commit()
+        self.c.execute('''
+            CREATE TABLE IF NOT EXISTS "object_integration_review" (
+                "id" CHAR(36),
+                "name" VARCHAR(32) NOT NULL, 
+                "icon" VARCHAR(32) DEFAULT NULL,
+                "url" VARCHAR(128) DEFAULT NULL,
+                "url_text" VARCHAR(64) DEFAULT NULL, 
+                "value" TEXT NOT NULL,
+                "created_at" TEXT DEFAULT CURRENT_TIMESTAMP,
+                "user_id" INTEGER REFERENCES user(id), 
+                "object_id" INTEGER REFERENCES object(id),
                 PRIMARY KEY("id")
             );
         ''')

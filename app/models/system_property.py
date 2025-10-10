@@ -1,6 +1,4 @@
 from enum import Enum
-from ..database import Database
-from ..config import log
 
 class SystemProperty(Enum):
     PROJECT_CREATE_DISABLED = "PROJECT_CREATE_DISABLED"

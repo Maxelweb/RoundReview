@@ -129,7 +129,7 @@ def project_update(project_id:str):
         db.close()
 
 @api_project_bp.route("/api/projects/<project_id>/users", methods=["GET"])
-def project_users_list(project_id: str):
+def project_users_list(project_id:str):
     """ Retrieve a list of all users who are members of the project """
 
     if not check_authentication():
