@@ -609,3 +609,41 @@ canvas {
     display: block;
     margin: 3px 0 0;
 }
+
+.bot-reviews {
+    background: linear-gradient(90deg,rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.bot-review {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 8px;
+    background: var(--theme-toolbars-bg);
+    color: var(--theme-body-text);
+    border: 4px solid transparent; /* var(--theme-toolbars-alt-border) */
+    padding: 8px 16px;
+    margin-top: 4px;
+}
+
+.bot-review:first-child {
+    margin-top: 0px;
+}
+
+.bot-review-header h4 {
+    margin: 10px 5px 10px 0px;
+    display: inline-block;
+}
+
+.bot-review-header span{
+    display: inline-block;
+}
+
+.bot-review-content {
+    margin-bottom: 10px;
+}
+
+.bot-review-value {
+    margin: 15px 0;
+}

@@ -39,3 +39,20 @@ export function putObject(url, data, callback) {
     const jsonData = JSON.stringify(data);
     xhttp.send(jsonData);
 }
+
+// Update Object
+export function deleteReview(url, callback) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("DELETE", url, true);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === 4) {
+            if (xhttp.status === 200) {
+                callback(null, xhttp.responseText);
+            } else {
+                callback(new Error(xhttp.status), null);
+            }
+        }
+    };
+    xhttp.send();
+}

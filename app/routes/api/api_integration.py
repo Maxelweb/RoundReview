@@ -61,7 +61,6 @@ def object_review_get(project_id: str, object_id: str):
 
         # Convert rows to Object instances and then to dictionaries
         reviews = [Review.from_db_row(row).to_dict() for row in rows]
-        log.debug("AAAAAAAAAAAAAAAAAAAAA")
         return {"reviews": reviews}, 200
 
     except Exception as e:
@@ -160,8 +159,8 @@ def object_review_create(project_id:str, object_id: str):
             (object_id, user_id)
         ).fetchone()
 
-        if existing_review:
-            return {"error": "Conflict: You have already created a review for this object. Remove or update the current review."}, 409
+        # if existing_review:
+        #     return {"error": "Conflict: You have already created a review for this object. Remove or update the current review."}, 409
 
         # Create new object integration review
         review_id = str(uuid.uuid4())
@@ -260,7 +259,7 @@ def integration_review_delete(review_id: str):
             WHERE id = ?
             ''',
             (review_id,)
-        ).execute()
+        )
         db.commit()
         db.log(user_id, f"object review delete (review_id={review_id})")
         return {"message": "Review deleted successfully"}, 200

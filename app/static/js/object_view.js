@@ -1,9 +1,10 @@
 // View Object detail JS Logic for RoundReview
 // ===========================================
 
+import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 import { renderText } from "./utils/text.js";
 import { buildOutlineList } from "./object/viewer.js";
-import { getObjectComments, putObject } from "./object/xhttp.js";
+import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
 import { saveLocalSettings } from "./object/storage.js";
 
@@ -46,7 +47,10 @@ const buttonCloseInformation = document.getElementById("close-information");
 const informationMenu = document.getElementById('information-menu');
 
 const selectCommentsMode = document.getElementById('comments-mode');
-const buttonNightMode = document.getElementById('night-mode')
+const buttonNightMode = document.getElementById('night-mode');
+
+const buttonsDeleteReview = document.querySelectorAll('.delete-review');
+const boxesReviewValue = document.querySelectorAll('.bot-review-value');
 
 // ======================= PDF Rendering =======================
 
@@ -400,6 +404,27 @@ function loadComments(per_page = true) {
     });    
 }
 
+// ======================= Reviews =======================
+
+
+// Event listener to delete review if present
+if (buttonsDeleteReview.length > 0) {
+
+    buttonsDeleteReview.forEach(element => {
+        element.addEventListener('click', () => {
+            if (!confirm("Are you sure to delete this review?"))
+                return;
+            const reviewId = element.getAttribute("data-review-id");
+            deleteReview("/api/integrations/reviews/" + reviewId, (err, res) => {
+                if (err) {
+                    alert("Error removing review: " + err);
+                } else if (res) {
+                    document.getElementById("review-" + reviewId).remove();
+                }
+            });    
+        });
+    });
+}
 
 // ======================= On Load =======================
 
@@ -416,5 +441,13 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem("rr-pdf-night-mode", nightModeEnabled);
     } else if (settings_night_mode != nightModeEnabled.toString()) {
         toggleNightMode();
+    }
+
+    // Render markdown
+    if (boxesReviewValue.length > 0) {
+        console.debug("CIAO")
+        boxesReviewValue.forEach(element => {
+            element.innerHTML = marked.parse(renderText(element.textContent));
+        });
     }
 });
