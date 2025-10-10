@@ -13,7 +13,7 @@ def project_list():
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     db = Database()
     try:
@@ -43,7 +43,7 @@ def project_create():
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     data = request.form or request.json
     log.debug(data)
@@ -86,7 +86,7 @@ def project_update(project_id:str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     data = request.form or request.json
     if not data or "title" not in data:
@@ -135,7 +135,7 @@ def project_users_list(project_id:str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     db = Database()
     try:
@@ -179,7 +179,7 @@ def project_join(project_id:str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     data = request.form or request.json
     if not data or "username" not in data or "role" not in data:
@@ -258,7 +258,7 @@ def project_unjoin(project_id:str):
     if not check_authentication():
         return {"error": "Unauthorized"}, 401
 
-    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key"))
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
 
     data = request.form or request.json
     if not data or "username" not in data:
