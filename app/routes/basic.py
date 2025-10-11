@@ -97,7 +97,7 @@ def login_callback_github():
                 session["user"] = user
                 session["user"].load_properties_from_db(db)
                 session["provider"] = LoginProvider.GITHUB
-                db.log(session["user"].id, f"login (provider={LoginProvider.INTERNAL.value})")
+                db.log(session["user"].id, f"login (provider={LoginProvider.GITHUB.value})")
                 db.close()
                 return redirect("/")
             
