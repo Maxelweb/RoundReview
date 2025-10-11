@@ -1,7 +1,7 @@
 import uuid, json, datetime
 from flask import request, session, Blueprint, current_app
 from ..utils import is_logged, get_system_property, get_user_from_api_key, check_authentication, get_user_webhooks, call_webhook
-from ...config import log, SYSTEM_MAX_UPLOAD_SIZE_MB
+from ...config import log, SYSTEM_MAX_UPLOAD_SIZE_MB, VERSION
 from ...database import Database
 from ...models import Project, Role, Object, ObjectStatus, SystemProperty
 
@@ -352,7 +352,7 @@ def object_update(object_id: str):
         db.log(user_id, f"project object update (project_id={project_id}, keys={"|".join(f"{key}" for key in updates.keys())})")
 
         # Webhook: if status changed, trigger notification for reviewers and owners
-        if not get_system_property(SystemProperty.WEBHOOKS_DISABLED) and "status" in updates.keys():
+        if get_system_property(SystemProperty.WEBHOOKS_DISABLED) != "TRUE" and "status" in updates.keys():
             webhooks = get_user_webhooks(project_id)
             seconds = 1
             for wh_user_id, wh_url in webhooks.items():
@@ -364,7 +364,7 @@ def object_update(object_id: str):
                         "project_id": project_id,
                         "updated_fields": {"status" : updates["status"]},
                         "updated_at": datetime.datetime.now().isoformat() + "Z",
-                    }, {"Content-Type": "application/json"}),
+                    }, {"Content-Type": "application/json", "User-Agent": f"RoundReview/{VERSION}"}),
                     name=f"webhook_object_updated_{object_id}_user_{wh_user_id}",
                     replace_existing=False,
                     max_instances=1,

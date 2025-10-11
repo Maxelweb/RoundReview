@@ -12,7 +12,7 @@ class SystemProperty(Enum):
     
     def check_value(self, value:str) -> bool:
         """ Check if the value is valid for the property """
-        if self in [SystemProperty.PROJECT_CREATE_DISABLED, SystemProperty.OBJECT_DELETE_DISABLED, SystemProperty.USER_LOGIN_DISABLED]:
+        if self in [SystemProperty.PROJECT_CREATE_DISABLED, SystemProperty.OBJECT_DELETE_DISABLED, SystemProperty.USER_LOGIN_DISABLED, SystemProperty.WEBHOOKS_DISABLED]:
             return value in ["TRUE", "FALSE"]
         elif self == SystemProperty.OBJECT_MAX_UPLOAD_SIZE_MB:
             try:

@@ -2,7 +2,7 @@ import os
 import logging
 
 DEBUG = os.environ.get('DEBUG') is not None or False
-VERSION = "v0.1.0"
+VERSION = "0.1.0"
 USER_SYSTEM_ID = 1
 USER_SYSTEM_NAME = "_SYSTEM"
 USER_SYSTEM_EMAIL = "system@local"
