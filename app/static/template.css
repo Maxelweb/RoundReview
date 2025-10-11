@@ -282,6 +282,7 @@ a.document-widget {
     padding: 5px;
     transition: 0.1s;
     min-height: 160px;
+    max-width: 175px;
 }
 
 a.document-widget:hover {

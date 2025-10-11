@@ -32,7 +32,6 @@ const totalPageNumDisplay = document.getElementById("total-pages-num");
 
 const pageScaleDisplay = document.getElementById("page-scale");
 const totalPageComments = document.getElementById("total-page-comments");
-const selectStatusElement = document.getElementById("status-label");
 const buttonEditElement = document.getElementById("edit-object-button");
 
 const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
@@ -51,6 +50,17 @@ const buttonNightMode = document.getElementById('night-mode');
 
 const buttonsDeleteReview = document.querySelectorAll('.delete-review');
 const boxesReviewValue = document.querySelectorAll('.bot-review-value');
+
+const selectStatusElement = document.getElementById("status-label");
+const selectStatusTick = {
+    success: function () {
+        const tickElement = document.getElementById('status-icon');
+        tickElement.classList.replace('none', 'iblock');
+        setTimeout(() => {
+            tickElement.classList.replace('iblock', 'none');
+        }, 5000);
+    }
+};
 
 // ======================= PDF Rendering =======================
 
@@ -199,6 +209,7 @@ document.getElementById("status-label").addEventListener("change", () => {
     putObject("/api/objects/" + pdfObjectId, {"status": document.getElementById("status-label").value}, (error, res) => {
         if (res){
             updateStatusColor();
+            selectStatusTick.success();
         } else {
             selectStatusElement.selectedIndex = objectCurrentStatusIndex;
             alert(error);

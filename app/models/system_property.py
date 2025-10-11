@@ -5,6 +5,7 @@ class SystemProperty(Enum):
     OBJECT_DELETE_DISABLED = "OBJECT_DELETE_DISABLED"
     USER_LOGIN_DISABLED = "USER_LOGIN_DISABLED"
     OBJECT_MAX_UPLOAD_SIZE_MB = "OBJECT_MAX_UPLOAD_SIZE_MB"
+    WEBHOOKS_DISABLED = "WEBHOOKS_DISABLED"
 
     def description(self) -> str:
         return SystemPropertyInfo[self.name].value
@@ -26,3 +27,4 @@ class SystemPropertyInfo(Enum):
     OBJECT_DELETE_DISABLED = "If TRUE, object delete is disabled for any user. FALSE by default"
     USER_LOGIN_DISABLED = "If TRUE, only admins can sign in. FALSE by default"
     OBJECT_MAX_UPLOAD_SIZE_MB = "Set the max upload size for objects in Megabytes. Maximum size: 16 (MB)."
+    WEBHOOKS_DISABLED = "If TRUE, webhooks are disabled for any user, FALSE by default."

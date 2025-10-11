@@ -125,6 +125,10 @@
     display: inline !important;
 }
 
+.none {
+    display: none !important;
+}
+
 .pointer {
     cursor: pointer;
 }

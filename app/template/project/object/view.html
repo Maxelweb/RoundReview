@@ -7,15 +7,6 @@
         <p class="muted">
             {{ object.description | e if object.description else "No description" }}
         </p>
-        <div class="object-details">
-            {% if object.status == 'Approved' %}
-            <div class="form-group text-center">
-                <a href="{{ url_for('object.download_signed', object_id=object.id) }}" class="btn btn-success">
-                    Download Digitally Signed Version
-                </a>
-            </div>
-            {% endif %}
-        </div>
     </div>
         
     <div class="pdf-container">
@@ -30,6 +21,7 @@
                 <span id="total-pages-num"></span>
             </div>
             <div class="pdf-control pdf-status">
+                <i class="fas fa-check success none" id="status-icon"></i> 
                 <select class="status-label" id="status-label" data-current-status="{{ object.status.value }}">
                     {% for status in object_statuses.keys() %}
                         <option {% if object.status == status %}selected{%endif%}

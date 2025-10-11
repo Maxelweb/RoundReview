@@ -351,8 +351,8 @@ def object_update(object_id: str):
         db.commit()
         db.log(user_id, f"project object update (project_id={project_id}, keys={"|".join(f"{key}" for key in updates.keys())})")
 
-        # If status changed, trigger webhooks for reviewers and owners
-        if "status" in updates.keys():
+        # Webhook: if status changed, trigger notification for reviewers and owners
+        if not get_system_property(SystemProperty.WEBHOOKS_DISABLED) and "status" in updates.keys():
             webhooks = get_user_webhooks(project_id)
             seconds = 1
             for wh_user_id, wh_url in webhooks.items():

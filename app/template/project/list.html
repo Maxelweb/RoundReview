@@ -1,25 +1,30 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
-    <p class="muted">Click on a project to view the resources inside of it</p>
+    <p class="muted">Click on a project to view the documents inside of it and manage it (owners only).</p>
 
     <div class="my-2">
         <a href="{{ url_for('project.create') }}"><button><i class="fas fa-plus-circle"></i> New Project</button></a>
     </div>
 
+    {% if not projects %}
+    <p class="muted">No project created yet. 
+    <br>Ask someone to add you into an existing project or create a new one with the <i class="fas fa-plus-circle"></i> button above.</p>
+    {% else %}
     <table>
         <tr>
             <th>Projects</th>
         </tr>
         {% for project in projects %}
-            <tr>
-                <td>
-                    <i class="fas fa-rocket primary my-1"></i>
-                    <a href="{{ url_for('project.view_objects', project_id=project.id) }}">{{ project.title }}</a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <i class="fas fa-rocket primary my-1"></i>
+                <a href="{{ url_for('project.view_objects', project_id=project.id) }}">{{ project.title }}</a>
+            </td>
+        </tr>
         {% endfor %}
     </table>
+    {%endif%}
 
 
 {% endblock %}

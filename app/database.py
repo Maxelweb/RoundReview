@@ -83,7 +83,8 @@ class Database:
                 ("PROJECT_CREATE_DISABLED", "FALSE", USER_SYSTEM_ID),
                 ("OBJECT_DELETE_DISABLED", "FALSE", USER_SYSTEM_ID),
                 ("USER_LOGIN_DISABLED", "FALSE", USER_SYSTEM_ID),
-                ("OBJECT_MAX_UPLOAD_SIZE_MB", SYSTEM_MAX_UPLOAD_SIZE_MB, USER_SYSTEM_ID)
+                ("OBJECT_MAX_UPLOAD_SIZE_MB", SYSTEM_MAX_UPLOAD_SIZE_MB, USER_SYSTEM_ID),
+                ("WEBHOOKS_DISABLED", "FALSE", USER_SYSTEM_ID)
             ])
         self.commit()
 
