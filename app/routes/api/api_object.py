@@ -1,6 +1,6 @@
-import uuid, json
-from flask import request, session, Blueprint
-from ..utils import is_logged, get_system_property, get_user_from_api_key, check_authentication
+import uuid, json, datetime
+from flask import request, session, Blueprint, current_app
+from ..utils import is_logged, get_system_property, get_user_from_api_key, check_authentication, get_user_webhooks, call_webhook
 from ...config import log, SYSTEM_MAX_UPLOAD_SIZE_MB
 from ...database import Database
 from ...models import Project, Role, Object, ObjectStatus, SystemProperty
@@ -350,6 +350,30 @@ def object_update(object_id: str):
         db.c.execute(update_query, (*updates.values(), object_id))
         db.commit()
         db.log(user_id, f"project object update (project_id={project_id}, keys={"|".join(f"{key}" for key in updates.keys())})")
+
+        # If status changed, trigger webhooks for reviewers and owners
+        if "status" in updates.keys():
+            webhooks = get_user_webhooks(project_id)
+            seconds = 1
+            for wh_user_id, wh_url in webhooks.items():
+                current_app.scheduler.add_job(
+                    func=call_webhook,
+                    args=(wh_url, {
+                        "event": "object.updated",
+                        "object_id": object_id,
+                        "project_id": project_id,
+                        "updated_fields": {"status" : updates["status"]},
+                        "updated_at": datetime.datetime.now().isoformat() + "Z",
+                    }, {"Content-Type": "application/json"}),
+                    name=f"webhook_object_updated_{object_id}_user_{wh_user_id}",
+                    replace_existing=False,
+                    max_instances=1,
+                    misfire_grace_time=300,
+                    trigger='date',
+                    run_date=datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+                )
+                seconds += 2 
+
         return {"message": "Object updated successfully"}, 200
 
     except Exception as e:

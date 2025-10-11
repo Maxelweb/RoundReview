@@ -4,6 +4,7 @@ from ..config import log
 
 class Property(Enum):
     API_KEY = "api_key"
+    WEBHOOK_URL = "webhook_url"
 
 class User:
     id: int

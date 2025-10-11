@@ -1,7 +1,10 @@
+import requests
 from flask import session, request
-from ..models import Object, User, Property, SystemProperty
+from ..models import Object, User, Property, SystemProperty, Role
 from ..config import USER_SYSTEM_ID, log
 from ..database import Database
+
+# TODO: this must be refactored
 
 def is_logged():
     return "user" in session.keys()
@@ -90,3 +93,37 @@ def get_system_property(key: SystemProperty) -> str | None:
         return None
     finally:
         db.close()
+
+def call_webhook(url, payload=None, headers=None) -> None:
+    """ Function to call external webhooks """
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        log.info(f"Webhook sent to {url} | Status: {response.status_code}")
+    except Exception as e:
+        log.error(f"Webhook error: {e}")
+
+def get_user_webhooks(project_id:int) -> dict:
+    """ Get all webhooks (user property) from reviewers and owners of a specific project """
+    db = Database()
+    webhooks = db.c.execute(
+        '''
+        SELECT up.user_id, up.value
+        FROM user_property up
+        WHERE up.key = ? AND up.user_id IN (
+            SELECT pu.user_id
+            FROM project_user pu
+            WHERE pu.project_id = ? AND pu.role IN (?, ?)
+        ) AND up.user_id != ?
+        ''',
+        (
+            Property.WEBHOOK_URL.value,
+            project_id,
+            Role.OWNER.value,
+            Role.REVIEWER.value,
+            USER_SYSTEM_ID
+        )
+    ).fetchall()
+    result = {row[0]: row[1] for row in webhooks}
+    db.close()
+    return result
+
