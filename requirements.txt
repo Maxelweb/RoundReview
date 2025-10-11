@@ -3,3 +3,4 @@ Flask-Session~=0.8
 waitress~=3.0
 apscheduler~=3.11
 requests~=2.32
+Authlib~=1.6

@@ -9,9 +9,8 @@ services:
       - sessions:/app/flask_session:rw
       - ./database:/app/database:rw
       - ./app:/app/app
-
-    environment:
-      - DEBUG=true
+    env_file:
+      - dev.env
 
 volumes:
   sessions:

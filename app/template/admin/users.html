@@ -7,23 +7,39 @@
     <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
     {% endif %}
     <h3>New user</h3>
+    <p class="muted">
+        The password for the new user will be showed one time. If lost, please reset the password after the user creation.
+    </p>
+    <p class="muted">
+        <strong>Tip:</strong> Adding a Github Username will enable the user to access directly using Github.
+    </p>
     <form action="{{ url_for('admin.users') }}" method="post">
         <fieldset>
             <div class="my-1">
                 <input type="hidden" name="target" value="user">
                 <input type="text" name="name" placeholder="Username" class="my-1 custom-input" required>
                 <input type="email" name="email" placeholder="Email" class="my-1 custom-input" required>
+                <input type="text" name="github_username" placeholder="Github Username for OAuth Access (optional)" class="my-1 custom-input"> 
             </div>
             <input type="submit" class="my-1" value="Confirm and Insert">
         </fieldset>
     </form>
-    <h3>Edit email</h3>
+    <h3>Edit user fields</h3>
+    <p class="muted">Leave empty to not alter any field.</p>
     <form action="{{ url_for('admin.users') }}" method="post">
         <fieldset>
             <div class="my-1">
-                <input type="hidden" name="target" value="email">
-                <input type="text" name="user_id" placeholder="User ID" class="my-1 custom-input" required>
-                <input type="email" name="email" placeholder="Email" class="my-1 custom-input" required>
+                <input type="hidden" name="target" value="fields">
+                <select name="user_id" class="my-1" required>
+                    <option disabled selected>Select a user to modify</option>
+                    {% for user in users %}
+                        {% if user.id != user_system_id %}
+                        <option value="{{ user.id }}">{{ user.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                Email: <input type="email" name="email" placeholder="Email" class="my-1 custom-input">
+                Github Username (Remove? <input type="checkbox" name="github_username_remove" value="1">): <input type="text" name="github_username" placeholder="Github Username to enable OAuth Access" class="my-1 custom-input">
             </div>
             <input type="submit" class="my-1" value="Change">
         </fieldset>
@@ -35,6 +51,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Github Username</th>
                 <th>Logs</th>
                 <th>Admin</th>
                 <th>Deleted</th>
@@ -45,25 +62,31 @@
                     <td>#{{ user.id }}</td>
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
+                    <td>{% if user.has_prop("github_username") %}
+                        <a href="https://github.com/{{ user.prop("github_username") }}" target="_blank">{{ user.prop("github_username") }}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
                     <td><a href="{{ url_for('admin.logs', user_id=user.id) }}">Show</a></td>
                     <td>{% if user.admin %}<i class="fas fa-check"></i>{% else %} - {% endif %}</td>
                     <td>{% if user.deleted %}<i class="fas fa-check"></i>{% else %} - {% endif %}</td>
                     <td>
-                        {% if not user.admin %}
+                        {% if not user.admin and user.id != user_system_id %}
                             {% if not user.deleted %}
-                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock">
+                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
                                 <input type="hidden" name="target" value="delete">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                 <input type="submit" value="Delete">
                             </form>
                             {% else %}
-                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock">
+                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
                                 <input type="hidden" name="target" value="undelete">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                 <input type="submit" value="Re-enable">
                             </form>
                             {% endif %}
-                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock">
+                            <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
                                 <input type="hidden" name="target" value="password">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                 <input type="submit" value="Reset password">

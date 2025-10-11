@@ -179,5 +179,5 @@ cython_debug/
 **/__pycache__
 **/*.db
 **/flask_session
-.env
+**/*.env
 **/tmp

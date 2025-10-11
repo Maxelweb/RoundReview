@@ -6,7 +6,22 @@
     {% if output %}
     <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
     {% endif %}
+
+    <h3>Github</h3>
+    <p><strong class="muted">Your Github Username:</strong> {{ user.prop('github_username') }}</p>
+    {% if provider == providers.GITHUB %}
+        <p class="success">You are currently logged-in via Github.</p>
+    {% else %}
+        <p class="primary">You are currently logged-in via internal login, but you can also login via Github.</p>
+    {% endif %}
+    {% if not user.has_prop('github_username') %}
+        <p class="warning">No Github account is currently associated to your account. Ask an admin to add a Github Account.</p>
+    {% endif %}
+
     <h3>Change password</h3>
+    {% if provider != providers.INTERNAL %}
+    <p class="muted">Password change is not available if logged-in via Github.</p>
+    {% else %}
     <form action="{{ url_for('settings.password') }}" method="post">
         <fieldset>
             <div>
@@ -18,6 +33,8 @@
             <input type="reset" class="secondary" value="Reset">
         </fieldset>
     </form>
+    {% endif %}
+    
 
     <h3>Developer</h3>
     <form action="{{ url_for('settings.properties') }}" method="post">

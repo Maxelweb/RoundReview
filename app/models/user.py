@@ -5,6 +5,11 @@ from ..config import log
 class Property(Enum):
     API_KEY = "api_key"
     WEBHOOK_URL = "webhook_url"
+    GITHUB_USERNAME = "github_username"
+
+class LoginProvider(Enum):
+    INTERNAL = "internal"
+    GITHUB = "github"
 
 class User:
     id: int

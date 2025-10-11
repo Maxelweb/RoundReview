@@ -3,7 +3,7 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID, WEBSITE_URL
 from ..database import Database
-from ..models import User, Log, SystemPropertyInfo, SystemProperty
+from ..models import User, Log, SystemPropertyInfo, SystemProperty, Property
 
 admin_blueprint = Blueprint('admin', __name__)
 
@@ -17,13 +17,34 @@ def users():
     user_id = request.form.get('user_id') or request.args.get('user_id')
     user_email = request.form.get('email')
     target = request.form.get('target')
-    check_list = [str(session["user"].id), str(USER_SYSTEM_ID)]
+    check_list = [str(session["user"].id), str(USER_SYSTEM_ID), None]
+    check_list_fields = [str(USER_SYSTEM_ID), None]
     if request.method == "POST":
-        if target == "email" and user_id not in check_list and user_email is not None:
-            db.c.execute('UPDATE user SET email = ? WHERE id = ? LIMIT 1', (user_email,user_id))
-            db.commit()
-            output = ("success", f"User #{user_id} email updated!")
-            db.log(session["user"].id, f"user email update (user_id={user_id})")
+        if target == "fields" and user_id not in check_list_fields:
+            github_username = request.form.get('github_username')
+            github_username_remove = request.form.get('github_username_remove') == "1"
+            updated_fields = []
+            if user_email != "":
+                db.c.execute('UPDATE user SET email = ? WHERE id = ? LIMIT 1', (user_email,user_id))
+                db.commit()
+                updated_fields.append("email")
+            if github_username_remove:
+                db.c.execute('DELETE FROM user_property WHERE user_id = ? AND key = ? LIMIT 1', (user_id, Property.GITHUB_USERNAME.value))
+                db.commit()
+                updated_fields.append("github_username")
+            elif github_username != "":
+                user_res = db.c.execute('SELECT * FROM user WHERE id = ? LIMIT 1', (user_id,)).fetchone()
+                user = User(user_res)
+                user.load_properties_from_db(db)
+                # FIXME: check if a github username is already present
+                if user.has_prop(Property.GITHUB_USERNAME):
+                    db.c.execute('UPDATE user_property SET value = ? WHERE user_id = ? AND key = ? LIMIT 1', (github_username,user_id,Property.GITHUB_USERNAME.value))
+                else:
+                    db.c.execute('INSERT INTO user_property (key, value, user_id) VALUES (?,?,?)', (Property.GITHUB_USERNAME.value,github_username,user_id))
+                db.commit()
+                updated_fields.append("github_username")
+            output = ("success", f"User #{user_id} updated!")
+            db.log(session["user"].id, f"user update (user_id={user_id}, fields={"|".join(updated_fields)})")
         elif target == "undelete" and user_id not in check_list:
             db.c.execute('UPDATE user SET deleted = ? WHERE id = ? LIMIT 1', (0,user_id))
             db.commit()
@@ -50,10 +71,14 @@ def users():
                     output = ("error", "Unable to add user, check the inserted fields.")
                 else:
                     user = User(user_res)
+                    # FIXME: check if a github username is already present
+                    db.c.execute('INSERT INTO user_property (key, value, user_id) VALUES (?,?,?)', (Property.GITHUB_USERNAME.value,request.form["github_username"],user.id))
                     output = ("success", f"New user #{user.id} added with password: {USER_DEFAULT_PASSWORD}")
                     db.log(session["user"].id, f"user add (user_id={user.id})")
     res = db.c.execute('SELECT * FROM user ORDER BY id DESC').fetchall()
     users = [User(row) for row in res]
+    for user in users:
+        user.load_properties_from_db(db)
     db.close()
     return render_template(
         "admin/users.html",
@@ -62,6 +87,7 @@ def users():
         selected_user_id=int(user_id) if user_id is not None else 0,
         title="Users",
         version=VERSION,
+        user_system_id=USER_SYSTEM_ID,
         logged=is_logged(),
         admin=is_logged_admin(),
         user=session["user"],

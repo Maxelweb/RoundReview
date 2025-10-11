@@ -5,7 +5,7 @@ from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin, log
 from ..config import VERSION
 from ..database import Database
-from ..models import User, Property
+from ..models import User, Property, LoginProvider
 
 settings_blueprint = Blueprint('settings', __name__)
 
@@ -28,6 +28,8 @@ def settings():
     return render_template(
         "settings.html",
         user=session["user"],
+        provider=session["provider"],
+        providers=LoginProvider,
         title="Your Settings",
         version=VERSION,
         logged=is_logged(),
@@ -126,6 +128,8 @@ def properties():
     return render_template(
         "settings.html",
         user=session["user"],
+        provider=session["provider"],
+        providers=LoginProvider,
         title="Settings",
         output=output.value,
         version=VERSION,
@@ -163,6 +167,8 @@ def password():
     return render_template(
         "settings.html",
         user=session["user"],
+        provider=session["provider"],
+        providers=LoginProvider,
         title="Settings",
         output=output.value,
         version=VERSION,

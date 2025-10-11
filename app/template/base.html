@@ -32,8 +32,9 @@
             <div class="nav-user">
                 {% if logged %}
                     <span class="nav-user-item">
+                        <strong>{{ user.name }}</strong>
                         <i class="fas fa-user"></i>
-                        <strong>{{ user.name }}</strong></span>
+                    </span>
                     {% if project %}
                         <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
                     {% else %}

@@ -3,10 +3,12 @@
 {% block content %}
 <section class="content">
     <h2>{{ title }}</h2>
-    <p>Welcome to Round Review! <i class="far fa-smile"></i></p> 
+    <p>Welcome to Round Review! <i class="fas fa-smile"></i></p> 
     <p>This is a simple web application to review documents.</p>
     {% if logged %}
         You are logged in.
+    {% else %}
+    Please, ask your administrator to sign-up a user before proceeding to login.
     {% endif %}
 </section>
 {% endblock %}

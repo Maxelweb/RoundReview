@@ -97,6 +97,7 @@ class Database:
             1)
         )
         self.commit()
+        log.warning("Default admin user %s created with password: %s", USER_ADMIN_EMAIL, USER_DEFAULT_PASSWORD)
 
     def __create_tables(self) -> bool:
 

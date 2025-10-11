@@ -2,15 +2,25 @@
 {% set current_nav = "login" %}
 {% block content %}
 <section class="content">
-    <h2>{{ title }}</h2>
-    <p>Insert your credentials to login</p>
-    {% if output %}
-    <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
-    {% endif %}
-    <form action="{{ url_for('basic.login') }}" method="post">
-        <input type="email" name="email" placeholder="Email" class="my-1" required>
-        <input type="password" name="password" placeholder="Password" class="my-1" required>
-        <input type="submit" class="my-2" value="Login">
-    </form>
+    <div class="center">
+        <h2>{{ title }}</h2>
+        {% if output %}
+        <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
+        {% endif %}
+        
+        {% if github_enabled %}
+        <h3>Github login</h3>
+        <p class="muted">The administrator must have already associated your internal account to Github.</p>
+        <a href="{{ url_for('basic.login_redirect_github')}}"><button><i class="fab fa-github"></i> Sign-in using Github</button></a>
+        {% endif %}
+
+        <h3>Basic login</h3>
+        <p class="muted">Insert your credentials to sign-in.</p>
+        <form action="{{ url_for('basic.login') }}" method="post">
+            <input type="email" name="email" placeholder="Email" class="my-1" required>
+            <input type="password" name="password" placeholder="Password" class="my-1" required>
+            <input type="submit" class="my-2" value="Sign-in with credentials">
+        </form>
+    </div>
 </section>
 {% endblock %}
