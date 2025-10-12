@@ -7,18 +7,33 @@
     <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
     {% endif %}
 
-    <h3>Github</h3>
-    <p><strong class="muted">Your Github Username:</strong> {{ user.prop('github_username') }}</p>
-    {% if provider == providers.GITHUB %}
-        <p class="success">You are currently logged-in via Github.</p>
-    {% else %}
-        <p class="primary">You are currently logged-in via internal login, but you can also login via Github.</p>
-    {% endif %}
-    {% if not user.has_prop('github_username') %}
-        <p class="warning">No Github account is currently associated to your account. Ask an admin to add a Github Account.</p>
-    {% endif %}
+    <h3><i class="fas fa-paintbrush muted"></i> Theme</h3>
+    <fieldset>
+        <div>
+            <p class="muted">Change the theme of the website from here. Note that the theme change is saved per browser session.</p>
+            <select id="theme-mode">
+                <option value="dark">Dark Theme</option>
+                <option value="light">Light Theme</option>
+            </select>
+        </div>
+    </fieldset>
 
-    <h3>Change password</h3>
+    <h3><i class="fab fa-github muted"></i> Github</h3>
+    <fieldset>
+        <div>
+            <p><strong class="muted">Your Github Username:</strong> {{ user.prop('github_username') }}</p>
+            {% if provider == providers.GITHUB %}
+                <p class="success">You are currently logged-in via Github.</p>
+            {% else %}
+                <p class="primary">You are currently logged-in via internal login, but you can also login via Github.</p>
+            {% endif %}
+            {% if not user.has_prop('github_username') %}
+                <p class="warning">No Github account is currently associated to your account. Ask an admin to add a Github Account.</p>
+            {% endif %}
+        </div>
+    </fieldset>
+
+    <h3><i class="fas fa-lock muted"></i> Change password</h3>
     {% if provider != providers.INTERNAL %}
     <p class="muted">Password change is not available if logged-in via Github.</p>
     {% else %}
@@ -36,7 +51,7 @@
     {% endif %}
     
 
-    <h3>Developer</h3>
+    <h3><i class="fas fa-code muted"></i> Developer</h3>
     <form action="{{ url_for('settings.properties') }}" method="post">
         <fieldset>
             <div class="my-2">
@@ -76,4 +91,7 @@
         </fieldset>
     </form>
 </section>
+
+<script src="{{ url_for('static', filename='js/settings.js') }}" type="module"></script>
+
 {% endblock %}
