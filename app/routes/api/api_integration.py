@@ -31,9 +31,6 @@ def object_review_get(project_id: str, object_id: str):
 
         if not member_check:
             return {"error": "Forbidden: You are not a member of this project"}, 403
-        
-        if member_check[0] not in [Role.OWNER.value, Role.REVIEWER.value]:
-            return {"error": "Forbidden: You do not have permission to view reviews"}, 403
 
         # Check if the object exists in the project
         object_check = db.c.execute(
@@ -134,7 +131,7 @@ def object_review_create(project_id:str, object_id: str):
             return {"error": "Forbidden: You are not a member of this project"}, 403
         
         if member_check[0] not in [Role.OWNER.value, Role.REVIEWER.value]:
-            return {"error": "Forbidden: You do not have permission to view reviews"}, 403
+            return {"error": "Forbidden: You do not have permission to create reviews"}, 403
 
         # Check if the object exists in the project
         object_check = db.c.execute(

@@ -16,7 +16,7 @@ def view_object(project_id: str, object_id: str):
     project:Project = None
     obj:Object = None
     can_edit = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER, Role.MEMBER] else False
-    can_comment = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER] else False
+    can_review = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER] else False
 
     res, status = project_list()
     if status == 200:
@@ -51,7 +51,7 @@ def view_object(project_id: str, object_id: str):
         logged=is_logged(),
         admin=is_logged_admin(),
         can_edit=can_edit,
-        can_comment=can_comment,
+        can_review=can_review,
         project_role=get_user_role_in_project(project_id),
         object_statuses=ObjectStatus,
         reviews=reviews,

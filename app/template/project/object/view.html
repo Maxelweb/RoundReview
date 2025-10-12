@@ -59,7 +59,7 @@
                     <option value="all">in total</option>
                 </select>
             </h3>
-            <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-comment="{{ can_comment }}" data-author-can-edit="{{ can_edit }}"></span>
+            <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-review="{{ can_review }}" data-author-can-edit="{{ can_edit }}"></span>
             <div id="comments-list" class="comment-list"></div>
         </div>
     </div>
@@ -114,8 +114,8 @@
                                     </button>
                                 </a>
                             {% endif %}
-                            <!-- If user is owner, show the delete button -->
-                            {% if can_edit %}
+                            <!-- If user is owner/reviewer, show the delete button -->
+                            {% if can_review %}
                                 <button type="submit" class="danger small delete-review" data-review-id="{{ review.id }}"><i class="fas fa-trash"></i> Delete review</button>
                             {% endif %}
                         </div>

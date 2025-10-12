@@ -34,8 +34,7 @@ const pageScaleDisplay = document.getElementById("page-scale");
 const totalPageComments = document.getElementById("total-page-comments");
 const buttonEditElement = document.getElementById("edit-object-button");
 
-const commentsEnabled = document.getElementById("author-info").getAttribute("data-author-can-comment") == "True";
-
+const reviewEnabled = document.getElementById("author-info").getAttribute("data-author-can-review") == "True";
 const editingEnabled = document.getElementById("author-info").getAttribute("data-author-can-edit") == "True";
 
 const buttonToggleOutline = document.getElementById("toggle-outline");
@@ -203,7 +202,7 @@ document.addEventListener('keydown', function(event) {
 // Handle PDF Select Status Color
 document.getElementById("status-label").addEventListener("change", () => {
     // Check user permission
-    if (!editingEnabled){
+    if (!reviewEnabled){
         return false;
     }
     putObject("/api/objects/" + pdfObjectId, {"status": document.getElementById("status-label").value}, (error, res) => {
@@ -242,7 +241,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
     const y = event.clientY - rect.top;
 
     // Check user permission
-    if (!commentsEnabled){
+    if (!reviewEnabled){
         return false;
     }
 
@@ -396,7 +395,7 @@ function loadComments(per_page = true) {
                 
                 // Create object
                 commentControl.appendChild(goToBtn);
-                if (commentsEnabled) {
+                if (reviewEnabled) {
                     commentControl.appendChild(resolveBtn);
                     commentControl.appendChild(deleteBtn);
                 }
@@ -440,9 +439,15 @@ if (buttonsDeleteReview.length > 0) {
 // ======================= On Load =======================
 
 document.addEventListener('DOMContentLoaded', function () {
+    
+    // Update color of status
     updateStatusColor();
-    if (!editingEnabled){
+    
+    // Check permissions
+    if (!reviewEnabled){
         selectStatusElement.disabled = true;
+    }
+    if (!editingEnabled){
         buttonEditElement.hidden = true;
     }
     

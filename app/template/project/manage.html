@@ -61,9 +61,9 @@
                 <th><label for="projectUserRole">Role</label></th>
                 <td>
                     <select id="projectUserRole" name="role" required class="my-1">
-                        <option value="{{ role.MEMBER.value }}">{{ role.MEMBER.value }} - Can add and edit files</option>
-                        <option value="{{ role.REVIEWER.value }}">{{ role.REVIEWER.value }} - Can add, edit and comment files</option>
-                        <option value="{{ role.OWNER.value }}">{{ role.OWNER.value }} - Can add, edit and comment files; Can manage users</option>
+                        <option value="{{ role.MEMBER.value }}">{{ role.MEMBER.value }} - Can view, add and edit files</option>
+                        <option value="{{ role.REVIEWER.value }}">{{ role.REVIEWER.value }} - Can view, add, edit and comment files</option>
+                        <option value="{{ role.OWNER.value }}">{{ role.OWNER.value }} - Can view, add, edit and comment files; Can manage project</option>
                     </select>
                 </td>
             </tr>
