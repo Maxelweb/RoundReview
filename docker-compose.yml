@@ -8,9 +8,25 @@ services:
     volumes:
       - sessions:/app/flask_session:rw
       - ./database:/app/database:rw
-      - ./app:/app/app
+      - ./app:/app/app # To remove
     env_file:
       - dev.env
+
+  roundreview_pdf_notary_bot:
+    container_name: "roundreview_pdf_notary_bot"
+    build: ./plugins/pdf-notary-bot
+    restart: unless-stopped
+    ports: 
+      - "8081:8081"
+    volumes:
+      - ./plugins/pdf-notary-bot:/app # To remove
+      - ./tmp/pdf-notary-bot/certs:/certs # To update
+      - ./tmp/pdf-notary-bot/signed_pdfs:/signed_pdfs # To update
+    environment:
+      - DEBUG=1
+      - API_KEY=
+      - API_BASE_URL=http://roundreview_app:8080/api
+      - PLUGIN_BASE_URL=http://localhost:8081
 
 volumes:
   sessions:

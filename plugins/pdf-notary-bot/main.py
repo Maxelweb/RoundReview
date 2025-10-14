@@ -67,13 +67,13 @@ def handle_webhook():
         signature_meta=PdfSignatureMetadata(field_name='Signature1'),
     )
 
-    output_path = f"signed_pdfs/{object_id}.pdf"
+    output_path = f"{PLUGIN_SIGNED_PDFS_FOLDER}/{object_id}.pdf"
     with open(output_path, "wb") as f:
         f.write(signed_pdf.getbuffer())
 
-    log.info("Saved PDF for Object ID = %s and Project ID = ", object_id, project_id)
+    log.info("Saved PDF for Object ID = %s and Project ID = %s", object_id, project_id)
 
-    encoded_object = str(base64.urlsafe_b64encode(bytes(object_id, "utf-8")))
+    encoded_object = base64.urlsafe_b64encode(bytes(object_id, "utf-8")).decode("utf-8")
 
     res = requests.post(
         url=f"{API_BASE_URL}/projects/{project_id}/objects/{object_id}/integrations/reviews",
@@ -115,8 +115,9 @@ def handle_download(base64_object_id:str):
     if res.status_code != 200:
         return {"error": "Failed to fetch PDF information"}, 500
 
-    object = res.json().object
-
+    # load json object into a SimpleNamespace
+    object = json.loads(json.dumps(res.json()), object_hook=lambda d: SimpleNamespace(**d)).object
+    
     with open(file_path, "rb") as f:
         pdf_data = f.read()
 

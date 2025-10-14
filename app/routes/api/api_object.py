@@ -198,8 +198,7 @@ def object_get(object_id: str, load_raw: bool=False):
             # encode data to base64 to be JSON serializable
             if obj.raw is not None:
                 obj.raw = str(base64.b64encode(obj.raw), "utf-8")
-
-
+                
         return {"object": obj.to_dict()}, 200
 
     except Exception as e:
