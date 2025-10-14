@@ -1,4 +1,4 @@
-import uuid, json, datetime
+import uuid, json, datetime, base64
 from flask import request, session, Blueprint, current_app
 from ..utils import is_logged, get_system_property, get_user_from_api_key, check_authentication, get_user_webhooks, call_webhook
 from ...config import log, SYSTEM_MAX_UPLOAD_SIZE_MB, VERSION
@@ -195,6 +195,10 @@ def object_get(object_id: str, load_raw: bool=False):
         # Load raw data if available
         if load_raw:
             obj.load_raw(db)
+            # encode data to base64 to be JSON serializable
+            if obj.raw is not None:
+                obj.raw = str(base64.b64encode(obj.raw), "utf-8")
+
 
         return {"object": obj.to_dict()}, 200
 

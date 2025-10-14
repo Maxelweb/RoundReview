@@ -16,7 +16,7 @@ class ResultMessage(Enum):
     SESSION_RELOAD_ERROR = ("error", "Unable to re-load session, please logout.")
     PASSWORD_UPDATE_SUCCESS = ("success", "Password changed successfully.")
     DEVELOPER_UPDATE_SUCCESS = ("success", "Developer settings updated successfully.")
-    DEVELOPER_WEBHOOK_ERROR = ("error", "The URL is not reachable correctly. Make sure the return http status code is 200.")
+    DEVELOPER_WEBHOOK_ERROR = ("error", "The URL is not reachable correctly. Make sure the URL returns an http status code.")
 
 
 @settings_blueprint.route("/settings", methods=["GET"])
@@ -99,7 +99,7 @@ def properties():
             except Exception as e:
                 log.error(f"Webhook URL validation error: {e}")
 
-            if status_code != 200:
+            if status_code is None or status_code < 200:
                 output = ResultMessage.DEVELOPER_WEBHOOK_ERROR
             else:
                 if user.has_prop(Property.WEBHOOK_URL):

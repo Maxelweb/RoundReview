@@ -1,3 +1,4 @@
+import base64
 from types import SimpleNamespace
 from flask import render_template, request, session, Blueprint
 from .utils import is_logged, is_logged_admin
@@ -62,13 +63,12 @@ def get_file(project_id: str, object_id: str):
     """ Serve the file associated with the object """
     # Fetch object details with raw data
     res, status = object_get(object_id, load_raw=True)
-    # log.debug("get_file - object details: ", status)
     if status == 200:
         obj = Object.from_dict(res["object"])
-        # print(obj.raw)
         if obj.raw is not None:
+            raw_object = base64.b64decode(obj.raw)
             return (
-                obj.raw,
+                raw_object,
                 200,
                 {
                     "Content-Type": "application/pdf",

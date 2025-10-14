@@ -90,7 +90,6 @@ def object_review_create(project_id:str, object_id: str):
         required_keys = {"name", "value"}
         if not required_keys.issubset(data.keys()):
             return {"error": f"Bad Request: Missing required keys: {required_keys - data.keys()}"}, 400
-
         
         # Validate input types and lengths
         name = data["name"]
@@ -156,8 +155,8 @@ def object_review_create(project_id:str, object_id: str):
             (object_id, user_id)
         ).fetchone()
 
-        # if existing_review:
-        #     return {"error": "Conflict: You have already created a review for this object. Remove or update the current review."}, 409
+        if existing_review:
+            return {"error": "Conflict: You have already created a review for this object. Remove or update the current review."}, 409
 
         # Create new object integration review
         review_id = str(uuid.uuid4())

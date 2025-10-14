@@ -79,7 +79,7 @@ class Object:
             comments=data["comments"],
             version=data["version"],
             status=data["status"],
-            raw=data.get("raw", None),
+            raw=data.get("raw", None), # Optional raw data in base64
             upload_date=data["upload_date"],
             update_date=data["update_date"],
         )
