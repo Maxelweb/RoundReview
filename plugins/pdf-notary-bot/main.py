@@ -3,8 +3,10 @@ import base64
 import requests
 from types import SimpleNamespace
 from flask import Flask, request, jsonify
-from pyhanko.sign import SimpleSigner, sign_pdf, PdfSignatureMetadata
+from pyhanko.sign import SimpleSigner, PdfSignatureMetadata, fields, signers
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
+from pyhanko.pdf_utils import text
+from pyhanko import stamp
 from config import (
     log,
     DEBUG,
@@ -61,11 +63,19 @@ def handle_webhook():
             log.warning("Notification valid, but NO_SIGNATURE found in description. Aborted.")
             return {"message": "Notification valid, but NO_SIGNATURE found in description. Aborted."}, 200
     
-    signed_pdf = sign_pdf(
-        IncrementalPdfFileWriter(io.BytesIO(base64.urlsafe_b64decode(object.raw))),
+    # Sign the PDF
+    pdf_writer = IncrementalPdfFileWriter(io.BytesIO(base64.urlsafe_b64decode(object.raw)), strict=False)
+    fields.append_signature_field(pdf_writer, sig_field_spec=fields.SigFieldSpec('Signature1', box=(400,60,10,10)))
+    pdf_meta = PdfSignatureMetadata(field_name='Signature1')
+    pdf_signer = signers.PdfSigner(
+        signature_meta=pdf_meta,
         signer=build_signer(),
-        signature_meta=PdfSignatureMetadata(field_name='Signature1'),
+        stamp_style=stamp.TextStampStyle(
+            background=None,
+            stamp_text="(!) Document digitally signed by %(signer)s\nTime: %(ts)s\nNOTE: the certificate is self-signed; verify it with the signer.",
+        ),
     )
+    signed_pdf = pdf_signer.sign_pdf(pdf_writer)
 
     output_path = f"{PLUGIN_SIGNED_PDFS_FOLDER}/{object_id}.pdf"
     with open(output_path, "wb") as f:
