@@ -4,7 +4,7 @@ from ..models import Object, User, Property, SystemProperty, Role
 from ..config import USER_SYSTEM_ID, log
 from ..database import Database
 
-# TODO: this must be refactored
+# TODO: future improvement - this should be refactored
 
 def is_logged():
     return "user" in session.keys()

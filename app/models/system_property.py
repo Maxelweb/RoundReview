@@ -1,6 +1,7 @@
 from enum import Enum
 
 class SystemProperty(Enum):
+    """ System properties """
     PROJECT_CREATE_DISABLED = "PROJECT_CREATE_DISABLED"
     OBJECT_DELETE_DISABLED = "OBJECT_DELETE_DISABLED"
     USER_LOGIN_DISABLED = "USER_LOGIN_DISABLED"
@@ -23,6 +24,7 @@ class SystemProperty(Enum):
         return False
 
 class SystemPropertyInfo(Enum):
+    """ System properties information """
     PROJECT_CREATE_DISABLED = "If TRUE, project creation is disabled for any user, FALSE by default."
     OBJECT_DELETE_DISABLED = "If TRUE, object delete is disabled for any user. FALSE by default"
     USER_LOGIN_DISABLED = "If TRUE, only admins can sign in. FALSE by default"

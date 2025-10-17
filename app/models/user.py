@@ -3,15 +3,18 @@ from ..database import Database
 from ..config import log
 
 class Property(Enum):
+    """ User properties enumerators """
     API_KEY = "api_key"
     WEBHOOK_URL = "webhook_url"
     GITHUB_USERNAME = "github_username"
 
 class LoginProvider(Enum):
+    """ Platform Providers enumerators """
     INTERNAL = "internal"
     GITHUB = "github"
 
 class User:
+    """ Platform User model """
     id: int
     name: str
     email: str

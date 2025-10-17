@@ -1,18 +1,10 @@
 from dataclasses import dataclass
-from enum import Enum
+from .role import Role
 
-class Role(Enum):
-    NO_ROLE = "No Role"
-    MEMBER = "Member"
-    REVIEWER = "Reviewer"
-    OWNER = "Owner"
-
-    @staticmethod
-    def values() -> list:
-        return list(map(lambda t: t.value, Role))
 
 @dataclass
 class ProjectUser:
+    """ Project User Model """
     project_id: int
     user_id: int
     role: Role | None

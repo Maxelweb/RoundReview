@@ -3,6 +3,7 @@ from .user import User
 from ..database import Database
 
 class ObjectStatus(Enum):
+    """ Status enumerator for Objects """
     NO_REVIEW = "No Review"
     PENDING_REVIEW = "Pending Review"
     UNDER_REVIEW = "Under Review"
@@ -26,7 +27,7 @@ class ObjectStatus(Enum):
         if status == status.APPROVED: return "#60a531"
 
 class Object:
-
+    """ Object model """
     DATE_FORMAT = "%Y-%m-%d, %H:%M"
 
     def __init__(self, id: str, path: int, user_id: int, project_id: int, name: str, 

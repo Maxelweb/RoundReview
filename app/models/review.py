@@ -1,6 +1,6 @@
 
 class Review:
-
+    """ Review model to use for objects """
     def __init__(self, 
                 id: str, 
                 name: str,

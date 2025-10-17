@@ -7,8 +7,6 @@ from ...models import Role, Review
 
 api_integration_bp = Blueprint('api_integration', __name__)
 
-# TODO: only reviewers or owners of that object can interact with these APIs
-
 @api_integration_bp.route("/api/projects/<project_id>/objects/<object_id>/integrations/reviews", methods=["GET"])
 def object_review_get(project_id: str, object_id: str):
     """ Get all integration reviews for an object from a project """

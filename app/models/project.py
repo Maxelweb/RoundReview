@@ -3,6 +3,7 @@ from typing import Optional
 
 @dataclass
 class Project:
+    """ Project model """
     id: Optional[int]
     title: str
     deleted: int = 0
