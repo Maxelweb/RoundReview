@@ -80,7 +80,7 @@
                         </th>
                         <td>
                             <input type="url" class="inline raw my-1" value="{% if user.prop('webhook_url') != None %} {{ user.prop('webhook_url') }} {% endif %}" name="webhook_url" placeholder="Enter a reachable URL (e.g. https://mywebsite/event/handler)"> 
-                            <p class="small block muted">If you are the reviewer or the owner of the project, you can get a POST notification if the <strong>document status is updated</strong> <br>(e.g. from "No Review" -> "Pending Review"). </p>
+                            <p class="small block muted">If you are a member of the project, you can get a POST notification if the <strong>document status is updated</strong> <br>(e.g. from "No Review" -> "Pending Review"). </p>
                         </td>
                     </tr>
                 </table>

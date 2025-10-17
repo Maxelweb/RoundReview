@@ -112,7 +112,7 @@ def get_user_webhooks(project_id:int) -> dict:
         WHERE up.key = ? AND up.user_id IN (
             SELECT pu.user_id
             FROM project_user pu
-            WHERE pu.project_id = ? AND pu.role IN (?, ?)
+            WHERE pu.project_id = ? AND pu.role IN (?, ?, ?)
         ) AND up.user_id != ?
         ''',
         (
@@ -120,6 +120,7 @@ def get_user_webhooks(project_id:int) -> dict:
             project_id,
             Role.OWNER.value,
             Role.REVIEWER.value,
+            Role.MEMBER.value,
             USER_SYSTEM_ID
         )
     ).fetchall()
