@@ -174,7 +174,7 @@ class Database:
                 "id" CHAR(36),
                 "name" VARCHAR(32) NOT NULL, 
                 "icon" VARCHAR(32) DEFAULT NULL,
-                "url" VARCHAR(128) DEFAULT NULL,
+                "url" VARCHAR(255) DEFAULT NULL,
                 "url_text" VARCHAR(64) DEFAULT NULL, 
                 "value" TEXT NOT NULL,
                 "created_at" TEXT DEFAULT CURRENT_TIMESTAMP,
