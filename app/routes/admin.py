@@ -38,9 +38,9 @@ def users():
                 user.load_properties_from_db(db)
                 # FIXME: check if a github username is already present
                 if user.has_prop(Property.GITHUB_USERNAME):
-                    db.c.execute('UPDATE user_property SET value = ? WHERE user_id = ? AND key = ? LIMIT 1', (github_username,user_id,Property.GITHUB_USERNAME.value))
+                    db.c.execute('UPDATE user_property SET value = ? WHERE user_id = ? AND key = ? LIMIT 1', (github_username.casefold(),user_id,Property.GITHUB_USERNAME.value))
                 else:
-                    db.c.execute('INSERT INTO user_property (key, value, user_id) VALUES (?,?,?)', (Property.GITHUB_USERNAME.value,github_username,user_id))
+                    db.c.execute('INSERT INTO user_property (key, value, user_id) VALUES (?,?,?)', (Property.GITHUB_USERNAME.value,github_username.casefold(),user_id))
                 db.commit()
                 updated_fields.append("github_username")
             output = ("success", f"User #{user_id} updated!")

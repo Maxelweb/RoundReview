@@ -78,12 +78,12 @@ def login_callback_github():
             
         resp = github.get('user')
         profile = resp.json()
-        github_username = profile['login']
+        github_username:str = profile['login']
 
         db = Database()
         res = db.c.execute(
             'SELECT u.* FROM user u, user_property up ON u.id = up.user_id WHERE up.key = ? AND up.value = ? AND u.admin >= 0 AND u.deleted = 0 LIMIT 1', 
-            (Property.GITHUB_USERNAME.value, github_username,)
+            (Property.GITHUB_USERNAME.value, github_username.casefold(),)
         ).fetchone()
         if not res:
             output = ("error", "No internal user is associated with your GitHub account. Please ask the administrator to add you.")
