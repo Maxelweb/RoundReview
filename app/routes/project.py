@@ -33,6 +33,7 @@ def get_user_role_in_project(project_id:str) -> Role:
 
 project_blueprint = Blueprint('project', __name__)
 
+
 @project_blueprint.route('/projects', methods=["GET"])
 def list():
     """ List projects """
@@ -54,6 +55,7 @@ def list():
         admin=is_logged_admin()
     )
 
+
 @project_blueprint.route('/projects/create', methods=["GET", "POST"])
 def create():
     """ Create a new project """
@@ -74,6 +76,7 @@ def create():
         admin=is_logged_admin()
     )
 
+
 @project_blueprint.route('/projects/<project_id>/', methods=["GET", "POST"])
 def view_objects(project_id:str):
     """ View the objects of a specific project or Delete an object from the same project """
@@ -85,7 +88,7 @@ def view_objects(project_id:str):
     project = None
 
     # Object deletion
-    if request.args.get("delete", None) == "1" and object_id is not None:
+    if request.method == "POST" and request.args.get("delete", None) == "1" and object_id is not None:
         res, status = object_delete(object_id)
         if status == 200:
             output = ("success", res["message"])
@@ -101,7 +104,6 @@ def view_objects(project_id:str):
         objects = [Object.from_dict(elem) for elem in res["objects"]]
         tree = build_object_tree(objects)
         last_objects = sorted(objects, key=lambda obj: obj.update_date, reverse=True)[:5]
-        log.debug("view_objects - tree: %s", tree)
     else:
         output = ("error", res["error"])
 
@@ -120,6 +122,7 @@ def view_objects(project_id:str):
         role=Role,
         project_role=get_user_role_in_project(project_id),
     )
+
 
 @project_blueprint.route('/projects/<project_id>/create', methods=["GET", "POST"])
 def create_object(project_id:str):
@@ -147,6 +150,7 @@ def create_object(project_id:str):
         admin=is_logged_admin(),
         project_role=get_user_role_in_project(project_id),
     )
+
 
 @project_blueprint.route('/projects/<project_id>/manage', methods=["GET", "POST"])
 def manage_project(project_id:str):

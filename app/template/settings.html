@@ -37,7 +37,7 @@
     {% if provider != providers.INTERNAL %}
     <p class="muted">Password change is not available if logged-in via Github.</p>
     {% else %}
-    <form action="{{ url_for('settings.password') }}" method="post">
+    <form action="{{ url_for('settings.update_password') }}" method="post">
         <fieldset>
             <div>
                 <input type="password" name="old_password" min="4" placeholder="Old password" class="my-1" required>
@@ -52,7 +52,7 @@
     
 
     <h3><i class="fas fa-code muted"></i> Developer</h3>
-    <form action="{{ url_for('settings.properties') }}" method="post">
+    <form action="{{ url_for('settings.update_properties') }}" method="post">
         <fieldset>
             <div class="my-2">
                 <input type="checkbox" name="enable_api_key" id="enableApiKey" value="1"

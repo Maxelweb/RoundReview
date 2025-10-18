@@ -36,8 +36,9 @@ def settings():
         admin=is_logged_admin(),
     )
 
+
 @settings_blueprint.route("/settings/properties", methods=["POST"])
-def properties():
+def update_properties():
     """ Submit properties update page """
     output = ""
     if not is_logged():
@@ -138,7 +139,7 @@ def properties():
     )
 
 @settings_blueprint.route("/settings/password", methods=["POST"])
-def password():
+def update_password():
     """ Submit Password update page """
     output = ""
     if not is_logged():

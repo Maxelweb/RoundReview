@@ -1,11 +1,13 @@
 from flask import render_template, request, session, redirect, Blueprint, url_for, current_app
 from .utils import is_logged, is_logged_admin
-from ..config import VERSION, log, USER_SYSTEM_ID, GITHUB_OAUTH_ENABLED
+from ..config import VERSION, log, GITHUB_OAUTH_ENABLED
 from ..database import Database
 from ..models import User, Log, SystemProperty, Property, LoginProvider
 from .utils import get_system_property
 
+
 basic_blueprint = Blueprint('basic', __name__)
+
 
 @basic_blueprint.route('/')
 def index():
@@ -18,6 +20,7 @@ def index():
         admin=is_logged_admin(),
         user=session["user"] if is_logged() else None,
     )
+
 
 @basic_blueprint.route("/login", methods=["POST", "GET"])
 def login():
@@ -59,6 +62,7 @@ def login():
         title="Login",
     )
 
+
 @basic_blueprint.route("/login/redirects/github")
 def login_redirect_github():
     """ Login using Github OAuth """
@@ -66,6 +70,7 @@ def login_redirect_github():
         return redirect("/")
     redirect_uri = url_for('basic.login_callback_github', _external=True)
     return current_app.oauth.create_client('github').authorize_redirect(redirect_uri)
+
 
 @basic_blueprint.route("/login/callbacks/github")
 def login_callback_github():

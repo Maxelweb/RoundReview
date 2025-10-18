@@ -8,11 +8,14 @@ from ..models import Project, Object, ObjectStatus, Role, Review
 from .api import project_list, object_get, object_update, object_review_get
 from .project import get_user_role_in_project
 
+
 object_blueprint = Blueprint('object', __name__)
+
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>', methods=["GET"])
 def view_object(project_id: str, object_id: str):
     """ View and handle the object of a specific project """
+
     output = ()
     project:Project = None
     obj:Object = None
@@ -58,10 +61,10 @@ def view_object(project_id: str, object_id: str):
         reviews=reviews,
     )
 
+
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>/file', methods=["GET"])
 def get_file(project_id: str, object_id: str):
     """ Serve the file associated with the object """
-    # Fetch object details with raw data
     res, status = object_get(object_id, load_raw=True)
     if status == 200:
         obj = Object.from_dict(res["object"])
@@ -76,9 +79,9 @@ def get_file(project_id: str, object_id: str):
                 }
             )
         else:
-            return "PDF content not found", 404
+            return {"error": "PDF content not found"}, 404
     else:
-        return f"Error fetching object: {res['error']}", status
+        return {"error": f"Error fetching object: {res['error']}"}, status
 
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>/edit', methods=["GET", "POST"])
@@ -87,7 +90,8 @@ def edit_object(project_id: str, object_id: str):
     output = ()
     obj:Object = None
     can_edit = True if get_user_role_in_project(project_id) in [Role.OWNER, Role.REVIEWER, Role.MEMBER] else False
-        
+
+    # Update documentation
     if request.method == "POST":
         res, status = object_update(request.form.get('object_id', None))
         if status == 200:
