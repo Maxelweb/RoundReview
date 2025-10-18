@@ -1,6 +1,8 @@
 import hashlib
 import random
 import datetime
+import re
+from pathlib import Path
 from sqlite3 import connect, Cursor, Error
 from .config import (
     log, 
@@ -25,10 +27,10 @@ class Database:
         self._cursor = self._client.cursor()
     
     def initialize(self) -> None:
-        if self.__create_tables():
-            log.warning("Database initialized with tables")
+        if self.__update_db_schema_version():
+            log.info("Database schema version initialized / updated correctly!")
         else:
-            log.fatal("Unable to create tables in database")
+            log.fatal("Unable to update schema in the database. Please check the logs.")
             exit(1)
         
         if self.c.execute("SELECT name FROM user WHERE admin = -1").fetchone() is None:
@@ -99,99 +101,73 @@ class Database:
         self.commit()
         log.warning("Default admin user %s created with password: %s", USER_ADMIN_EMAIL, USER_DEFAULT_PASSWORD)
 
-    def __create_tables(self) -> bool:
+    def __update_db_schema_version(self) -> bool:
 
-        tables_to_create = ["log", "user", "user_property", "project", "project_user", "object", "object_integration_review"]
+        schemas = []
+        has_db_version = self.c.execute("SELECT 1 FROM sqlite_master WHERE name = 'rr_db_version'").fetchone()
+        schema_dir = Path(__file__).resolve().parent / "schema"
 
-        self.c.execute('''
-            CREATE TABLE IF NOT EXISTS "log" (
-                "id"	INTEGER,
-                "date"	TEXT NOT NULL,
-                "user_id" INTEGER,
-                "action" TEXT NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT),
-                FOREIGN KEY("user_id") REFERENCES "user"("id")
-            ); 
-        ''')
-        self.commit()
-        self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "user" (
-                "id"	INTEGER,
-                "name"	VARCHAR(32) UNIQUE,
-                "email"	VARCHAR(64) UNIQUE,
-                "password"	TEXT NOT NULL,
-                "admin"	INTEGER DEFAULT 0,
-                "deleted" INTEGER DEFAULT 0,
-                PRIMARY KEY("id" AUTOINCREMENT)
-            );
-        ''')
-        self.commit()
-        self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "user_property" (
-                "key"	VARCHAR(32) NOT NULL,
-                "value"	TEXT NOT NULL,
-                "user_id" INTEGER REFERENCES user(id)
-            );
-        ''')
-        self.commit()
-        self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "project" (
-                "id"	INTEGER,
-                "title"	TEXT NOT NULL,
-                "deleted" INTEGER DEFAULT 0,
-                PRIMARY KEY("id" AUTOINCREMENT)
-            );
-        ''')
-        self.commit()
-        self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "project_user" (
-                "project_id" INTEGER REFERENCES project(id),
-                "user_id" INTEGER REFERENCES user(id),
-                "role" VARCHAR(32) NOT NULL
-            );
-        ''')
-        self.commit()
-        self.c.execute('''                        
-            CREATE TABLE IF NOT EXISTS "object" (
-                "id" CHAR(36),
-                "path" TEXT NOT NULL,
-                "user_id" INTEGER REFERENCES user(id),
-                "project_id" INTEGER REFERENCES project(id),
-                "name" TEXT NOT NULL,
-                "description" TEXT DEFAULT NULL,
-                "raw" BLOB DEFAULT NULL,
-                "comments" TEXT DEFAULT NULL,
-                "version" VARCHAR(64) DEFAULT NULL,
-                "status" VARCHAR(32) DEFAULT NULL,
-                "upload_date" TEXT DEFAULT CURRENT_TIMESTAMP,
-                "update_date" TEXT DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY("id")
-            );
-        ''')
-        self.commit()
-        self.c.execute('''
-            CREATE TABLE IF NOT EXISTS "object_integration_review" (
-                "id" CHAR(36),
-                "name" VARCHAR(32) NOT NULL, 
-                "icon" VARCHAR(32) DEFAULT NULL,
-                "url" VARCHAR(255) DEFAULT NULL,
-                "url_text" VARCHAR(64) DEFAULT NULL, 
-                "value" TEXT NOT NULL,
-                "created_at" TEXT DEFAULT CURRENT_TIMESTAMP,
-                "user_id" INTEGER REFERENCES user(id), 
-                "object_id" INTEGER REFERENCES object(id),
-                PRIMARY KEY("id")
-            );
-        ''')
-        self.commit()
-        raw_tables = self.c.execute("SELECT name FROM sqlite_master").fetchall()
-        if raw_tables is None:
+        # Get all the schemas and corresponding ids
+        if not schema_dir.exists() or not schema_dir.is_dir():
+            log.fatal("Database schema directory not found: %s", schema_dir)
             return False
+
+        for p in schema_dir.iterdir():
+            if not p.is_file():
+                continue
+            m = re.match(r"^(\d+)", p.name)
+            if not m:
+                continue
+            try:
+                ver = int(m.group(1))
+            except ValueError:
+                continue
+            schemas.append((ver, p))
+
+        schemas.sort(key=lambda x: x[0])
+        latest_version = schemas[-1][0] if schemas else -1
+
+        # Check for first installation and current db version
+        if has_db_version is None:
+            current_version = -1
+        else:
+            db_version = self.c.execute("SELECT id FROM rr_db_version ORDER BY id DESC LIMIT 1").fetchone()
+            current_version = db_version[0] if db_version else -1
+        
+        # Evaluate action based on the db version and the schema version
+        if current_version == latest_version:
+            log.info("Database schema up-to-date (version %s)", current_version)
+        elif current_version > latest_version:
+            log.warning("Database version (%s) has a higher schema version than the available (%s). Something is wrong. Please, make sure you are using the latest version of the application.", current_version, latest_version)
+            return False
+        elif current_version < latest_version:
+            log.warning("Database version ID=%s is older than latest schema ID=%s, applying updates...", current_version, latest_version)
+            for ver, path in schemas:
+                if ver <= current_version:
+                    continue
+                try:
+                    sql = path.read_text()
+                    self.c.executescript(sql)
+                    self.commit()
+                    log.info("Database: applied schema %s", path.name)
+                except Error as e:
+                    log.fatal("Database: failed to apply schema %s: %s", path.name, e)
+                    return False
+
+        # Check for required tabels
+        required_tables = ["rr_db_version", "log", "user", "user_property", "project", "project_user", "object", "object_integration_review"]
+        raw_tables = self.c.execute("SELECT name FROM sqlite_master").fetchall()
+
+        if raw_tables is None:
+            log.info("Database: unable to find all required tables. Please check the logs.")
+            return False
+        
         tables = [table[0] for table in raw_tables]
         log.debug("Checking tables creation...")
-        if not all(t in tables for t in tables_to_create):
-            log.warning("Failed to create the following tables: %s", ", ".join([t for t in tables_to_create if t not in tables]))
+        if not all(t in tables for t in required_tables):
+            log.warning("Failed to find the following required tables: %s", ", ".join([t for t in required_tables if t not in tables]))
             return False
+        
         return True
     
     
