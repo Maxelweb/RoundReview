@@ -182,4 +182,5 @@ cython_debug/
 **/tmp
 **/docker-compose.custom.yml
 **/docker-compose.override.yml
-!template.env
+!template.**.env
+**/*.pem
