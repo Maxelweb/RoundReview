@@ -175,9 +175,11 @@ cython_debug/
 
 
 # Others
-
 **/__pycache__
 **/*.db
 **/flask_session
 **/*.env
 **/tmp
+**/docker-compose.custom.yml
+**/docker-compose.override.yml
+!template.env

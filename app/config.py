@@ -7,7 +7,6 @@ DEBUG = os.environ.get('DEBUG') is not None or False
 USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
 USER_DEFAULT_PASSWORD = os.environ.get('RR_DEFAULT_USER_PASSWORD') or secrets.token_hex(16)
-WEBSITE_URL = os.environ.get('RR_WEBSITE_URL') or "localhost"
 
 GITHUB_OAUTH_ENABLED = os.environ.get('GITHUB_OAUTH_ENABLED') is not None or False
 GITHUB_OAUTH_CLIENT_ID = os.environ.get('GITHUB_OAUTH_CLIENT_ID') or None
