@@ -40,10 +40,10 @@ def settings():
 @settings_blueprint.route("/settings/properties", methods=["POST"])
 def update_properties():
     """ Submit properties update page """
-    output = ""
     if not is_logged():
         return redirect("/")
     
+    output = ()
     user:User = session["user"]
     db = Database()
 
@@ -141,9 +141,9 @@ def update_properties():
 @settings_blueprint.route("/settings/password", methods=["POST"])
 def update_password():
     """ Submit Password update page """
-    output = ""
     if not is_logged():
         return redirect("/")
+    output = ()
     db = Database()
     old_psw = request.form.get('old_password')
     new_psw = request.form.get('new_password')

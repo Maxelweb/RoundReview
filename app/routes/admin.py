@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
-from ..config import VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID, WEBSITE_URL
+from ..config import VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID
 from ..database import Database
 from ..models import User, Log, SystemPropertyInfo, SystemProperty, Property
 
