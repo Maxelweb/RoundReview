@@ -191,9 +191,7 @@ def handle_download(base64_code:str):
         status=200,
         mimetype='application/pdf',
     )
-    # response.headers.set('Content-Disposition', 'attachment', filename=f'{object.name} - signed.pdf')
-    #change headers to online view
-    response.headers.set('Content-Disposition', 'inline', filename=f'{object.name} - signed.pdf')
+    response.headers.set('Content-Disposition', 'attachment', filename=f'{object.name} - signed.pdf')
     return response
 
 

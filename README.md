@@ -4,20 +4,23 @@ Round Review is a PDF platform to manage documents and reviews with collaborator
 
 ## Features
 
-- Create and manage projects with documents
-- Invite and manage users for each project
-- Upload, view and edit PDFs (it also comes with a night mode!)
-- Click & comment on PDF for reviewers and project owners
-- Multi-theme support (light/dark)
-- Basic and advanced user access (with also Github OAuth integration)
-- Notifications and webhook support
-- API based: access everything with documented public APIs 
-    - (documentation under work)
-- Docker-based deployment configurable via .env
-- System admin panel management with audit logs
-- Bot Integration Review: support for external bots with 3rd-party API for document reviews
-    - E.g. #1 - When a document is `Approved`, apply a signature to the PDF.
-    - E.g. #2 - You can create your own AI integration to perform LLM-based reviews.
+- 📁 **Create and manage projects** with PDF documents  
+- 👥 **Invite and manage users** in each project  
+- 📄 **Upload, view, and edit PDFs**  
+  - Includes **night mode** for comfortable viewing
+- 💬 **Click & comment on PDFs** for reviewers and project owners  
+- 🎨 **Multi-theme support** (light/dark)  
+- 🔐 **Basic and advanced user access**  
+  - Includes **GitHub OAuth integration**  
+- 🔔 **Webhook support** for notifications  
+- 🔌 **API-based access** to all features  
+  - 📚 Documentation is currently under development  
+- 🐳 **Docker-based deployment** configurable via `.env`  
+- 🛡️ **System admin panel** with audit logs  
+- 🤖 **Bot Integration Review**  
+  - Supports external bots via 3rd-party API for document reviews  
+    - 📝 *Example 1:* When a document is `Approved`, apply a signature to the PDF  
+    - 🧠 *Example 2:* Create your own AI integration for LLM-based summaries and reviews  
 
 ## Installation
 

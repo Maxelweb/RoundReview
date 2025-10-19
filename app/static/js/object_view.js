@@ -185,9 +185,9 @@ document.getElementById("reset-scale").addEventListener("click", () => {
 
 // Handle prev page and next page with left / right keys
 document.addEventListener('keydown', function(event) {
-    if (commentTextarea.style.display != 'none')
+    if (commentTextarea.style.display != '' && commentTextarea.style.display != 'none') {
         return;
-
+    }
     switch (event.key) {
         case 'ArrowLeft':
             pdfPrevPage();

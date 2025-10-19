@@ -349,7 +349,6 @@ def object_update(object_id: str):
 
         # Build the update query dynamically
         update_query = "UPDATE object SET update_date = CURRENT_TIMESTAMP, " + ", ".join(f"{key} = ?" for key in updates.keys()) + " WHERE id = ?"
-
         db.c.execute(update_query, (*updates.values(), object_id))
         db.commit()
         db.log(user_id, f"project object update (project_id={project_id}, keys={"|".join(f"{key}" for key in updates.keys())})")
