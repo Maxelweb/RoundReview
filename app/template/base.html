@@ -13,12 +13,13 @@
 </head>
 <body>
     <header>
-        <div class="container">
+        <div class="container header-line">
             <div class="nav-logo">
                 <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
+                <div class="nav-beta">beta</div>
             </div>
         </div>
-        <div class="container header-container">
+        <div class="container header-line header-container">
             <div class="nav">
             {% if logged %}
                 <a href="{{ url_for('project.list') }}" {% if current_nav == "projects" %} class="current" {% endif %}><i class="fas fa-rocket"></i> Projects</a>
@@ -36,13 +37,11 @@
             <div class="nav-user">
                 {% if logged %}
                     <span class="nav-user-item">
-                        <strong>{{ user.name }}</strong>
                         <i class="fas fa-user"></i>
+                        <strong>{{ user.name }}</strong>
                     </span>
                     {% if project %}
                         <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
-                    {% else %}
-                        <span class="nav-user-item">&nbsp;</span>
                     {% endif %}
                 {% endif %}
             </div>
