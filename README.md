@@ -2,6 +2,8 @@
 
 Round Review is a PDF platform to manage documents and reviews with collaborators.
 
+> The project is under active development and the current version is in **beta**
+
 ## Features
 
 - 📁 **Create and manage projects** with PDF documents  
