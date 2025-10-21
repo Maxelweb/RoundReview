@@ -4,6 +4,7 @@ import secrets
 
 # ------ Environment Variables ------ 
 DEBUG = os.environ.get('DEBUG') is not None or False
+APP_NAME = os.environ.get('RR_APP_NAME') or "Round Review"
 USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
 USER_DEFAULT_PASSWORD = os.environ.get('RR_DEFAULT_USER_PASSWORD') or secrets.token_hex(16)

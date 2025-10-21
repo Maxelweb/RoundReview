@@ -1,6 +1,6 @@
 from flask import render_template, request, session, redirect, Blueprint, url_for, current_app
 from .utils import is_logged, is_logged_admin
-from ..config import VERSION, log, GITHUB_OAUTH_ENABLED
+from ..config import VERSION, log, GITHUB_OAUTH_ENABLED, APP_NAME
 from ..database import Database
 from ..models import User, Log, SystemProperty, Property, LoginProvider
 from .utils import get_system_property
@@ -14,7 +14,7 @@ def index():
     """ Index page """
     return render_template(
         "index.html",
-        title="Welcome",
+        title=APP_NAME,
         version=VERSION,
         logged=is_logged(),
         admin=is_logged_admin(),
