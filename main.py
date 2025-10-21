@@ -10,11 +10,12 @@ def main():
     db.close()
     log.info("Starting server...")
     if DEBUG:
+        app.config["TEMPLATES_AUTO_RELOAD"] = True
         app.run(
-            debug=False, 
+            debug=True, 
             host="0.0.0.0", 
             port="8080",
-            load_dotenv=True,
+            load_dotenv=True
         )
     else:
         serve(app, host="0.0.0.0", port="8080")

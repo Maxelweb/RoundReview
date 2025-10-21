@@ -5,9 +5,8 @@
 
 /* ========================================== */
 
-
-.muted, .gray {
-    color: #7c7b7b;
+.bold {
+    font-weight: bold;
 }
 
 .box {
@@ -17,51 +16,66 @@
 }
 
 .bg-muted {
-    background-color: #747474;
+    background-color: var(--muted);
     color: white;
     font-weight: bold;
 }
 
 .bg-error {
-    background-color: rgb(181, 57, 57);
+    background-color: var(--danger);
     color: white;
     font-weight: bold;
 }
 
 .bg-success {
-    background-color: rgb(121, 185, 1);;
+    background-color: var(--success);
     color: white;
     font-weight: bold;
 }
 
 .bg-warning {
-    background-color: rgb(185, 132, 1);
+    background-color: var(--warning);
     color: white;
     font-weight: bold;
 }
 
-.error, .red{
-    color: rgb(168, 7, 7);
+.primary, .blue{
+    color: var(--primary);
+}
+
+.error, .red, .danger{
+    color: var(--danger) !important;
 }
 
 .success, .green {
-    color: #339b30;
+    color: var(--success) !important;
 }
 
 .warning, .orange {
-    color: #d1a037;
+    color: var(--warning) !important;
 }
 
 .black {
     color: black !important;
 }
 
+.muted, .gray {
+    color: var(--muted) !important; /* #7c7b7b */
+}
+
+.my-0 {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
 .my-1 {
-    margin: 10px 0;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
 }
 
 .my-2 {
-    margin: 20px 0;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
 }
 
 .strong {
@@ -99,6 +113,22 @@
     width: 100%;
 }
 
-.diblock {
+.block {
+    display: block !important;
+}
+
+.iblock {
     display: inline-block !important;
+}
+
+.inline {
+    display: inline !important;
+}
+
+.none {
+    display: none !important;
+}
+
+.pointer {
+    cursor: pointer;
 }

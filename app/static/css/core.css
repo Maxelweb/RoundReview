@@ -1,0 +1,206 @@
+/* 
+    Round Review Theme CSS - Core styles
+    by Maxelweb
+*/
+
+/* ========================================== */
+
+
+body {
+    font-family: "Funnel Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: var(--theme-body-text);
+    text-align: center;
+    background-color: var(--theme-body-bg);
+}
+
+a {
+    color:var(--theme-a-link);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--theme-a-link-hover);
+}
+
+/* a:visited {
+    
+} */
+
+.raw {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9pt;
+}
+
+img {
+    max-width: 200px;
+}
+
+h2 {
+    margin: 0.5rem 0;
+}
+
+h2 small {
+    border: 2px solid var(--theme-banner-border);
+    border-radius: 8px;
+    padding: 3px 6px;
+    font-size: small;
+}
+
+input[type=text], 
+input[type=email],
+input[type=url], 
+input[type=password],
+.custom-input,
+.amount-input {
+    border-radius: 0;
+    border: 0;
+    width: 99%;
+    max-width: 300px;
+    margin: 10px 5px 0 0;
+    display: block;
+}
+
+input[type=text],
+input[type=url],
+input[type=email],
+input[type=password],
+select,
+table,
+textarea{
+    width: 99%;
+    padding: 8px;
+    border: 1px solid var(--theme-input-tables-border);
+    border-radius: 4px;
+    background-color: var(--theme-input-tables-bg);
+    color: var(--theme-body-text);
+}
+
+input[type=url] {
+    max-width: 100%;
+}
+
+button, 
+input[type=button], 
+input[type=submit], 
+input[type=reset] {
+    border: 2px solid var(--primary);
+    border-radius: 5px;
+    background-color: var(--theme-input-tables-bg);
+    color: var(--primary);
+    padding: 7px 9px;
+}
+
+button:hover, 
+input[type=button]:hover, 
+input[type=submit]:hover, 
+input[type=reset]:hover {
+    background-color: var(--theme-input-tables-border);
+    cursor: pointer;
+}
+
+button:focus, 
+input[type=button]:focus, 
+input[type=submit]:focus, 
+input[type=reset]:focus {
+    background-color: var(--theme-input-focus-primary);
+}
+
+
+button.secondary, 
+input[type=button].secondary, 
+input[type=submit].secondary, 
+input[type=reset].secondary {
+    border-color: var(--secondary);
+    background-color: var(--theme-input-tables-bg);
+    color: var(--secondary);
+}
+
+button.secondary:hover, 
+input[type=button].secondary:hover, 
+input[type=submit].secondary:hover, 
+input[type=reset].secondary:hover {
+    background-color: var(--theme-input-tables-border);
+    cursor: pointer;
+}
+
+button.secondary:focus, 
+input[type=button].secondary:focus, 
+input[type=submit].secondary:focus, 
+input[type=reset].secondary:focus {
+    background-color: var(--theme-input-focus-secondary);
+}
+
+textarea {
+    max-width: 98% !important;
+    resize: vertical;
+    /* border: 0; */
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.custom-input {
+    width: 40% !important;
+    padding: 8px;
+}
+
+.custom-select {
+    width: auto !important;
+    min-width: 50px;
+    padding: 8px;
+    border: 0;
+}
+
+.amount-input {
+    min-width: 100px;
+    padding: 6px 4px;
+    font-size: 18px;
+    text-align: right;
+}
+
+code {
+    color: rebeccapurple;
+    word-wrap: break-word;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    background-color: var(--theme-input-tables-border);
+    color: var(--secondary);
+}
+
+td,th {
+    padding: 6px 14px;
+    border: 1px solid var(--theme-input-tables-border);
+}
+
+legend {
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    padding: 6px;
+    border: 2px solid #cc9607;
+    font-size: 90%;
+}
+
+fieldset {
+    border: 0px solid var(--secondary);
+    background-color: var(--theme-banner-bg);
+    border-radius: 4px;
+}
+
+fieldset textarea{
+    width: 95% !important;
+}

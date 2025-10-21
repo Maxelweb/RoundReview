@@ -1,3 +1,5 @@
+name: RoundReview_Stack
+
 services:
   roundreview_app:
     container_name: "roundreview_app"
@@ -6,10 +8,25 @@ services:
     ports: 
       - "8080:8080"
     volumes:
-      - sessions:/app/flask_session:rw
-      - database:/app/database:rw
-      - ./app:/app/app
+      - rr_sessions:/app/flask_session:rw
+      - rr_database:/app/database:rw
+    env_file:
+      - ./envs/rr-app.env
+
+  roundreview_pdf_notary_bot:
+    container_name: "roundreview_pdf_notary_bot"
+    build: ./plugins/pdf-notary-bot
+    restart: unless-stopped
+    ports: 
+      - "8081:8081"
+    volumes:
+      - rr_signed_pdfs:/signed_pdfs
+      # NOTE: Update this volume according to the location of your certificates
+      - ./certs:/certs
+    env_file:
+      - ./envs/rr-pdf-notary-bot.env
 
 volumes:
-  sessions:
-  database:
+  rr_sessions:
+  rr_database:
+  rr_signed_pdfs:

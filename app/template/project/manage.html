@@ -1,0 +1,76 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
+    
+    <h3><i class="fas fa-rocket primary my-1"></i> Project Information</h3>
+
+    <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=rename_project" method="post">
+        <table>
+            <tr>
+                <th><label for="projectTitle">Title</label></th>
+                <td>
+                    <input type="text" id="projectTitle" name="title" placeholder="Enter a project title" required class="my-1" value="{{ project.title }}">
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="submit" value="Update">
+        </div>
+    </form>
+
+
+    <h3><i class="fas fa-users primary my-1"></i> User Management</h3>
+    
+    <p class="muted">To change the role of a user, remove the user from the project and re-add with the chosen role.</p>
+
+    <h3>View users in project</h3>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        {% for puser in users %}
+        <tr>
+            <td><span title="User ID: {{ user.id }}">{{ puser.name }}</span></td>
+            <td>{{ puser.role }}</td>
+            <td>
+                {% if puser.id != user.id %}
+                <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=unjoin" method="post">
+                    <input type="hidden" name="username" value="{{ puser.name }}">
+                    <button type="submit" title="Remove user from project"><i class="fas danger fa-trash-alt"></i></button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+
+    <h3>Add user to project</h3>
+    <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=join" method="post">
+        <table>
+            <tr>
+                <th><label for="projectUserName">Username</label></th>
+                <td>
+                    <input type="text" id="projectUserName" name="username" placeholder="Enter username" required class="my-1">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="projectUserRole">Role</label></th>
+                <td>
+                    <select id="projectUserRole" name="role" required class="my-1">
+                        <option value="{{ role.MEMBER.value }}">{{ role.MEMBER.value }} - Can view, add and edit files</option>
+                        <option value="{{ role.REVIEWER.value }}">{{ role.REVIEWER.value }} - Can view, add, edit and comment files</option>
+                        <option value="{{ role.OWNER.value }}">{{ role.OWNER.value }} - Can view, add, edit and comment files; Can manage project</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="my-2">
+            <input type="submit" value="Confirm">
+        </div>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% set current_nav = "global_settings" %}
+{% block content %}
+<section class="content">
+    <h2 class="error">{{ title }} <small>admin</small></h2>
+    {% if output %}
+    <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
+    {% endif %}
+    <h3>System Parameters</h3>
+    <form action="{{ url_for('admin.settings') }}" method="post">
+        <fieldset>
+            <div class="my-2">
+                <table class="my-2">
+                    {% for key, value in sys_user.properties.items() %}
+                    <tr>
+                        <th>{{ key }}</th>
+                        <td>
+                            <input type="text" class="my-1" name="{{ key }}" value="{{ value }}">
+                            <p class="small block muted">{{ syspropinfo[key].description() }}</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <input type="submit" class="my-1" value="Update global settings">
+            <input type="reset" class="secondary" value="Reset">
+        </fieldset>
+    </form>
+</section>
+{% endblock %}

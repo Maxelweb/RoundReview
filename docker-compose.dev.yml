@@ -1,0 +1,43 @@
+name: RoundReview_DevStack
+
+services:
+  roundreview_app:
+    container_name: "roundreview_app"
+    build: .
+    restart: unless-stopped
+    ports: 
+      - "8080:8080"
+    volumes:
+      - rr_sessions:/app/flask_session:rw
+      - ./database:/app/database:rw
+      - ./app:/app/app
+    env_file:
+      - ./envs/rr-app.env
+
+  roundreview_pdf_notary_bot:
+    container_name: "roundreview_pdf_notary_bot"
+    build: ./plugins/pdf-notary-bot
+    restart: unless-stopped
+    ports: 
+      - "8081:8081"
+    volumes:
+      - ./plugins/pdf-notary-bot:/app 
+      - ./envs:/certs 
+      - rr_signed_pdfs:/signed_pdfs
+    env_file:
+      - ./envs/rr-pdf-notary-bot.env
+
+  roundreview_example_bot:
+    container_name: "roundreview_example_bot"
+    build: ./plugins/example-bot
+    restart: unless-stopped
+    ports: 
+      - "8082:8082"
+    volumes:
+      - ./plugins/example-bot:/app
+    environment:
+      - DEBUG=1
+
+volumes:
+  rr_sessions:
+  rr_signed_pdfs:

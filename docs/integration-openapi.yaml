@@ -1,0 +1,319 @@
+openapi: 3.0.2
+info:
+  title: Round Review - Integration API
+  description: "API for 3rd party integrations (for project owners and reviewers only). [NOTES]: The documentation is under creation and it can be subject to changes"
+  version: "0.1.0"
+  contact:
+    name: Developer
+    email: maxelweb+roundreview@gmail.com
+    url: https://github.com/Maxelweb/RoundReview
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /api/projects/{project_id}/objects/{object_id}/integrations/reviews:
+    get:
+      summary: List integration reviews for an object
+      description: Retrieve all integration reviews for a specific object in a project. Requires project membership.
+      operationId: listObjectIntegrationReviews
+      tags:
+        - Reviews
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: false
+          schema:
+            type: string
+          description: API key for non-session authentication
+      responses:
+        "200":
+          description: List of integration reviews for the object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IntegrationReview'
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: user is not a member of this project or object not in project"
+        "500":
+          description: Internal server error
+    post:
+      summary: Create an integration review for an object
+      description: Create a new integration review for the object. User must be a project member with role OWNER or REVIEWER and must not have an existing review for the object.
+      operationId: createObjectIntegrationReview
+      tags:
+        - Reviews
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: x-api-key
+          in: header
+          required: false
+          schema:
+            type: string
+          description: API key for non-session authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - value
+              properties:
+                name:
+                  type: string
+                  maxLength: 32
+                  description: Short title for the review
+                  example: "API Review"
+                value:
+                  type: string
+                  maxLength: 8192
+                  description: Full review content
+                  example: "Detailed integration notes..."
+                icon:
+                  type: string
+                  maxLength: 32
+                  description: Optional icon identifier
+                url:
+                  type: string
+                  maxLength: 128
+                  description: Optional related URL
+                url_text:
+                  type: string
+                  maxLength: 64
+                  description: Optional text for the URL
+      responses:
+        "201":
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  review_id:
+                    type: string
+                    format: uuid
+        "400":
+          description: Bad Request (invalid JSON, missing fields, or validation failure)
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden (not a project member or object not in project or insufficient role)
+        "409":
+          description: Conflict (user has already created a review for this object)
+        "500":
+          description: Internal server error
+
+  /api/integrations/reviews:
+    get:
+      summary: List integration reviews of the authenticated user
+      description: Retrieve all integration reviews created by the authenticated user. Include review 'value' field when query parameter value=1.
+      operationId: listUserIntegrationReviews
+      tags:
+        - Reviews
+      parameters:
+        - name: value
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["0", "1"]
+          description: Set to "1" to include the review value field (defaults to "0")
+        - name: x-api-key
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of user's integration reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IntegrationReview'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /api/integrations/reviews/{review_id}:
+    delete:
+      summary: Delete an integration review
+      description: Delete an integration review. The review can be deleted by its owner or by a project member with OWNER/REVIEWER role on the associated project.
+      operationId: deleteIntegrationReview
+      tags:
+        - Reviews
+      parameters:
+        - name: review_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: x-api-key
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Review deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: Unauthorized
+        "404":
+          description: "Not Found: Review does not exist or cannot be deleted by you"
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    IntegrationReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        icon:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        url_text:
+          type: string
+          nullable: true
+        value:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        user_id:
+          type: string
+        object_id:
+          type: string
+
+
+    get:
+      summary: Get object details
+      description: Retrieve detailed information of an object.
+      operationId: getObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object details
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: You are not a member of the project associated with this object"
+        "404":
+          description: Object not found
+    put:
+      summary: Update an object
+      description: Update an existing object.
+      operationId: updateObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                comments:
+                  type: string
+                version:
+                  type: string
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Object updated successfully
+        "400":
+          description: Missing request body or invalid fields
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only the object owner or a project owner can update the object"
+        "404":
+          description: Object not found
+    delete:
+      summary: Delete an object
+      description: Delete an existing object.
+      operationId: deleteObject
+      tags:
+        - Objects
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object deleted successfully
+        "401":
+          description: Unauthorized
+        "403":
+          description: "Forbidden: Only the object owner or a project owner can delete the object"
+        "404":
+          description: Object not found

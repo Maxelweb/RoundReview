@@ -1,12 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="content">
-    <h2>{{ title }}</h2>
-    <p>Welcome to Round Review! <i class="far fa-smile"></i></p> 
-    <p>This is a simple web application to review documents.</p>
+<section class="content tcenter main-page">
+    <i class="fas fa-file main-icon"></i>
+    <h2 class="logo-font">
+        {{ title }}
+    </h2>
+    <p>Welcome to Round Review! <i class="fas fa-smile"></i></p> 
+    <p>A self-contained collaborative web application to upload, comment and review PDF documents.</p>
+
     {% if logged %}
-        You are logged in.
+        <p class="success">You are currently logged in!</p>
+    {% else %}
+        <p class="primary">Please, ask your administrator to sign-up a user before proceeding to login.</p>
     {% endif %}
+
+    <div class="main-grid">
+        <div class="feature-box">
+            <i class="fas primary fa-folder-open feature-icon"></i>
+            <h3>Create &amp; Manage Projects</h3>
+            <p>Organize PDF documents into projects and manage files and collaborators.</p>
+        </div>
+
+        <div class="feature-box">
+            <i class="fas warning fa-users feature-icon"></i>
+            <h3>Invite &amp; Manage Users</h3>
+            <p>Add members, assign roles (members, reviewers) and control access per project.</p>
+        </div>
+    </div>
+    <div class="main-grid">
+        <div class="feature-box">
+            <i class="fas error fa-file-pdf feature-icon"></i>
+            <h3>Upload, View &amp; Annotate PDFs</h3>
+            <p>Upload PDFs, annotate, comment inline and use night mode for comfortable reading.</p>
+        </div>
+
+        <div class="feature-box">
+            <i class="fas success fa-plug feature-icon"></i>
+            <h3>Integrations &amp; Webhooks</h3>
+            <p>Webhooks and bot integrations for digital signatures and rielaboration.</p>
+        </div>
+    </div>
 </section>
 {% endblock %}

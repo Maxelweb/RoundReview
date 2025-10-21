@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Log: 
-
+    """ Standard log format """
     DATE_FORMAT = "%Y-%m-%d, %H:%M:%S"
 
     id: int

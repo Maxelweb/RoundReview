@@ -1,0 +1,117 @@
+{% extends 'project/base.html' %}
+
+{% block inner_content %}
+    <a href="{{ url_for('project.list') }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to projects</a>
+
+    {% if project_role == role.OWNER %}
+    <h3><i class="fas fa-rocket primary my-1"></i> Project Management</h3>
+        
+    <p class="muted">&raquo; Go to <a href="{{ url_for('project.manage_project', project_id=project.id) }}">Project Management</a> to manage users and others (only for project owners).</p>
+    {% endif %}
+
+    <h3><i class="fas fa-newspaper muted my-1"></i> Recent documents</h3>
+
+    <div class="document-widgets">
+        {% if not last_objects %}
+        <p class="muted">No documents yet.</p>
+        {% endif %}
+        {% for obj in last_objects %}
+        <a class="document-widget" href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}">
+            <span class="widget-info my-1">
+                <span class="status-label" style="background-color: {{ obj.status.get_color(obj.status) }};">
+                    {{ obj.status.value }}
+                </span>
+            </span>
+            <span class="widget-info">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span class="object-last-update" data-timestamp="{{ obj.update_date }}" title="Last update: {{ obj.update_date }}"></span>
+            </span>
+            <span class="widget-icon"><i class="fas fa-file-alt"></i></span>
+            
+            <span class="widget-title">{{ obj.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <h3><i class="fas fa-file muted my-1"></i> All documents</h3>
+    <p class="muted">Click on a resource to explore more.</p>
+    
+    <div class="my-2">
+        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
+    </div>
+
+    <table id="resource-table" class="resource-table">
+        <tr>
+            <th colspan="4">Resources</th>
+        </tr>
+        {% if not last_objects %}
+            <tr>
+                <td colspan="4" class="muted">No documents available yet. Add a new document and start reviewing!</td>
+            </tr>
+        {% endif %}
+
+        {% macro render_tree(tree, parent_path='') %}
+            
+            {% for key, value in tree.items() %}
+            {% if key != '_objects' %}
+                {% set current_path = parent_path + '/' + key %}
+                <tr class="folder-row" data-folder-path="{{ current_path }}" {% if path and (path == current_path or path.startswith(current_path + '/')) %}data-open="true"{% endif %} id="folder-{{ key | replace('/', '_') }}"
+                >
+                <td colspan="3" class="folder-link">
+                    <i class="fas fa-folder"></i>
+                    <a href="#" class="folder-link-key">{{ key }}</a> 
+                </td>
+                <td class="folder-actions">
+                    <span class="action-item">
+                        {{ (value|length - (1 if '_objects' in value else 0)) + (value['_objects']|length if '_objects' in value else 0) }} items
+                    </span>
+                    <span class="action-item">
+                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" title="Add new document here">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
+                    </span>
+                    <span class="action-item">
+                        <a href="{{ url_for('project.view_objects', project_id=project.id, path=current_path) }}" title="Copy link to this folder">
+                            <i class="fas fa-link"></i>
+                        </a>
+                    </span>
+                </td>
+                </tr>
+                {% if value %}
+                <tr class="folder-file" data-folder-path="{{ current_path }}" style="display: {% if path and (path == current_path or path.startswith(current_path + '/')) %}table-row{% else %}none{% endif %};">
+                    <td colspan="4" class="nested-table-cell">
+                    <table class="nested-table">
+                        {{ render_tree(value, current_path) }}
+                    </table>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% for obj in tree['_objects'] %}
+            <tr id="file-{{ obj.id }}">
+                <td>
+                    <i class="fas fa-file-alt"></i>
+                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">
+                    {{ obj.name }}
+                    </a>
+                </td>
+                <td colspan="3" class="file-infos">
+                    <span class="info-item">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <span class="object-last-update" data-timestamp="{{ obj.update_date }}" title="Last update: {{ obj.update_date }}"></span>
+                    </span>
+                    <span class="info-item status-label" style="background-color: {{ obj.status.get_color(obj.status) }};">
+                    {{ obj.status.value }}</span>
+                    <span class="info-item">v{{ obj.version }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        {% endmacro %}
+        {{ render_tree(tree['root']) }}
+    </table>
+
+    <script src="{{ url_for('static', filename='js/project_view.js') }}" type="module"></script>
+
+{% endblock %}

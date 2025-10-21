@@ -1,13 +1,43 @@
 {% extends 'base.html' %}
-
+{% set current_nav = "settings" %}
 {% block content %}
 <section class="content">
     <h2>{{ title }}</h2>
     {% if output %}
     <p class="box bg-{{ output[0] }}">{{ output[1] }}</p>
     {% endif %}
-    <h3>Change password</h3>
-    <form action="{{ url_for('basic.settings') }}" method="post">
+
+    <h3><i class="fas fa-paintbrush muted"></i> Theme</h3>
+    <fieldset>
+        <div>
+            <p class="muted">Change the theme of the website from here. Note that the theme change is saved per browser session.</p>
+            <select id="theme-mode" class="my-1">
+                <option value="dark">Dark Theme</option>
+                <option value="light">Light Theme</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <h3><i class="fab fa-github muted"></i> Github</h3>
+    <fieldset>
+        <div>
+            <p><strong class="muted">Your Github Username:</strong> {{ user.prop('github_username') }}</p>
+            {% if provider == providers.GITHUB %}
+                <p class="success">You are currently logged-in via Github.</p>
+            {% else %}
+                <p class="primary">You are currently logged-in via internal login, but you can also login via Github.</p>
+            {% endif %}
+            {% if not user.has_prop('github_username') %}
+                <p class="warning">No Github account is currently associated to your account. Ask an admin to add a Github Account.</p>
+            {% endif %}
+        </div>
+    </fieldset>
+
+    <h3><i class="fas fa-lock muted"></i> Change password</h3>
+    {% if provider != providers.INTERNAL %}
+    <p class="muted">Password change is not available if logged-in via Github.</p>
+    {% else %}
+    <form action="{{ url_for('settings.update_password') }}" method="post">
         <fieldset>
             <div>
                 <input type="password" name="old_password" min="4" placeholder="Old password" class="my-1" required>
@@ -15,7 +45,53 @@
                 <input type="password" name="confirm_password" min="4" placeholder="Confirm password" class="my-1" required>
             </div>
             <input type="submit" class="my-1" value="Confirm">
+            <input type="reset" class="secondary" value="Reset">
+        </fieldset>
+    </form>
+    {% endif %}
+    
+
+    <h3><i class="fas fa-code muted"></i> Developer</h3>
+    <form action="{{ url_for('settings.update_properties') }}" method="post">
+        <fieldset>
+            <div class="my-2">
+                <input type="checkbox" name="enable_api_key" id="enableApiKey" value="1"
+                {% if user.has_prop("api_key") %}
+                checked
+                {% endif %}
+                > <label for="enableApiKey">Enable API Key</label>
+
+                {% if user.has_prop("api_key") %}
+                <table class="my-2">
+                    <tr>
+                        <th>Your API Key
+                        </th>
+                        <td>
+                            <input type="password" class="inline raw my-1" readonly value="{{ user.prop('api_key') }}" id="apiKeyInput">
+                            <button type="button" class="inline" onclick="document.getElementById('apiKeyInput').type = document.getElementById('apiKeyInput').type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('fa-eye'); this.querySelector('i').classList.toggle('fa-eye-slash');">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <p class="small block muted">Do not share this key. To regenerate the key, disable and re-enable the API key setting.</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Webhook URL (updates only)
+                        </th>
+                        <td>
+                            <input type="url" class="inline raw my-1" value="{% if user.prop('webhook_url') != None %} {{ user.prop('webhook_url') }} {% endif %}" name="webhook_url" placeholder="Enter a reachable URL (e.g. https://mywebsite/event/handler)"> 
+                            <p class="small block muted">If you are a member of the project, you can get a POST notification if the <strong>document status is updated</strong> <br>(e.g. from "No Review" -> "Pending Review"). </p>
+                        </td>
+                    </tr>
+                </table>
+                {% endif %}
+            </div>
+            <input type="submit" class="my-1" value="Update">
+            <input type="reset" class="secondary" value="Reset">
         </fieldset>
     </form>
 </section>
+
+<script src="{{ url_for('static', filename='js/settings.js') }}" type="module"></script>
+
 {% endblock %}

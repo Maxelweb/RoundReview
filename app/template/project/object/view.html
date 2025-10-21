@@ -1,0 +1,131 @@
+{% extends 'project/base_wide.html' %}
+
+{% block inner_content %}
+    <div class="container">
+        <a href="{{ url_for('project.view_objects', project_id=project.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to project</a>
+        <h3><i class="fas fa-file primary my-1"></i> Document Review</h3>
+        <p class="muted">
+            {{ object.description | e if object.description else "No description" }}
+        </p>
+    </div>
+        
+    <div class="pdf-container">
+        <div class="pdf-navbar container" id="controls">
+            <div class="pdf-control">
+                <button id="toggle-outline" title="Toggle index"><i class="fas fa-list-ol"></i></button>
+                &nbsp;
+                <button id="prev-page" title="Previous page"><i class="fas fa-arrow-left"></i></button>
+                <button id="next-page" title="Next page"><i class="fas fa-arrow-right"></i></button>
+                &nbsp;
+                Page: <span class="bold" id="page-num">1</span> / 
+                <span id="total-pages-num"></span>
+            </div>
+            <div class="pdf-control pdf-status">
+                <i class="fas fa-check success none" id="status-icon"></i> 
+                <select class="status-label" id="status-label" data-current-status="{{ object.status.value }}">
+                    {% for status in object_statuses.keys() %}
+                        <option {% if object.status == status %}selected{%endif%}
+                        data-color="{{ object_statuses.get_color(status) }}">{{ status.value }}</option>
+                    {% endfor %}
+                </select>
+                <i class="fas fa-sun muted pointer pdf-night-mode" title="Toggle night mode" id="night-mode"></i>
+            </div>
+            <div class="pdf-control">
+                <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
+                Scale: <span class="bold" id="page-scale"></span>
+                &nbsp;
+                <button id="page-zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
+                <button id="page-zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                &nbsp;
+                <button id="toggle-information" title="Show/Hide Document information"><i class="fas fa-info-circle"></i></button>
+            </div>
+        </div>
+
+        <div class="pdf-outline container" id="pdf-outline">
+            <h3><i class="fas fa-list-ul"></i> Outline</h3>
+            <ul class="pdf-outline-list" id="pdf-outline-list"></ul>
+        </div>
+
+        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}">
+            <canvas id="pdf-canvas"></canvas>
+            <div id="markers"></div>
+            <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
+        </div>
+
+        <div class="pdf-sidebar" id="sidebar">
+            <h3><span class="badge-total" id="total-page-comments">0</span> Comments 
+                <select class="comments-mode" id="comments-mode">
+                    <option value="per_page">on this page</option>
+                    <option value="all">in total</option>
+                </select>
+            </h3>
+            <span class="hidden" id="author-info" data-author-name="{{ user.name }}" data-author-id="{{ user.id }}" data-author-can-review="{{ can_review }}" data-author-can-edit="{{ can_edit }}"></span>
+            <div id="comments-list" class="comment-list"></div>
+        </div>
+    </div>
+
+    <div id="information-menu" class="information-menu">
+        <div class="menu-header">
+            <h3><i class="fas fa-file primary my-1"></i> Document information </h3>
+            <span id="close-information" class="close-btn"><i class="fas fa-close"></i></span>
+        </div>
+        <div class="menu-content">
+            <p><span class="muted">Project title</span> <strong>{{ project.title }}</strong></p>
+            <p><span class="muted">Document version</span> <strong>v{{ object.version }}</strong></p>
+            <p><span class="muted">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <code>{{ object.path }}</code></p>
+            <p><span class="muted">Author:</span> <strong>{{ object.user.name }}</strong></p>
+            <p><span class="muted">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
+            <p><span class="muted">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+
+            <p><span class="muted my-1">Actions</span> 
+            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
+            &nbsp;
+            <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-arrow-down"></i> Download</button></a>
+            &nbsp;
+            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
+                <input type="hidden" name="object_id" value="{{ object.id }}">
+                <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>
+            </form>
+            </p>
+        </div>
+    </div>
+
+    {% if reviews %}
+        <div class="container">
+            <h3><i class="fas fa-user-astronaut primary my-1"></i> Bot Integration Reviews</h3>
+            <div class="bot-reviews">
+                {% for review in reviews %}
+                    <div class="bot-review" id="review-{{ review.id }}">
+                        <div class="bot-review-header">
+                            <h4><i class="fas fa-robot"></i> {{ review.name }}</h4>
+                            <span class="muted">{{ review.created_at }}</span>
+                        </div>
+                        <div class="bot-review-content">
+                            <div class="bot-review-value">{{ review.value }}</div>
+                            {% if review.url and review.url_text %}
+                                <a href="{{ review.url }}" target="_blank">
+                                    <button>
+                                        {% if review.icon %}
+                                            <i class="fas fa-{{ review.icon }}" alt="Bot Icon" class="bot-review-icon"></i>
+                                        {% else %}
+                                            <i class="fas fa-external-link-alt" alt="Bot Icon" class="bot-review-icon"></i>
+                                        {% endif %}
+                                        {{ review.url_text }}
+                                    </button>
+                                </a>
+                            {% endif %}
+                            <!-- If user is owner/reviewer, show the delete button -->
+                            {% if can_review %}
+                                <button type="submit" class="danger small delete-review" data-review-id="{{ review.id }}"><i class="fas fa-trash"></i> Delete review</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+        </div>
+
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/object_view.js') }}" type="module"></script>
+
+{% endblock %}

@@ -1,34 +1,65 @@
 <!DOCTYPE html>
 <html>
-<title>Round Review</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon.png') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Round Review - {{ title }}</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme/dark.css') }}" id="style-theme-dark">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme/light.css') }}" id="style-theme-light" disabled>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+</head>
 <body>
     <header>
-        <div class="container">
-            <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
+        <div class="container header-line">
+            <div class="nav-logo">
+                <a href="{{ url_for('basic.index') }}" class="logo"><h1>Round Review</h1></a>
+                <div class="nav-beta">beta</div>
+            </div>
+        </div>
+        <div class="container header-line header-container">
             <div class="nav">
             {% if logged %}
+                <a href="{{ url_for('project.list') }}" {% if current_nav == "projects" %} class="current" {% endif %}><i class="fas fa-rocket"></i> Projects</a>
                 {% if admin %}
-                <a href="{{ url_for('admin.users') }}" class="current"><i class="fas fa-users"></i> Users</a>
-                <a href="{{ url_for('admin.logs') }}"><i class="fas fa-rectangle-list"></i> Logs</a>
+                    <a href="{{ url_for('admin.users') }}" {% if current_nav == "users" %} class="current" {% endif %}><i class="fas fa-users"></i> Users</a>
+                    <a href="{{ url_for('admin.logs') }}" {% if current_nav == "logs" %} class="current" {% endif %}><i class="fas fa-rectangle-list"></i> Logs</a>
+                    <a href="{{ url_for('admin.settings') }}" {% if current_nav == "global_settings" %} class="current" {% endif %}><i class="fas fa-globe"></i> Global Settings</a>
                 {% endif %}
-                <a href="{{ url_for('basic.settings') }}"><i class="fas fa-gears"></i> Settings</a>
+                <a href="{{ url_for('settings.settings') }}"{% if current_nav == "settings" %} class="current" {% endif %}><i class="fas fa-gears"></i> Settings</a>
                 <a href="{{ url_for('basic.logout') }}"><i class="fas fa-arrow-right-from-bracket"></i> Logout</a>
             {% else %}
-                <a href="{{ url_for('basic.login') }}"><i class="fas fa-arrow-right-to-bracket"></i> Login</a>
+                <a href="{{ url_for('basic.login') }}" {% if current_nav == "login" %} class="current" {% endif %}><i class="fas fa-arrow-right-to-bracket"></i> Login</a>
             {% endif %}
             </div>
-            </a>
+            <div class="nav-user">
+                {% if logged %}
+                    <span class="nav-user-item">
+                        <i class="fas fa-user"></i>
+                        <strong>{{ user.name }}</strong>
+                    </span>
+                    {% if project %}
+                        <span class="nav-user-item">Project Role: <strong>{{ project_role.value }}</strong></span>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     </header>
-    <div class="container">
+    <div class="container {% if wide_content %}container-full{% endif %}" id="main-content">
         {% block content %}{% endblock %}
     </div>
     <footer>
-        <strong>RoundReview Web Application</strong> ({{ version }}) - Developed by Maxelweb
+        <div class="footer-item logo-font">
+            Round Review
+        </div>
+        <div class="footer-item">
+            v{{ version }}
+        </div>
+        <div class="footer-item">
+            <i class="fas fa-code"></i> Developed by <a href="https://github.com/Maxelweb">Maxelweb</a> for anyone
+        </div>
     </footer>
 </body>
 </html>
