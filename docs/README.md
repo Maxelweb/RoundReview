@@ -1,10 +1,15 @@
 # Round Review - Extensive Documentation
 
+> [!WARNING]
 > The documentation is under creation and it will be subject to frequent changes
 
 ## APIs
 
 - [Integration APIs - v0.1.0](./integration-openapi.yaml)
+
+## Environment Variables
+
+Checkout the environment variables for the app and the plugin [in this page](./envs.md).
 
 ## Webhook Notification for Document Status Updates
 
