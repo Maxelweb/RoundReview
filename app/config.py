@@ -18,7 +18,7 @@ GITHUB_OAUTH_API_BASE_URL = os.environ.get('GITHUB_OAUTH_API_BASE_URL') or 'http
 
 
 # ------ Defaults ------ 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 USER_SYSTEM_ID = 1
 USER_SYSTEM_NAME = "_SYSTEM"
 USER_SYSTEM_EMAIL = "system@local"
