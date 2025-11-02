@@ -1,12 +1,16 @@
-# Round Review
+# <div align="center">📄 Round Review</div>
 
-Round Review is a PDF platform to manage documents and reviews with collaborators. More [screenshots](https://github.com/Maxelweb/RoundReview/releases/tag/v0.2.0).
-
+<div align="center">
+Round Review is a PDF platform to manage documents and reviews with collaborators.
+</div>
 
 > [!NOTE]
 > The project is under active development and the current version is in **beta**
 
 ![RoundReview Platform](https://private-user-images.githubusercontent.com/34033090/503884354-10e6e314-47d0-4db0-a232-e257e738ad3f.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjIxMTE4MjEsIm5iZiI6MTc2MjExMTUyMSwicGF0aCI6Ii8zNDAzMzA5MC81MDM4ODQzNTQtMTBlNmUzMTQtNDdkMC00ZGIwLWEyMzItZTI1N2U3MzhhZDNmLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTExMDIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMTAyVDE5MjUyMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTZiZmFiMGNhMzAxM2U1MzhhYmEyODdmYmRkYTc0MTc5MzQ5NDkwOTA4NGYzNTg0M2U1MzA2NjJlZmJlY2I2YTQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.eq2QcCd1J9LIbgSCxLLOHhCl00Uw3Z2-nPjbtBf7vr0)
+
+Checkout more [screenshots](https://github.com/Maxelweb/RoundReview/releases/tag/v0.2.0).
+
 
 ## Features
 
