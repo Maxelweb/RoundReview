@@ -8,6 +8,7 @@ from pyhanko.sign import SimpleSigner, PdfSignatureMetadata, fields, signers
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.pdf_utils import images, layout
 from pyhanko import stamp
+from waitress import serve
 from config import (
     log,
     DEBUG,
@@ -29,7 +30,7 @@ app = Flask(__name__)
 scheduler.start()
 
 # Background service to clean deleted reviews
-@scheduler.scheduled_job('interval', hours=1)
+@scheduler.scheduled_job('interval', hours=24)
 def clean_deleted_reviews() -> None:
     log.info("Starting cleaning background service")
     res = requests.get(
@@ -59,6 +60,11 @@ def clean_deleted_reviews() -> None:
             os.remove(file_path)
     log.info("Cleaning background service completed")
 
+
+@app.route('/', methods=['GET'])
+def handle_index():
+    """ Handle Index """
+    return {"plugin_name": PLUGIN_NAME, "plugin_version": PLUGIN_VERSION}, 200
 
 @app.route('/webhook', methods=['POST'])
 def handle_webhook():
@@ -196,5 +202,8 @@ def handle_download(base64_code:str):
 
 
 if __name__ == '__main__':
-    app.config["TEMPLATES_AUTO_RELOAD"] = True
-    app.run(host="0.0.0.0", port=8081, debug=DEBUG)
+    if DEBUG:
+        app.config["TEMPLATES_AUTO_RELOAD"] = True
+        app.run(host="0.0.0.0", port=8081, debug=DEBUG)
+    else:
+        serve(app, host="0.0.0.0", port="8081")

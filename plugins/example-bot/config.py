@@ -2,7 +2,7 @@ import os
 import logging
 
 # ------ ENVIRONMENTS ------ 
-DEBUG = os.environ.get('DEBUG') is not None or False
+DEBUG = os.environ.get('DEBUG') or False
 
 # ------ Defaults ------ 
 

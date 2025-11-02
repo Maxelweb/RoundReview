@@ -2,7 +2,7 @@ import os
 import logging
 
 # ------ ENVIRONMENTS ------ 
-DEBUG = os.environ.get('DEBUG') is not None or False
+DEBUG = os.environ.get('DEBUG') or None 
 API_KEY = os.environ.get('API_KEY') or None
 API_BASE_URL = os.environ.get('API_BASE_URL') or None
 PLUGIN_KEY_PASSPHRASE = os.environ.get('PLUGIN_KEY_PASSPHRASE') or None

@@ -3,7 +3,7 @@ import logging
 import secrets
 
 # ------ Environment Variables ------ 
-DEBUG = os.environ.get('DEBUG') is not None or False
+DEBUG = os.environ.get('DEBUG') or False
 APP_NAME = os.environ.get('RR_APP_NAME') or "Round Review"
 USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
