@@ -18,7 +18,7 @@
 | `DEBUG` | Enable debug logging and development mode | None (unset) | No — let empty in production and `1` or `True` in development |
 
 
-### Github OAuth App
+### Github OAuth - Extra Configuration
 
 > [!NOTE]
 > You can enable Github Authentication for your users using the environment variables in this section.
@@ -45,7 +45,7 @@
 | `PLUGIN_KEY_PASSPHRASE` | Passphrase for the plugin private key (if any) | None | No - if your key certificate is NOT encrypted; keep it secret |
 | `PLUGIN_KEY_PATH` | Filesystem path to private key used for signing | /certs/key.pem | No — ensure path matches your container/host path |
 | `PLUGIN_CERT_PATH` | Filesystem path to certificate used for signing | /certs/cert.pem | No — ensure path matches your container/host path |
-| `PLUGIN_SIGN_IMAGE_PATH` | Optional image used to stamp signed PDFs | None | Optional — set if you want a visible signature image and change it according to your container/host path (e.g. `/certs/sign.png`) |
+| `PLUGIN_SIGN_IMAGE_PATH` | Optional image used to stamp signed PDFs | None | No — set if you want a visible signature image and change it according to your container/host path (e.g. `/certs/sign.png`) |
 | `PLUGIN_SIGNED_PDFS_FOLDER` | Folder where signed PDFs are stored | /signed_pdfs | No — change it according to your container/host path |
 | `PLUGIN_IS_BEHIND_PROXY` | Plugin is hosted behind proxy (passing `x-forwarded-*`) | False | No — change it according to your configuration |
 | `PLUGIN_BASE_URL_PREFIX` | Plugin base URL prefix for APIs (must start with `/`) | `/` | No — change it according to your configuration (useful if put under a path (e.g. `mywebsite.ltd/notary-bot`)) |
