@@ -28,7 +28,9 @@ from config import (
 
 # Core definitions
 scheduler = BackgroundScheduler()
-app = ProxyFix(Flask(__name__), x_prefix=1) if PLUGIN_IS_BEHIND_PROXY else Flask(__name__)
+app = Flask(__name__)
+if PLUGIN_IS_BEHIND_PROXY:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 scheduler.start()
 
 # Background service to clean deleted reviews
