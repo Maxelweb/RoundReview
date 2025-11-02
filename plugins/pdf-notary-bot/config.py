@@ -6,6 +6,7 @@ DEBUG = os.environ.get('DEBUG') or None
 API_KEY = os.environ.get('API_KEY') or None
 API_BASE_URL = os.environ.get('API_BASE_URL') or None
 PLUGIN_IS_BEHIND_PROXY = os.environ.get('PLUGIN_IS_BEHIND_PROXY') == "True" or False
+PLUGIN_BASE_URL_PREFIX = os.environ.get('PLUGIN_BASE_URL_PREFIX') or None
 PLUGIN_KEY_PASSPHRASE = os.environ.get('PLUGIN_KEY_PASSPHRASE') or None
 PLUGIN_KEY_PATH = os.environ.get('PLUGIN_KEY_PATH') or "/certs/key.pem"
 PLUGIN_CERT_PATH = os.environ.get('PLUGIN_CERT_PATH') or "/certs/cert.pem"
