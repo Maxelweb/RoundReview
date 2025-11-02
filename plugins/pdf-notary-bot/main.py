@@ -3,6 +3,7 @@ import base64
 import requests
 from types import SimpleNamespace
 from flask import Flask, request
+from werkzeug.middleware.proxy_fix import ProxyFix
 from apscheduler.schedulers.background import BackgroundScheduler
 from pyhanko.sign import SimpleSigner, PdfSignatureMetadata, fields, signers
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
@@ -22,11 +23,12 @@ from config import (
     PLUGIN_BASE_URL,
     PLUGIN_SIGNED_PDFS_FOLDER,
     PLUGIN_SIGN_IMAGE_PATH,
+    PLUGIN_IS_BEHIND_PROXY,
 )
 
 # Core definitions
 scheduler = BackgroundScheduler()
-app = Flask(__name__)
+app = ProxyFix(Flask(__name__), x_prefix=1) if PLUGIN_IS_BEHIND_PROXY else Flask(__name__)
 scheduler.start()
 
 # Background service to clean deleted reviews
