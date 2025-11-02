@@ -6,6 +6,7 @@
 - Fix `DEBUG` variable not working as expected
 - (pdf-notary-bot) Increased from 1 hour to 24 hours the plugin deletion scheduled
 - (pdf-notary-bot) Fix support behind proxy and with url prefix
+- (pdf-notary-bot) Version update (v0.1.0) -> (v0.1.1)
 
 **v0.2.0** (2025-10-21)
 
