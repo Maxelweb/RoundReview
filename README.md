@@ -50,6 +50,13 @@ Round Review is a PDF platform to manage documents and reviews with collaborator
     - In case of port error (e.g. already in use), change the first port inside the docker-compose file to something else
     - To stop this, use `docker-compose down roundreview_app`
 
+#### Default admin credentials and password
+
+The following credentials applies only if you didn't change the default environment variables configuration.
+
+- Email: `admin@system.com` 
+- Password: `<randomly generated>` (check docker logs)
+
 > [!WARNING]
 > If you didn't change the default **admin password** to something else, you MUST check the logs from the docker container to get the generated password (`docker logs roundreview_app`). If you missed it, restart from scratch by removing the volumes created.
 
