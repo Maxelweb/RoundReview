@@ -16,7 +16,7 @@ PLUGIN_SIGN_IMAGE_PATH = os.environ.get('PLUGIN_SIGN_IMAGE_PATH') or None
 
 PLUGIN_SIGNED_PDFS_FOLDER = os.environ.get('PLUGIN_SIGNED_PDFS_FOLDER') or "/signed_pdfs"
 PLUGIN_BASE_URL = os.environ.get('PLUGIN_BASE_URL') or "localhost"
-PLUGIN_VERSION = "0.1.0"
+PLUGIN_VERSION = "0.1.1"
 PLUGIN_NAME = "pdf_notary_bot"
 
 # ------ Others ------ 

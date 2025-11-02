@@ -24,10 +24,10 @@ from config import (
 
 core_blueprint = Blueprint('core', __name__)
 
-@core_blueprint.route('/', methods=['GET'])
-def handle_index():
-    """ Handle Index """
-    return {"plugin_name": PLUGIN_NAME, "plugin_version": PLUGIN_VERSION}, 200
+# @core_blueprint.route('/', methods=['GET'])
+# def handle_index():
+#     """ Handle Index """
+#     return {"plugin_name": PLUGIN_NAME, "plugin_version": PLUGIN_VERSION}, 200
 
 @core_blueprint.route('/webhook', methods=['POST'])
 def handle_webhook():
