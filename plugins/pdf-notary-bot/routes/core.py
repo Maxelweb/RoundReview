@@ -2,7 +2,7 @@ import os, json, io, hashlib
 import base64
 import requests
 from types import SimpleNamespace
-from flask import request, Blueprint
+from flask import request, Blueprint, current_app
 from pyhanko.sign import SimpleSigner, PdfSignatureMetadata, fields, signers
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.pdf_utils import images, layout
@@ -155,7 +155,7 @@ def handle_download(base64_code:str):
     if partial_md5 != hashlib.md5(pdf_data).hexdigest()[:8]:
         return {"error": "ID not found"}, 404
 
-    response = app.response_class(
+    response = current_app.response_class(
         response=pdf_data,
         status=200,
         mimetype='application/pdf',
