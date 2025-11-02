@@ -3,7 +3,7 @@ import logging
 import secrets
 
 # ------ Environment Variables ------ 
-DEBUG = os.environ.get('DEBUG') is not None or False
+DEBUG = os.environ.get('DEBUG') or False
 APP_NAME = os.environ.get('RR_APP_NAME') or "Round Review"
 USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
@@ -18,7 +18,7 @@ GITHUB_OAUTH_API_BASE_URL = os.environ.get('GITHUB_OAUTH_API_BASE_URL') or 'http
 
 
 # ------ Defaults ------ 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 USER_SYSTEM_ID = 1
 USER_SYSTEM_NAME = "_SYSTEM"
 USER_SYSTEM_EMAIL = "system@local"
