@@ -259,6 +259,8 @@ table.resource-table tr.folder-row.drag-over {
     animation: folder-drop-pulse 0.8s ease-in-out infinite alternate;
 }
 
+/* ==== Drag and Drop files styles ==== */
+
 table.resource-table tr.folder-row.drag-over a,
 table.resource-table tr.folder-row.drag-over i,
 table.resource-table tr.folder-row.drag-over .action-item {
@@ -299,12 +301,15 @@ table.resource-table tr.folder-row.drag-over .action-item {
     font-size: 1.2rem;
     line-height: 1;
     padding: 4px 9px;
+    border-radius: 50px;
 }
 
 .drop-location {
     margin-left: 6px;
     font-weight: 600;
 }
+
+/* ===== ====== */
 
 table.nested-table tr:nth-last-child(1) {
     border-bottom: none !important;

@@ -123,14 +123,15 @@
                 <tr>
                     <th><label for="dropLocation">Location</label></th>
                     <td>
-                        <code>/</code><span id="dropLocation" class="drop-location"></span>
+                        <code><span id="dropLocation" class="drop-location"></span></code>
                         <input type="hidden" name="path" id="dropLocationHidden" value="/">
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="dropObjectPdf">PDF File</label></th>
+                    <th><label for="dropObjectPdf">Upload PDF File</label></th>
                     <td>
                         <input type="file" id="dropObjectPdf" name="file" accept="application/pdf" required>
+                         <p class="small block muted">Only <code>.pdf</code> extension is accepted.</p>
                     </td>
                 </tr>
                 <tr>
@@ -138,7 +139,7 @@
                     <td><input type="text" id="dropObjectName" name="name" required></td>
                 </tr>
                 <tr>
-                    <th><label for="dropObjectDescription">Description / Notes</label></th>
+                    <th><label for="dropObjectDescription">Description or Notes</label></th>
                     <td>
                         <textarea id="dropObjectDescription" name="description" maxlength="256"></textarea>
                         <p class="small block muted">This field is <span class="strong">optional</span>.</p>
@@ -147,7 +148,7 @@
                 <tr>
                     <th><label for="dropObjectVersion">Version</label></th>
                     <td>
-                        <input type="text" id="dropObjectVersion" name="version" value="1.0.0"
+                        <input type="text" id="dropObjectVersion" name="version"
                             pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?$"
                             required title="Version must follow semantic versioning (e.g. 1.0.0)">
                     </td>
@@ -155,7 +156,6 @@
             </table>
             <div class="my-2">
                 <input type="submit" value="Confirm">
-                <button type="button" class="secondary dialog-close">Cancel</button>
             </div>
         </form>
     </dialog>
