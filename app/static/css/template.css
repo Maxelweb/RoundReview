@@ -253,6 +253,59 @@ table.resource-table tr.folder-row {
     border-bottom: 2px solid var(--theme-resources-folder-border);
 }
 
+table.resource-table tr.folder-row.drag-over {
+    background-color: var(--primary);
+    color: #fff;
+    animation: folder-drop-pulse 0.8s ease-in-out infinite alternate;
+}
+
+table.resource-table tr.folder-row.drag-over a,
+table.resource-table tr.folder-row.drag-over i,
+table.resource-table tr.folder-row.drag-over .action-item {
+    color: #fff;
+}
+
+@keyframes folder-drop-pulse {
+    from { opacity: 0.65; }
+    to { opacity: 1; }
+}
+
+.drop-upload-dialog {
+    width: min(720px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    border: 2px solid var(--theme-input-tables-border);
+    border-radius: 8px;
+    padding: 20px;
+    color: var(--theme-body-text);
+    background: var(--theme-body-bg);
+}
+
+.drop-upload-dialog::backdrop {
+    background: rgb(0 0 0 / 0.65);
+}
+
+.drop-upload-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.drop-upload-dialog-header h3 {
+    margin: 0;
+}
+
+.drop-upload-dialog .dialog-close {
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 4px 9px;
+}
+
+.drop-location {
+    margin-left: 6px;
+    font-weight: 600;
+}
+
 table.nested-table tr:nth-last-child(1) {
     border-bottom: none !important;
 }
