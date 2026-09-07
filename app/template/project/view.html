@@ -118,30 +118,31 @@
                 <h3><i class="fas fa-file-arrow-up primary"></i> Create new document</h3>
                 <button type="button" class="secondary dialog-close" aria-label="Close">&times;</button>
             </div>
-            <p>Complete the form below to add the dropped PDF to this folder.</p>
+            <p>Fill the form below to add a new PDF to this folder.</p>
             <table>
                 <tr>
                     <th><label for="dropLocation">Location</label></th>
                     <td>
-                        <code><span id="dropLocation" class="drop-location"></span></code>
+                        <span id="dropLocation" class="drop-location block my-1"></span>
                         <input type="hidden" name="path" id="dropLocationHidden" value="/">
+                        <p class="small block muted">To change location, please use the "New document" button.</p>
                     </td>
                 </tr>
                 <tr>
                     <th><label for="dropObjectPdf">Upload PDF File</label></th>
                     <td>
-                        <input type="file" id="dropObjectPdf" name="file" accept="application/pdf" required>
+                        <input type="file" id="dropObjectPdf" name="file" accept="application/pdf" required class="my-1">
                          <p class="small block muted">Only <code>.pdf</code> extension is accepted.</p>
                     </td>
                 </tr>
                 <tr>
                     <th><label for="dropObjectName">Document name</label></th>
-                    <td><input type="text" id="dropObjectName" name="name" required></td>
+                    <td><input type="text" id="dropObjectName" name="name" required class="my-1"></td>
                 </tr>
                 <tr>
                     <th><label for="dropObjectDescription">Description or Notes</label></th>
                     <td>
-                        <textarea id="dropObjectDescription" name="description" maxlength="256"></textarea>
+                        <textarea class="my-1" id="dropObjectDescription" name="description" maxlength="256" placeholder="Enter description or notes for the document"></textarea>
                         <p class="small block muted">This field is <span class="strong">optional</span>.</p>
                     </td>
                 </tr>
@@ -150,7 +151,7 @@
                     <td>
                         <input type="text" id="dropObjectVersion" name="version"
                             pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?$"
-                            required title="Version must follow semantic versioning (e.g. 1.0.0)">
+                            required title="Version must follow semantic versioning (e.g. 1.0.0)" placeholder="e.g. 1.0.0">
                     </td>
                 </tr>
             </table>

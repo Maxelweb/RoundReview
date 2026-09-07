@@ -309,6 +309,44 @@ table.resource-table tr.folder-row.drag-over .action-item {
     font-weight: 600;
 }
 
+.pdf-drop-zone {
+    border: 2px dashed var(--theme-input-tables-border);
+    border-radius: 8px;
+    padding: 18px 12px;
+    margin: 10px 0 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--theme-input-tables-bg);
+}
+
+.pdf-drop-zone:hover {
+    border-color: var(--primary);
+    background-color: var(--theme-input-tables-border);
+}
+
+.pdf-drop-zone.drag-over {
+    border-color: var(--primary);
+    background-color: rgba(0, 123, 255, 0.05);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.pdf-drop-zone .pdf-drop-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.pdf-drop-zone .pdf-drop-text {
+    margin: 8px 0;
+    color: var(--theme-body-text);
+    font-size: 0.95rem;
+}
+
+.pdf-drop-zone #objectPdf {
+    display: none;
+}
+
 /* ===== ====== */
 
 table.nested-table tr:nth-last-child(1) {
