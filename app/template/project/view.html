@@ -90,12 +90,13 @@
             {% endfor %}
 
             {% for obj in tree['_objects'] %}
-            <tr id="file-{{ obj.id }}">
+            <tr id="file-{{ obj.id }}" class="file-row" data-file-id="{{ obj.id }}" data-file-path="{{ obj.path }}" data-file-name="{{ obj.name }}" data-object-url="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}">
                 <td>
+                    <span class="file-drag-handle" draggable="true" title="Drag to move document">
+                        <i class="fas fa-grip-vertical"></i>
+                    </span>
                     <i class="fas fa-file-alt"></i>
-                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">
-                    {{ obj.name }}
-                    </a>
+                    <span class="file-name">{{ obj.name }}</span>
                 </td>
                 <td colspan="3" class="file-infos">
                     <span class="info-item">
@@ -156,7 +157,34 @@
                 </tr>
             </table>
             <div class="my-2">
-                <input type="submit" value="Confirm">
+                <input type="submit" value="Confirm upload">
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="move-file-dialog" class="drop-upload-dialog">
+        <form id="move-file-form" method="post">
+            <div class="drop-upload-dialog-header">
+                <h3><i class="fas fa-arrow-right primary"></i> Move document</h3>
+                <button type="button" class="secondary dialog-close" aria-label="Close">&times;</button>
+            </div>
+            <p>Are you sure you want to move this document?</p>
+            <table>
+                <tr>
+                    <th style="max-width: 25%"><label>Document name</label></th>
+                    <td><span id="moveFileName"></span></td>
+                </tr>
+                <tr>
+                    <th><label>From</label></th>
+                    <td><span class="strong" id="moveFromPath"></span></td>
+                </tr>
+                <tr>
+                    <th><label>To</label></th>
+                    <td><span class="strong" id="moveToPath"></span></td>
+                </tr>
+            </table>
+            <div class="my-2">
+                <input type="submit" value="Confirm move">
             </div>
         </form>
     </dialog>

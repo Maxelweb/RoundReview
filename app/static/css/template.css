@@ -347,6 +347,50 @@ table.resource-table tr.folder-row.drag-over .action-item {
     display: none;
 }
 
+table.resource-table tr.file-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+table.resource-table tr.file-row.drag-source {
+    opacity: 0.5;
+    background-color: var(--theme-input-tables-border);
+}
+
+table.resource-table tr.file-row:hover {
+    background-color: var(--theme-resources-folder-bg-hover);
+}
+
+.file-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    padding: 4px 6px;
+    margin-right: 4px;
+    border-radius: 4px;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.file-drag-handle:active {
+    cursor: grabbing;
+}
+
+.file-drag-handle:hover {
+    background-color: var(--theme-input-tables-border);
+}
+
+.file-drag-handle i {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.file-name {
+    text-decoration: none;
+    color: var(--theme-body-text);
+}
+
 /* ===== ====== */
 
 table.nested-table tr:nth-last-child(1) {
