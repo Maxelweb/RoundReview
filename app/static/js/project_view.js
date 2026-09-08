@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        document.querySelectorAll('.dialog-close').forEach(button => {
+        document.querySelectorAll('.dialog-close-action').forEach(button => {
             button.addEventListener('click', () => {
                 dropDialog.close();
                 moveFileDialog.close();

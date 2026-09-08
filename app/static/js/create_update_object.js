@@ -16,14 +16,7 @@ function renderSegments() {
     segments.forEach((seg, idx) => {
         const span = document.createElement('span');
         span.textContent = seg;
-        span.style.border = '1px solid #007bff';
-        span.style.borderRadius = '4px';
-        span.style.padding = '2px 8px';
-        span.style.marginRight = '2px';
-        span.style.background = 'transparent';
-        span.style.marginBottom = '2px';
-        span.style.display = 'flex';
-        span.style.alignItems = 'center';
+        span.className = 'location-segment';
         locationSegments.appendChild(span);
         const slash = document.createElement('span');
         slash.textContent = '/';

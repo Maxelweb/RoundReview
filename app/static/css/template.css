@@ -393,6 +393,33 @@ table.resource-table tr.file-row:hover {
 
 /* ===== ====== */
 
+.location-input {
+    display: flex; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    padding: 4px; 
+    min-height: 26px;
+}
+
+.location-input-text {
+    border: none !important; 
+    outline: none; 
+    min-width: 40px; 
+    flex: 1; 
+    margin: 0 !important;
+}
+
+.location-segment {
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+}
+
 table.nested-table tr:nth-last-child(1) {
     border-bottom: none !important;
 }

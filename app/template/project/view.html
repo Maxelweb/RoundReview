@@ -34,7 +34,7 @@
     </div>
 
     <h3><i class="fas fa-file muted my-1"></i> All documents</h3>
-    <p class="muted">Click on a resource to explore more.</p>
+    <p class="muted">Click on a resource to explore more. You can drag-and-drop a document to upload in a specific folder.</p>
     
     <div class="my-2">
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
@@ -92,7 +92,7 @@
             {% for obj in tree['_objects'] %}
             <tr id="file-{{ obj.id }}" class="file-row" data-file-id="{{ obj.id }}" data-file-path="{{ obj.path }}" data-file-name="{{ obj.name }}" data-object-url="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}">
                 <td>
-                    <span class="file-drag-handle" draggable="true" title="Drag to move document">
+                    <span class="file-drag-handle" draggable="true" title="Drag to move document in another folder">
                         <i class="fas fa-grip-vertical"></i>
                     </span>
                     <i class="fas fa-file-alt"></i>
@@ -117,14 +117,15 @@
         <form action="{{ url_for('project.create_object', project_id=project.id) }}" method="post" enctype="multipart/form-data">
             <div class="drop-upload-dialog-header">
                 <h3><i class="fas fa-file-arrow-up primary"></i> Create new document</h3>
-                <button type="button" class="secondary dialog-close" aria-label="Close">&times;</button>
+                <button type="button" class="secondary dialog-close dialog-close-action" aria-label="Close">&times;</button>
             </div>
             <p>Fill the form below to add a new PDF to this folder.</p>
             <table>
                 <tr>
                     <th><label for="dropLocation">Location</label></th>
                     <td>
-                        <span id="dropLocation" class="drop-location block my-1"></span>
+                        <i class="fas fa-folder primary"></i>
+                        <span id="dropLocation" class="drop-location code my-1 location-segment"></span>
                         <input type="hidden" name="path" id="dropLocationHidden" value="/">
                         <p class="small block muted">To change location, please use the "New document" button.</p>
                     </td>
@@ -166,7 +167,7 @@
         <form id="move-file-form" method="post">
             <div class="drop-upload-dialog-header">
                 <h3><i class="fas fa-arrow-right primary"></i> Move document</h3>
-                <button type="button" class="secondary dialog-close" aria-label="Close">&times;</button>
+                <button type="button" class="secondary dialog-close dialog-close-action" aria-label="Close">&times;</button>
             </div>
             <p>Are you sure you want to move this document?</p>
             <table>
@@ -175,16 +176,17 @@
                     <td><span id="moveFileName"></span></td>
                 </tr>
                 <tr>
-                    <th><label>From</label></th>
-                    <td><span class="strong" id="moveFromPath"></span></td>
-                </tr>
-                <tr>
-                    <th><label>To</label></th>
-                    <td><span class="strong" id="moveToPath"></span></td>
+                    <td colspan="2" class="tcenter">
+                        <i class="fas fa-folder muted"></i>
+                        <span class="strong location-segment border-muted code" id="moveFromPath"></span> 
+                        &nbsp; &rarr; &nbsp;
+                        <i class="fas fa-folder success"></i>
+                        <span class="strong location-segment border-success code" id="moveToPath"></span></td>
                 </tr>
             </table>
             <div class="my-2">
-                <input type="submit" value="Confirm move">
+                <input type="submit" value="Confirm move"> &nbsp;
+                <button type="button" class="dialog-close-action secondary">Cancel move</button>
             </div>
         </form>
     </dialog>
