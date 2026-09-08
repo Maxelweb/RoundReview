@@ -13,6 +13,37 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const resourceTable = document.getElementById('resource-table');
+    const openFoldersStorageKey = resourceTable
+        ? `rr-project-open-folders-${resourceTable.dataset.projectId}`
+        : null;
+
+    const getStoredOpenFolders = () => {
+        if (!openFoldersStorageKey) return new Set();
+        try {
+            const storedFolders = JSON.parse(localStorage.getItem(openFoldersStorageKey) || '[]');
+            return new Set(Array.isArray(storedFolders) ? storedFolders : []);
+        } catch (error) {
+            return new Set();
+        }
+    };
+
+    const saveOpenFolders = openFolders => {
+        if (!openFoldersStorageKey) return;
+        try {
+            localStorage.setItem(openFoldersStorageKey, JSON.stringify([...openFolders]));
+        } catch (error) {
+        }
+    };
+
+    const openFolders = getStoredOpenFolders();
+    const folderRows = document.querySelectorAll('.folder-row');
+    folderRows.forEach(folderRow => {
+        if (folderRow.dataset.open === 'true') {
+            openFolders.add(folderRow.dataset.folderPath);
+        }
+    });
+
     const folderLinks = document.querySelectorAll('.folder-link');
     folderLinks.forEach(link => {
         link.addEventListener('click', function (event) {
@@ -23,9 +54,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 const isOpen = folderContent.style.display !== 'none';
                 folderContent.style.display = isOpen ? 'none' : '';
                 this.closest('.folder-row').dataset.open = !isOpen;
+                if (isOpen) {
+                    [...openFolders]
+                        .filter(path => path === folderPath || path.startsWith(`${folderPath}/`))
+                        .forEach(path => openFolders.delete(path));
+                } else {
+                    openFolders.add(folderPath);
+                }
+                saveOpenFolders(openFolders);
             }
         });
     });
+
+    openFolders.forEach(folderPath => {
+        const folderRow = [...folderRows].find(row => row.dataset.folderPath === folderPath);
+        if (!folderRow) return;
+        const folderContent = [...document.querySelectorAll('.folder-file')]
+            .find(content => content.dataset.folderPath === folderPath);
+        if (folderContent) {
+            folderContent.style.display = '';
+            folderRow.dataset.open = true;
+        }
+
+        let parentFolderFile = folderRow.closest('.folder-file');
+        while (parentFolderFile) {
+            const parentPath = parentFolderFile.dataset.folderPath;
+            const parentFolderRow = [...folderRows]
+                .find(row => row.dataset.folderPath === parentPath);
+            if (!parentFolderRow) break;
+            parentFolderFile.style.display = '';
+            parentFolderRow.dataset.open = true;
+            openFolders.add(parentPath);
+            parentFolderFile = parentFolderRow.closest('.folder-file');
+        }
+    });
+    saveOpenFolders(openFolders);
 
     const dropDialog = document.getElementById('drop-upload-dialog');
     const dropFile = document.getElementById('dropObjectPdf');

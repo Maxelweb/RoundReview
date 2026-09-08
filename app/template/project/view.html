@@ -40,7 +40,7 @@
         <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
 
-    <table id="resource-table" class="resource-table">
+    <table id="resource-table" class="resource-table" data-project-id="{{ project.id }}">
         <tr>
             <th colspan="4">Resources</th>
         </tr>
