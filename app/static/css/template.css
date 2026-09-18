@@ -465,7 +465,7 @@ span.status-label {
     padding: 0px 4px 2px;
     border-radius: 4px;
     color: #FFF;
-    border: 1px solid #2c2c2f;
+    border: 1px solid transparent;
     text-transform: lowercase;
 }
 
@@ -598,7 +598,7 @@ a.document-widgets:nth-last-child(1) {
 
 .pdf-status {
     text-align: center;
-    margin: 5px 0 0 0;
+    margin: 0px 0 0 0;
     font-size: 110%;
 }
 
