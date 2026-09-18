@@ -190,6 +190,17 @@ footer img {
 }
 
 
+.table-expanded {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-expanded th,
+.table-expanded td {
+    padding: 16px;
+    border: 1px solid var(--theme-input-tables-border);
+}
+
 /* == PROJECTS == */
 
 
@@ -713,13 +724,21 @@ span.comment-number {
     font-size: 90%;
     color: #777;
     text-align: right;
-    margin: 5px 0 0 0;
+    margin: 10px 0 0 0;
 }
 
 .comment .comment-control span {
-    margin-left: 12px;
-    transition: 0.3s;
+    margin-left: 6px;
+    transition: 0.1s;
     cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 5px;
+    border: 2px solid transparent;
+}
+
+.comment .comment-control span:hover {
+    border-color: var(--secondary);
+    transition: 0.1s;
 }
 
 .comment .comment-control i {
