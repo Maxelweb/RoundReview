@@ -37,7 +37,7 @@
     <p class="muted">Click on a resource to explore more. You can drag-and-drop a document to upload in a specific folder.</p>
     
     <div class="my-2">
-        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
+        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button class="success"><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
 
     <table id="resource-table" class="resource-table" data-project-id="{{ project.id }}">
@@ -66,7 +66,7 @@
                         {{ (value|length - (1 if '_objects' in value else 0)) + (value['_objects']|length if '_objects' in value else 0) }} items
                     </span>
                     <span class="action-item">
-                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" title="Add new document here">
+                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" class="success" title="Add new document here">
                             <i class="fas fa-plus-circle"></i>
                         </a>
                     </span>
@@ -158,7 +158,7 @@
                 </tr>
             </table>
             <div class="my-2">
-                <input type="submit" value="Confirm upload">
+                <input type="submit" value="Confirm and upload">
             </div>
         </form>
     </dialog>
@@ -170,23 +170,25 @@
                 <button type="button" class="secondary dialog-close dialog-close-action" aria-label="Close">&times;</button>
             </div>
             <p>Are you sure you want to move this document?</p>
-            <table>
+            <table class="table-expanded">
                 <tr>
-                    <th style="max-width: 25%"><label>Document name</label></th>
-                    <td><span id="moveFileName"></span></td>
+                    <td colspan="2" class="h3 tcenter strong">
+                        <i class="fas fa-file-alt"></i>
+                        <span id="moveFileName"></span>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="tcenter">
                         <i class="fas fa-folder muted"></i>
-                        <span class="strong location-segment border-muted code" id="moveFromPath"></span> 
+                        <span class="location-segment border-muted code" id="moveFromPath"></span> 
                         &nbsp; &rarr; &nbsp;
                         <i class="fas fa-folder success"></i>
-                        <span class="strong location-segment border-success code" id="moveToPath"></span></td>
+                        <span class="location-segment border-success code" id="moveToPath"></span></td>
                 </tr>
             </table>
             <div class="my-2">
-                <input type="submit" value="Confirm move"> &nbsp;
-                <button type="button" class="dialog-close-action secondary">Cancel move</button>
+                <input type="submit" value="Confirm move">
+                <button type="button" class="dialog-close-action secondary">Cancel</button>
             </div>
         </form>
     </dialog>

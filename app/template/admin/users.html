@@ -77,7 +77,7 @@
                             <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
                                 <input type="hidden" name="target" value="delete">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
-                                <input type="submit" value="Delete">
+                                <input type="submit" class="danger" value="Delete">
                             </form>
                             {% else %}
                             <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
@@ -89,7 +89,7 @@
                             <form action="{{ url_for('admin.users') }}" method="post" class="diblock my-1">
                                 <input type="hidden" name="target" value="password">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
-                                <input type="submit" value="Reset password">
+                                <input type="submit" class="warning" value="Reset password">
                             </form>
                         {% endif %}
                     </td>
