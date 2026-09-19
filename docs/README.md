@@ -18,6 +18,7 @@ A webhook is a notification that is triggered inside the system when a document 
 ### Notification Details
 
 The notification includes the following details:
+
 - **Event type**: "object.updated"
 - **Object ID**: The ID of the object that has been updated
 - **Project ID**: The ID of the project associated with the object
