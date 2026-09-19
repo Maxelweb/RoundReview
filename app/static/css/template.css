@@ -853,8 +853,9 @@ canvas {
   cursor: pointer;
 }
 
-.information-menu .menu-content span {
+.information-menu .menu-content span.menu-content-title {
     display: block;
+    color: var(--muted);
     margin: 3px 0 0;
 }
 

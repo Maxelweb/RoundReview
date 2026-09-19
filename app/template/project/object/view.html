@@ -81,19 +81,19 @@
 
     <div id="information-menu" class="information-menu">
         <div class="menu-header">
-            <h3><i class="fas fa-file primary my-1"></i> Document information </h3>
+            <h3><i class="fas fa-file-alt primary my-1"></i> Document Information </h3>
             <span id="close-information" class="close-btn"><i class="fas fa-close"></i></span>
         </div>
         <div class="menu-content">
-            <p><span class="muted">Project title</span> <strong>{{ project.title }}</strong></p>
-            <p><span class="muted">Document version</span> <strong>v{{ object.version }}</strong></p>
-            <p><span class="muted">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <code>{{ object.path }}</code></p>
-            <p><span class="muted">Author:</span> <strong>{{ object.user.name }}</strong></p>
-            <p><span class="muted">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
-            <p><span class="muted">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+            <p><span class="menu-content-title">Project title</span> <strong>{{ project.title }}</strong></p>
+            <p><span class="menu-content-title">Document version</span> <strong>v{{ object.version }}</strong></p>
+            <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code diblock">{{ object.path }}</span></p>
+            <p><span class="menu-content-title">Author</span> <strong>{{ object.user.name }}</strong></p>
+            <p><span class="menu-content-title">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
+            <p><span class="menu-content-title">Last update date</span> <strong>{{ object.update_date }}</strong></p>
 
-            <p><span class="muted my-1">Actions</span> 
-            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
+            <p><span class="menu-content-title my-1">Actions</span> 
+            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
             &nbsp;
             <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-arrow-down"></i> Download</button></a>
             &nbsp;
