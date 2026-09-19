@@ -4,10 +4,6 @@
 Round Review is a PDF platform to manage documents and reviews with collaborators.
 </div>
 
-> [!NOTE]
-> The project is under active development and the current version is in **beta**
-
-
 ![RoundReview Platform](docs/images/screenshots/index-page.jpg)
 
 Checkout more [screenshots](https://github.com/Maxelweb/RoundReview/releases/tag/v0.2.0).
@@ -37,6 +33,9 @@ Checkout more [screenshots](https://github.com/Maxelweb/RoundReview/releases/tag
   - Supports external bots via 3rd-party API for document reviews  
     - 📝 *Example 1:* When a document is `Approved`, apply a signature to the PDF  
     - 🧠 *Example 2:* Create your own AI integration for LLM-based summaries and reviews  
+
+> [!NOTE]
+> The project is under active development and the current version is in **beta**
 
 ## Plugins
 
