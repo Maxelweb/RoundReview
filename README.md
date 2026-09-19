@@ -1,12 +1,12 @@
 # <div align="center">📄 Round Review</div>
 
 <div align="center">
-Round Review is a PDF platform to manage documents and reviews with collaborators.
+Round Review is a PDF platform to manage documents and reviews with collaborators.<br><br>
 </div>
 
 ![RoundReview Platform](docs/images/screenshots/index-page.jpg)
 
-Checkout more [screenshots](https://github.com/Maxelweb/RoundReview/releases/tag/v0.2.0).
+Checkout more screenshots [here](https://github.com/Maxelweb/RoundReview/releases/tag/v0.2.0).
 
 ## Features
 
