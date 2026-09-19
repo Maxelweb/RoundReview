@@ -49,6 +49,10 @@ const buttonNightMode = document.getElementById('night-mode');
 
 const buttonsDeleteReview = document.querySelectorAll('.delete-review');
 const boxesReviewValue = document.querySelectorAll('.bot-review-value');
+const editCommentDialog = document.getElementById('edit-comment-dialog');
+const editCommentForm = document.getElementById('edit-comment-form');
+const editCommentInput = document.getElementById('edit-comment-input');
+let commentBeingEdited = null;
 
 const selectStatusElement = document.getElementById("status-label");
 const selectStatusTick = {
@@ -392,10 +396,21 @@ function loadComments(per_page = true) {
                         }, 100); 
                     }
                 });
+
+                const editBtn = document.createElement("span");
+                editBtn.title = "Edit comment";
+                editBtn.innerHTML = "<i class='fas warning fa-pen'></i>";
+                editBtn.addEventListener("click", () => {
+                    commentBeingEdited = { id, data };
+                    editCommentInput.value = text;
+                    editCommentDialog.showModal();
+                    editCommentInput.focus();
+                });
                 
                 // Create object
                 commentControl.appendChild(goToBtn);
                 if (reviewEnabled) {
+                    commentControl.appendChild(editBtn);
                     commentControl.appendChild(resolveBtn);
                     commentControl.appendChild(deleteBtn);
                 }
@@ -413,6 +428,36 @@ function loadComments(per_page = true) {
         }
     });    
 }
+
+function closeEditCommentDialog() {
+    editCommentDialog.close();
+    commentBeingEdited = null;
+}
+
+document.getElementById('close-edit-comment').addEventListener('click', closeEditCommentDialog);
+document.getElementById('cancel-edit-comment').addEventListener('click', closeEditCommentDialog);
+
+editCommentForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const updatedText = editCommentInput.value.trim();
+    if (!commentBeingEdited || !updatedText) {
+        return;
+    }
+
+    const { id, data } = commentBeingEdited;
+    data.inlineComments = data.inlineComments.map(comment =>
+        comment.id === id ? { ...comment, text: updatedText } : comment
+    );
+
+    putObject("/api/objects/" + pdfObjectId, { comments: data }, (err) => {
+        if (err) {
+            alert("Error updating comment: " + err);
+            return;
+        }
+        closeEditCommentDialog();
+        loadComments(commentsModePerPage);
+    });
+});
 
 // ======================= Reviews =======================
 
