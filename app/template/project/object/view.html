@@ -14,8 +14,8 @@
             <div class="pdf-control">
                 <button id="toggle-outline" title="Toggle index"><i class="fas fa-list-ol"></i></button>
                 &nbsp;
-                <button id="prev-page" title="Previous page"><i class="fas fa-arrow-left"></i></button>
-                <button id="next-page" title="Next page"><i class="fas fa-arrow-right"></i></button>
+                <button id="prev-page" title="Previous page" class="secondary"><i class="fas fa-arrow-left"></i></button>
+                <button id="next-page" title="Next page" class="secondary"><i class="fas fa-arrow-right"></i></button>
                 &nbsp;
                 Page: <span class="bold" id="page-num">1</span> / 
                 <span id="total-pages-num"></span>
@@ -31,11 +31,11 @@
                 <i class="fas fa-sun muted pointer pdf-night-mode" title="Toggle night mode" id="night-mode"></i>
             </div>
             <div class="pdf-control">
-                <button id="reset-scale" style="display: none;"><i class="fas fa-undo"></i> Reset</button>
+                <button id="reset-scale" style="display: none;" class="secondary"><i class="fas fa-undo"></i> Reset</button>
                 Scale: <span class="bold" id="page-scale"></span>
                 &nbsp;
-                <button id="page-zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
-                <button id="page-zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                <button id="page-zoom-out" class="secondary" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                <button id="page-zoom-in"  class="secondary" title="Zoom in"><i class="fas fa-search-plus"></i></button>
                 &nbsp;
                 <button id="toggle-information" title="Show/Hide Document information"><i class="fas fa-info-circle"></i></button>
             </div>
@@ -64,21 +64,36 @@
         </div>
     </div>
 
+    <dialog id="edit-comment-dialog" class="drop-upload-dialog">
+        <form id="edit-comment-form">
+            <div class="drop-upload-dialog-header">
+                <h3><i class="fas fa-pen primary"></i> Edit comment</h3>
+                <button type="button" class="secondary dialog-close" id="close-edit-comment" aria-label="Close">&times;</button>
+            </div>
+            <label for="edit-comment-input" class="muted my-1">Comment</label>
+            <textarea id="edit-comment-input" class="my-1" required></textarea>
+            <div class="my-2">
+                <input type="submit" value="Save comment">
+                <button type="button" class="secondary" id="cancel-edit-comment">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+
     <div id="information-menu" class="information-menu">
         <div class="menu-header">
-            <h3><i class="fas fa-file primary my-1"></i> Document information </h3>
+            <h3><i class="fas fa-file-alt primary my-1"></i> Document Information </h3>
             <span id="close-information" class="close-btn"><i class="fas fa-close"></i></span>
         </div>
         <div class="menu-content">
-            <p><span class="muted">Project title</span> <strong>{{ project.title }}</strong></p>
-            <p><span class="muted">Document version</span> <strong>v{{ object.version }}</strong></p>
-            <p><span class="muted">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <code>{{ object.path }}</code></p>
-            <p><span class="muted">Author:</span> <strong>{{ object.user.name }}</strong></p>
-            <p><span class="muted">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
-            <p><span class="muted">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+            <p><span class="menu-content-title">Project title</span> <strong>{{ project.title }}</strong></p>
+            <p><span class="menu-content-title">Document version</span> <strong>v{{ object.version }}</strong></p>
+            <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code diblock">{{ object.path }}</span></p>
+            <p><span class="menu-content-title">Author</span> <strong>{{ object.user.name }}</strong></p>
+            <p><span class="menu-content-title">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
+            <p><span class="menu-content-title">Last update date</span> <strong>{{ object.update_date }}</strong></p>
 
-            <p><span class="muted my-1">Actions</span> 
-            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button"><i class="fas fa-edit"></i> Edit</button></a>
+            <p><span class="menu-content-title my-1">Actions</span> 
+            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
             &nbsp;
             <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-arrow-down"></i> Download</button></a>
             &nbsp;

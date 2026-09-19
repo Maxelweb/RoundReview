@@ -190,6 +190,17 @@ footer img {
 }
 
 
+.table-expanded {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-expanded th,
+.table-expanded td {
+    padding: 16px;
+    border: 1px solid var(--theme-input-tables-border);
+}
+
 /* == PROJECTS == */
 
 
@@ -253,6 +264,173 @@ table.resource-table tr.folder-row {
     border-bottom: 2px solid var(--theme-resources-folder-border);
 }
 
+table.resource-table tr.folder-row.drag-over {
+    background-color: var(--primary);
+    color: #fff;
+    animation: folder-drop-pulse 0.8s ease-in-out infinite alternate;
+}
+
+/* ==== Drag and Drop files styles ==== */
+
+table.resource-table tr.folder-row.drag-over a,
+table.resource-table tr.folder-row.drag-over i,
+table.resource-table tr.folder-row.drag-over .action-item {
+    color: #fff;
+}
+
+@keyframes folder-drop-pulse {
+    from { opacity: 0.65; }
+    to { opacity: 1; }
+}
+
+.drop-upload-dialog {
+    width: min(720px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    border: 2px solid var(--theme-input-tables-border);
+    border-radius: 8px;
+    padding: 20px;
+    color: var(--theme-body-text);
+    background: var(--theme-body-bg);
+}
+
+.drop-upload-dialog::backdrop {
+    background: rgb(0 0 0 / 0.65);
+}
+
+.drop-upload-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.drop-upload-dialog-header h3 {
+    margin: 0;
+}
+
+.drop-upload-dialog .dialog-close {
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 4px 9px;
+    border-radius: 50px;
+}
+
+.drop-location {
+    margin-left: 6px;
+    font-weight: 600;
+}
+
+.pdf-drop-zone {
+    border: 2px dashed var(--theme-input-tables-border);
+    border-radius: 8px;
+    padding: 18px 12px;
+    margin: 10px 0 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--theme-input-tables-bg);
+}
+
+.pdf-drop-zone:hover {
+    border-color: var(--primary);
+    background-color: var(--theme-input-tables-border);
+}
+
+.pdf-drop-zone.drag-over {
+    border-color: var(--primary);
+    background-color: rgba(0, 123, 255, 0.05);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.pdf-drop-zone .pdf-drop-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.pdf-drop-zone .pdf-drop-text {
+    margin: 8px 0;
+    color: var(--theme-body-text);
+    font-size: 0.95rem;
+}
+
+.pdf-drop-zone #objectPdf {
+    display: none;
+}
+
+table.resource-table tr.file-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+table.resource-table tr.file-row.drag-source {
+    opacity: 0.5;
+    background-color: var(--theme-input-tables-border);
+}
+
+table.resource-table tr.file-row:hover {
+    background-color: var(--theme-resources-folder-bg-hover);
+}
+
+.file-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    padding: 4px 6px;
+    margin-right: 4px;
+    border-radius: 4px;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.file-drag-handle:active {
+    cursor: grabbing;
+}
+
+.file-drag-handle:hover {
+    background-color: var(--theme-input-tables-border);
+}
+
+.file-drag-handle i {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.file-name {
+    text-decoration: none;
+    color: var(--theme-body-text);
+}
+
+/* ===== ====== */
+
+.location-input {
+    display: flex; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    padding: 4px; 
+    min-height: 26px;
+}
+
+.location-input-text {
+    border: none !important; 
+    outline: none; 
+    min-width: 40px; 
+    flex: 1; 
+    margin: 0 !important;
+}
+
+.location-segment {
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+}
+
 table.nested-table tr:nth-last-child(1) {
     border-bottom: none !important;
 }
@@ -287,7 +465,7 @@ span.status-label {
     padding: 0px 4px 2px;
     border-radius: 4px;
     color: #FFF;
-    border: 1px solid #2c2c2f;
+    border: 1px solid transparent;
     text-transform: lowercase;
 }
 
@@ -377,10 +555,11 @@ a.document-widgets:nth-last-child(1) {
 
 .pdf-viewer {
     position: relative;
-    display: inline-block;
+    display: inline-grid;
     vertical-align: top;
     box-shadow: -2px 0 5px var(--theme-toolbars-shadow);
     border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 .pdf-navbar {
@@ -414,13 +593,13 @@ a.document-widgets:nth-last-child(1) {
 }
 
 .pdf-night-mode:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
     transition: 0.3s;
 }
 
 .pdf-status {
     text-align: center;
-    margin: 5px 0 0 0;
+    margin: 0px 0 0 0;
     font-size: 110%;
 }
 
@@ -473,12 +652,15 @@ a.document-widgets:nth-last-child(1) {
 }
 
 .pdf-sidebar {
-    width: 20%;
-    padding: 10px;
+    padding: 0 10px;
     min-height: 20vh;
     color: var(--theme-body-text);
-    display: inline-block;
-    margin-left: 20px;
+    display: inline-grid;
+    margin: 0 20px;
+}
+
+.pdf-sidebar h3 {
+    margin: 0 0 0.5rem 0;
 }
 
 select.comments-mode {
@@ -498,6 +680,23 @@ select.comments-mode {
 .comment-list {
     max-height: calc(100vh - 100px);
     overflow: auto;
+}
+
+.comment-list::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+.comment-list::-webkit-scrollbar {
+	width: 12px;
+}
+.comment-list::-webkit-scrollbar-thumb {
+	background-color: var(--secondary);
+	border: 4px solid transparent;
+	background-clip: padding-box;
+	border-radius: 5px;
+    padding-left: 2px;
+}
+.comment-list:hover::-webkit-scrollbar-thumb {
+	background-color: var(--secondary);
 }
 
 .comment {
@@ -546,13 +745,21 @@ span.comment-number {
     font-size: 90%;
     color: #777;
     text-align: right;
-    margin: 5px 0 0 0;
+    margin: 10px 0 0 0;
 }
 
 .comment .comment-control span {
-    margin-left: 12px;
-    transition: 0.3s;
+    margin-left: 6px;
+    transition: 0.1s;
     cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 5px;
+    border: 2px solid transparent;
+}
+
+.comment .comment-control span:hover {
+    border-color: var(--secondary);
+    transition: 0.1s;
 }
 
 .comment .comment-control i {
@@ -646,8 +853,9 @@ canvas {
   cursor: pointer;
 }
 
-.information-menu .menu-content span {
+.information-menu .menu-content span.menu-content-title {
     display: block;
+    color: var(--muted);
     margin: 3px 0 0;
 }
 

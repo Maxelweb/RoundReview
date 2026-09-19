@@ -34,13 +34,13 @@
     </div>
 
     <h3><i class="fas fa-file muted my-1"></i> All documents</h3>
-    <p class="muted">Click on a resource to explore more.</p>
+    <p class="muted">Click on a resource to explore more. You can drag-and-drop a document to upload in a specific folder.</p>
     
     <div class="my-2">
-        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button><i class="fas fa-plus-circle"></i> New Document</button></a>
+        <a href="{{ url_for('project.create_object', project_id=project.id) }}"><button class="success"><i class="fas fa-plus-circle"></i> New Document</button></a>
     </div>
 
-    <table id="resource-table" class="resource-table">
+    <table id="resource-table" class="resource-table" data-project-id="{{ project.id }}">
         <tr>
             <th colspan="4">Resources</th>
         </tr>
@@ -66,7 +66,7 @@
                         {{ (value|length - (1 if '_objects' in value else 0)) + (value['_objects']|length if '_objects' in value else 0) }} items
                     </span>
                     <span class="action-item">
-                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" title="Add new document here">
+                        <a href="{{ url_for('project.create_object', project_id=project.id, folder_path=current_path) }}" class="success" title="Add new document here">
                             <i class="fas fa-plus-circle"></i>
                         </a>
                     </span>
@@ -90,12 +90,13 @@
             {% endfor %}
 
             {% for obj in tree['_objects'] %}
-            <tr id="file-{{ obj.id }}">
+            <tr id="file-{{ obj.id }}" class="file-row" data-file-id="{{ obj.id }}" data-file-path="{{ obj.path }}" data-file-name="{{ obj.name }}" data-object-url="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}">
                 <td>
+                    <span class="file-drag-handle" draggable="true" title="Drag to move document in another folder">
+                        <i class="fas fa-grip-vertical"></i>
+                    </span>
                     <i class="fas fa-file-alt"></i>
-                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=obj.id) }}" class="resource-link">
-                    {{ obj.name }}
-                    </a>
+                    <span class="file-name">{{ obj.name }}</span>
                 </td>
                 <td colspan="3" class="file-infos">
                     <span class="info-item">
@@ -111,6 +112,86 @@
         {% endmacro %}
         {{ render_tree(tree['root']) }}
     </table>
+
+    <dialog id="drop-upload-dialog" class="drop-upload-dialog">
+        <form action="{{ url_for('project.create_object', project_id=project.id) }}" method="post" enctype="multipart/form-data">
+            <div class="drop-upload-dialog-header">
+                <h3><i class="fas fa-file-arrow-up primary"></i> Create new document</h3>
+                <button type="button" class="secondary dialog-close dialog-close-action" aria-label="Close">&times;</button>
+            </div>
+            <p>Fill the form below to add a new PDF to this folder.</p>
+            <table>
+                <tr>
+                    <th><label for="dropLocation">Location</label></th>
+                    <td>
+                        <i class="fas fa-folder primary"></i>
+                        <span id="dropLocation" class="drop-location code my-1 location-segment"></span>
+                        <input type="hidden" name="path" id="dropLocationHidden" value="/">
+                        <p class="small block muted">To change location, please use the "New document" button.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="dropObjectPdf">Upload PDF File</label></th>
+                    <td>
+                        <input type="file" id="dropObjectPdf" name="file" accept="application/pdf" required class="my-1">
+                         <p class="small block muted">Only <code>.pdf</code> extension is accepted.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="dropObjectName">Document name</label></th>
+                    <td><input type="text" id="dropObjectName" name="name" required class="my-1"></td>
+                </tr>
+                <tr>
+                    <th><label for="dropObjectDescription">Description or Notes</label></th>
+                    <td>
+                        <textarea class="my-1" id="dropObjectDescription" name="description" maxlength="256" placeholder="Enter description or notes for the document"></textarea>
+                        <p class="small block muted">This field is <span class="strong">optional</span>.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="dropObjectVersion">Version</label></th>
+                    <td>
+                        <input type="text" id="dropObjectVersion" name="version"
+                            pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?$"
+                            required title="Version must follow semantic versioning (e.g. 1.0.0)" placeholder="e.g. 1.0.0">
+                    </td>
+                </tr>
+            </table>
+            <div class="my-2">
+                <input type="submit" value="Confirm and upload">
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="move-file-dialog" class="drop-upload-dialog">
+        <form id="move-file-form" method="post">
+            <div class="drop-upload-dialog-header">
+                <h3><i class="fas fa-arrow-right primary"></i> Move document</h3>
+                <button type="button" class="secondary dialog-close dialog-close-action" aria-label="Close">&times;</button>
+            </div>
+            <p>Are you sure you want to move this document?</p>
+            <table class="table-expanded">
+                <tr>
+                    <td colspan="2" class="h3 tcenter strong">
+                        <i class="fas fa-file-alt"></i>
+                        <span id="moveFileName"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="tcenter">
+                        <i class="fas fa-folder muted"></i>
+                        <span class="location-segment border-muted code" id="moveFromPath"></span> 
+                        &nbsp; &rarr; &nbsp;
+                        <i class="fas fa-folder success"></i>
+                        <span class="location-segment border-success code" id="moveToPath"></span></td>
+                </tr>
+            </table>
+            <div class="my-2">
+                <input type="submit" value="Confirm move">
+                <button type="button" class="dialog-close-action secondary">Cancel</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="{{ url_for('static', filename='js/project_view.js') }}" type="module"></script>
 
