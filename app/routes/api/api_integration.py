@@ -111,8 +111,8 @@ def object_review_create(project_id:str, object_id: str):
             return {"error": "Bad Request: 'url' exceeds maximum length of 128 characters"}, 400
         if url_text is not None and len(url_text) > 64:
             return {"error": "Bad Request: 'url_text' exceeds maximum length of 64 characters"}, 400
-        if len(value) > 8192:
-            return {"error": "Bad Request: 'value' exceeds maximum length of 8192 characters"}, 400
+        if len(value) > 32768:
+            return {"error": "Bad Request: 'value' exceeds maximum length of 32768 characters"}, 400
 
         # Check if the user is a member of the project
         member_check = db.c.execute(
@@ -273,8 +273,8 @@ def integration_review_update(review_id: str):
     data = request.get_json(silent=True)
     if not data or not isinstance(data.get("value"), str):
         return {"error": "Bad Request: 'value' must be a string"}, 400
-    if len(data["value"]) > 8192:
-        return {"error": "Bad Request: 'value' exceeds maximum length of 8192 characters"}, 400
+    if len(data["value"]) > 32768:
+        return {"error": "Bad Request: 'value' exceeds maximum length of 32768 characters"}, 400
 
     db = Database()
     try:

@@ -283,6 +283,9 @@ table.resource-table tr.folder-row.drag-over .action-item {
     to { opacity: 1; }
 }
 
+/* ==== Dialogs ==== */
+/* FIXME: refactor this to be more generic */
+
 .drop-upload-dialog {
     width: min(720px, calc(100% - 32px));
     max-height: calc(100% - 32px);
@@ -706,20 +709,24 @@ select.comments-mode {
     overflow: auto;
 }
 
-.comment-list::-webkit-scrollbar-track {
+.comment-list::-webkit-scrollbar-track,
+.bot-review::-webkit-scrollbar-track {
 	background-color: transparent;
 }
-.comment-list::-webkit-scrollbar {
+.comment-list::-webkit-scrollbar,
+.bot-review::-webkit-scrollbar {
 	width: 12px;
 }
-.comment-list::-webkit-scrollbar-thumb {
+.comment-list::-webkit-scrollbar-thumb,
+.bot-review::-webkit-scrollbar-thumb {
 	background-color: var(--secondary);
 	border: 4px solid transparent;
 	background-clip: padding-box;
 	border-radius: 5px;
     padding-left: 2px;
 }
-.comment-list:hover::-webkit-scrollbar-thumb {
+.comment-list:hover::-webkit-scrollbar-thumb,
+.bot-review:hover::-webkit-scrollbar-thumb {
 	background-color: var(--secondary);
 }
 
