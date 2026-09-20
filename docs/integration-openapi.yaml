@@ -170,6 +170,45 @@ paths:
           description: Internal server error
 
   /api/integrations/reviews/{review_id}:
+    put:
+      summary: Update an integration review
+      description: Update the value of an integration review owned by the authenticated user or managed by a project owner/reviewer.
+      operationId: updateIntegrationReview
+      tags:
+        - Reviews
+      parameters:
+        - name: review_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: x-api-key
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+              properties:
+                value:
+                  type: string
+                  maxLength: 8192
+      responses:
+        "200":
+          description: Review updated successfully
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Review does not exist or cannot be updated
     delete:
       summary: Delete an integration review
       description: Delete an integration review. The review can be deleted by its owner or by a project member with OWNER/REVIEWER role on the associated project.
