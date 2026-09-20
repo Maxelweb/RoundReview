@@ -13,20 +13,6 @@ services:
     env_file:
       - ./envs/rr-app.env
 
-  roundreview_pdf_notary_bot:
-    container_name: "roundreview_pdf_notary_bot"
-    build: ./plugins/pdf-notary-bot
-    restart: unless-stopped
-    ports: 
-      - "8081:8081"
-    volumes:
-      - rr_signed_pdfs:/signed_pdfs
-      # NOTE: Update this volume according to the location of your certificates
-      - ./certs:/certs
-    env_file:
-      - ./envs/rr-pdf-notary-bot.env
-
 volumes:
   rr_sessions:
   rr_database:
-  rr_signed_pdfs:

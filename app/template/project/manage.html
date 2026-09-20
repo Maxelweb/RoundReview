@@ -39,7 +39,7 @@
                 {% if puser.id != user.id %}
                 <form action="{{ url_for('project.manage_project', project_id=project.id) }}?action=unjoin" method="post">
                     <input type="hidden" name="username" value="{{ puser.name }}">
-                    <button type="submit" title="Remove user from project"><i class="fas danger fa-trash-alt"></i></button>
+                    <button type="submit" class="danger" title="Remove user from project"><i class="fas fa-trash-alt"></i></button>
                 </form>
                 {% endif %}
             </td>

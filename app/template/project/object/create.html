@@ -10,14 +10,14 @@
             <tr>
                 <th><label for="objectPdf">Location</label></th>
                 <td width="75%">
-                    <div id="locationInput" class="location-input" tabindex="0" style="display: flex; align-items: center; flex-wrap: wrap; padding: 4px; min-height: 26px;">
+                    <div id="locationInput" class="location-input" tabindex="0">
                         <code>/</code> &nbsp;
                         <input type="hidden" name="path" id="locationHidden"
                         {% if data %} value="{{ data.path }}" {% else %} value="{{ folder_path }}" {% endif %}>
                         <span id="locationSegments" style="display: flex; align-items: center; flex-wrap: wrap;">
                             <span style="margin: 0px 2px;">/</span>
                         </span>
-                        <input type="text" id="locationText" style="border: none; outline: none; min-width: 40px; flex: 1;">
+                        <input type="text" id="locationText" class="location-input-text">
                     </div>
                     <p class="small block muted">Use <code>/</code> to add new folders (max 3 folders).</p>
                 </td>
@@ -25,7 +25,11 @@
             <tr>
                 <th><label for="objectPdf">PDF File</label></th>
                 <td>
-                    <input type="file" id="objectPdf" name="file" accept="application/pdf" required class="my-1">
+                    <div id="pdfDropZone" class="pdf-drop-zone">
+                        <div class="pdf-drop-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <p class="pdf-drop-text">Drag and drop your PDF here or click to select</p>
+                        <input type="file" id="objectPdf" name="file" accept="application/pdf" required class="my-1">
+                    </div>
                     <p class="small block muted">Only <code>.pdf</code> extension is accepted.</p>
                 </td>
             </tr>
@@ -36,9 +40,9 @@
                 </td>
             </tr>
             <tr>
-                <th><label for="objectDescription">Description / Notes</label></th>
+                <th><label for="objectDescription">Description or Notes</label></th>
                 <td>
-                    <textarea id="objectDescription" name="description" placeholder="Enter description" maxlength="256" class="my-1">{% if data %}{{ data.description }}{% endif %}</textarea>
+                    <textarea id="objectDescription" name="description" placeholder="Enter description or notes for the document" maxlength="256" class="my-1">{% if data %}{{ data.description }}{% endif %}</textarea>
                     <p class="small block muted">This field is <span class="strong">optional</span>.</p>
                 </td>
             </tr>
@@ -50,7 +54,7 @@
             </tr>
         </table>
         <div class="my-2">
-            <input type="submit" value="Confirm">
+            <input type="submit" value="Confirm and upload">
         </div>
     </form>
 

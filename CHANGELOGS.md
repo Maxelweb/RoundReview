@@ -1,5 +1,15 @@
 # Changelogs
 
+**v0.3.0** (2026-10-20)
+
+- Add drag-n-drop in project view
+- Add drag-n-drop in add new document
+- Add edit comment dialog
+- Add possibility to move document from one folder to the other in project view
+- Add opened folders of a project in memory
+- Style and theme improvements
+- Refactor: move `./plugins` to separate repository ([Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins))
+
 **v0.2.1** (2025-11-02)
 
 - Update documentation and environment variables documentation

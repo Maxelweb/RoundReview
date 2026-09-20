@@ -262,3 +262,48 @@ def integration_review_delete(review_id: str):
         return {"error": "Internal server error"}, 500
     finally:
         db.close()
+
+@api_integration_bp.route("/api/integrations/reviews/<review_id>", methods=["PUT"])
+def integration_review_update(review_id: str):
+    """ Update an integration review owned by the authenticated user """
+    if not check_authentication():
+        return {"error": "Unauthorized"}, 401
+
+    user_id = session["user"].id if is_logged() else get_user_from_api_key(request.headers.get("x-api-key")).id
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data.get("value"), str):
+        return {"error": "Bad Request: 'value' must be a string"}, 400
+    if len(data["value"]) > 8192:
+        return {"error": "Bad Request: 'value' exceeds maximum length of 8192 characters"}, 400
+
+    db = Database()
+    try:
+        review_check = db.c.execute(
+            """
+            SELECT 1
+            FROM object_integration_review
+            WHERE id = ? AND user_id = ?
+            UNION
+            SELECT 1
+            FROM object_integration_review oir
+            JOIN object o ON oir.object_id = o.id
+            JOIN project_user pu ON o.project_id = pu.project_id
+            WHERE oir.id = ? AND pu.user_id = ? AND pu.role IN (?, ?)
+            """,
+            (review_id, user_id, review_id, user_id, Role.OWNER.value, Role.REVIEWER.value)
+        ).fetchone()
+        if not review_check:
+            return {"error": "Not Found: Review does not exist or cannot be updated by you"}, 404
+
+        db.c.execute(
+            "UPDATE object_integration_review SET value = ? WHERE id = ?",
+            (data["value"], review_id)
+        )
+        db.commit()
+        db.log(user_id, f"object review update (review_id={review_id})")
+        return {"message": "Review updated successfully"}, 200
+    except Exception as e:
+        log.error(f"Error updating review {review_id} for user {user_id}: {e}")
+        return {"error": "Internal server error"}, 500
+    finally:
+        db.close()

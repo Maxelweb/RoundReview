@@ -25,6 +25,10 @@ a:hover {
     color: var(--theme-a-link-hover);
 }
 
+a.success:hover, a.danger:hover, a.warning:hover, a.secondary:hover {
+    color: var(--theme-a-link-alt-hover) !important;
+}
+
 /* a:visited {
     
 } */
@@ -38,8 +42,10 @@ img {
     max-width: 200px;
 }
 
-h2 {
+
+h2, .h2 {
     margin: 0.5rem 0;
+    font-size: 1.5rem;
 }
 
 h2 small {
@@ -47,6 +53,16 @@ h2 small {
     border-radius: 8px;
     padding: 3px 6px;
     font-size: small;
+}
+
+h3, .h3 {
+    font-size: 1.17rem;
+    margin: 1.0rem 0rem 0.5rem;
+}
+
+p {
+    margin: 0.25rem 0 0.75rem;
+    line-height: 1.5rem;
 }
 
 input[type=text], 
@@ -90,7 +106,8 @@ input[type=reset] {
     border-radius: 5px;
     background-color: var(--theme-input-tables-bg);
     color: var(--primary);
-    padding: 7px 9px;
+    padding: 4px 10px;
+    margin-right: 3px;
 }
 
 button:hover, 
@@ -107,7 +124,6 @@ input[type=submit]:focus,
 input[type=reset]:focus {
     background-color: var(--theme-input-focus-primary);
 }
-
 
 button.secondary, 
 input[type=button].secondary, 
@@ -133,6 +149,79 @@ input[type=reset].secondary:focus {
     background-color: var(--theme-input-focus-secondary);
 }
 
+button.warning, 
+input[type=button].warning, 
+input[type=submit].warning, 
+input[type=reset].warning {
+    border-color: var(--warning);
+    background-color: var(--theme-input-tables-bg);
+    color: var(--warning);
+}
+
+button.warning:hover, 
+input[type=button].warning:hover, 
+input[type=submit].warning:hover, 
+input[type=reset].warning:hover {
+    background-color: var(--theme-input-tables-border);
+    cursor: pointer;
+}
+
+button.warning:focus, 
+input[type=button].warning:focus, 
+input[type=submit].warning:focus, 
+input[type=reset].warning:focus {
+    background-color: var(--theme-input-focus-warning);
+}
+
+
+button.danger, 
+input[type=button].danger, 
+input[type=submit].danger, 
+input[type=reset].danger {
+    border-color: var(--danger);
+    background-color: var(--theme-input-tables-bg);
+    color: var(--danger);
+}
+
+button.danger:hover, 
+input[type=button].danger:hover, 
+input[type=submit].danger:hover, 
+input[type=reset].danger:hover {
+    background-color: var(--theme-input-tables-border);
+    cursor: pointer;
+}
+
+button.danger:focus, 
+input[type=button].danger:focus, 
+input[type=submit].danger:focus, 
+input[type=reset].danger:focus {
+    background-color: var(--theme-input-focus-danger);
+}
+
+button.success, 
+input[type=button].success, 
+input[type=submit].success, 
+input[type=reset].success {
+    border-color: var(--success);
+    background-color: var(--theme-input-tables-bg);
+    color: var(--success);
+}
+
+button.success:hover, 
+input[type=button].success:hover, 
+input[type=submit].success:hover, 
+input[type=reset].success:hover {
+    background-color: var(--theme-input-tables-border);
+    cursor: pointer;
+}
+
+button.success:focus, 
+input[type=button].success:focus, 
+input[type=submit].success:focus, 
+input[type=reset].success:focus {
+    background-color: var(--theme-input-focus-success);
+}
+
 textarea {
     max-width: 98% !important;
     resize: vertical;
@@ -147,6 +236,10 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+button i {
+    padding: 2px 0;
 }
 
 .custom-input {

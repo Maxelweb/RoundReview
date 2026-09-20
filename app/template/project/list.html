@@ -4,7 +4,7 @@
     <p class="muted">Click on a project to view the documents inside of it and manage it (owners only).</p>
 
     <div class="my-2">
-        <a href="{{ url_for('project.create') }}"><button><i class="fas fa-plus-circle"></i> New Project</button></a>
+        <a href="{{ url_for('project.create') }}"><button class="success"><i class="fas fa-plus-circle"></i> New Project</button></a>
     </div>
 
     {% if not projects %}
@@ -18,8 +18,8 @@
         {% for project in projects %}
         <tr>
             <td>
-                <i class="fas fa-rocket primary my-1"></i>
-                <a href="{{ url_for('project.view_objects', project_id=project.id) }}">{{ project.title }}</a>
+                <i class="fas fa-rocket primary my-1 h3"></i>
+                <a class="h3 bold" href="{{ url_for('project.view_objects', project_id=project.id) }}">{{ project.title }}</a>
             </td>
         </tr>
         {% endfor %}

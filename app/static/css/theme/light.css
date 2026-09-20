@@ -25,8 +25,12 @@
     --theme-input-tables-border: #eee9e9;
     --theme-input-focus-primary: #c9d0da;
     --theme-input-focus-secondary: #d1d1d1;
+    --theme-input-focus-warning: #efd289;
+    --theme-input-focus-success: #d1e0c9;
+    --theme-input-focus-danger: #e0c9c9;
     --theme-a-link: #37519d;
     --theme-a-link-hover: #2755df;
+    --theme-a-link-alt-hover: #6f6f6f;
 
     --theme-resources-folder-bg: #f5f5f7;
     --theme-resources-folder-border: #ebebeb;
@@ -40,7 +44,9 @@
     --theme-toolbars-outline-border: #fff;
     --theme-toolbars-shadow: rgba(196, 196, 196, 0.3);
 
+    --theme-review-bg: #f0f0f0;
+
     --theme-comment-bg: #ebebeb;
     --theme-comment-border: #ebebeb;
-    --theme-comment-control: #ffff4a;
+    --theme-comment-control: #c0c022;
 }

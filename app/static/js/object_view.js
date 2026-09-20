@@ -2,7 +2,7 @@
 // ===========================================
 
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-import { renderText } from "./utils/text.js";
+import { renderText, escapeText } from "./utils/text.js";
 import { buildOutlineList } from "./object/viewer.js";
 import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
@@ -49,6 +49,16 @@ const buttonNightMode = document.getElementById('night-mode');
 
 const buttonsDeleteReview = document.querySelectorAll('.delete-review');
 const boxesReviewValue = document.querySelectorAll('.bot-review-value');
+const buttonsOpenReview = document.querySelectorAll('.open-review');
+const reviewDialog = document.getElementById('review-dialog');
+const reviewDialogTitle = document.getElementById('review-dialog-title');
+const reviewDialogContent = document.getElementById('review-dialog-content');
+const buttonCloseReviewDialog = document.getElementById('close-review-dialog');
+
+const editCommentDialog = document.getElementById('edit-comment-dialog');
+const editCommentForm = document.getElementById('edit-comment-form');
+const editCommentInput = document.getElementById('edit-comment-input');
+let commentBeingEdited = null;
 
 const selectStatusElement = document.getElementById("status-label");
 const selectStatusTick = {
@@ -263,7 +273,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
             commentTextarea.removeEventListener("keydown", onKeyDown);
             setTimeout(() => {
                 loadComments(commentsModePerPage);
-            }, 100);
+            }, 250); // Delay to ensure the comment is saved before reloading
         } else if (e.key === "Escape") {
             commentTextarea.value = "";
             commentTextarea.style.display = "none";
@@ -392,10 +402,21 @@ function loadComments(per_page = true) {
                         }, 100); 
                     }
                 });
+
+                const editBtn = document.createElement("span");
+                editBtn.title = "Edit comment";
+                editBtn.innerHTML = "<i class='fas warning fa-pen'></i>";
+                editBtn.addEventListener("click", () => {
+                    commentBeingEdited = { id, data };
+                    editCommentInput.value = text;
+                    editCommentDialog.showModal();
+                    editCommentInput.focus();
+                });
                 
                 // Create object
                 commentControl.appendChild(goToBtn);
                 if (reviewEnabled) {
+                    commentControl.appendChild(editBtn);
                     commentControl.appendChild(resolveBtn);
                     commentControl.appendChild(deleteBtn);
                 }
@@ -414,7 +435,52 @@ function loadComments(per_page = true) {
     });    
 }
 
+function closeEditCommentDialog() {
+    editCommentDialog.close();
+    commentBeingEdited = null;
+}
+
+document.getElementById('close-edit-comment').addEventListener('click', closeEditCommentDialog);
+document.getElementById('cancel-edit-comment').addEventListener('click', closeEditCommentDialog);
+
+editCommentForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const updatedText = editCommentInput.value.trim();
+    if (!commentBeingEdited || !updatedText) {
+        return;
+    }
+
+    const { id, data } = commentBeingEdited;
+    data.inlineComments = data.inlineComments.map(comment =>
+        comment.id === id ? { ...comment, text: updatedText } : comment
+    );
+
+    putObject("/api/objects/" + pdfObjectId, { comments: data }, (err) => {
+        if (err) {
+            alert("Error updating comment: " + err);
+            return;
+        }
+        closeEditCommentDialog();
+        loadComments(commentsModePerPage);
+    });
+});
+
 // ======================= Reviews =======================
+
+// Open the already-rendered review content in a larger dialog
+buttonsOpenReview.forEach(button => {
+    button.addEventListener('click', () => {
+        const review = button.closest('.bot-review');
+        const reviewValue = review.querySelector('.bot-review-value');
+        const reviewTitle = review.querySelector('.bot-review-header h4');
+
+        reviewDialogTitle.textContent = reviewTitle.textContent.trim();
+        reviewDialogContent.innerHTML = reviewValue.outerHTML;
+        reviewDialog.showModal();
+    });
+});
+
+buttonCloseReviewDialog.addEventListener('click', () => reviewDialog.close());
 
 
 // Event listener to delete review if present
@@ -461,9 +527,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Render markdown
     if (boxesReviewValue.length > 0) {
-        console.debug("CIAO")
         boxesReviewValue.forEach(element => {
-            element.innerHTML = marked.parse(renderText(element.textContent));
+            element.innerHTML = marked.parse(escapeText(element.textContent));
         });
     }
 });
