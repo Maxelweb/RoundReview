@@ -79,6 +79,14 @@
         </form>
     </dialog>
 
+    <dialog id="review-dialog" class="drop-upload-dialog bot-review-dialog">
+        <div class="drop-upload-dialog-header bot-review-dialog-header">
+            <h2><i class="fas fa-robot secondary"></i> Bot Integration Review <small id="review-dialog-title"></small></h2>
+            <button type="button" class="secondary dialog-close" id="close-review-dialog" aria-label="Close">&times;</button>
+        </div>
+        <div id="review-dialog-content" class="bot-review bot-review-expanded"></div>
+    </dialog>
+
     <div id="information-menu" class="information-menu">
         <div class="menu-header">
             <h3><i class="fas fa-file-alt primary my-1"></i> Document Information </h3>
@@ -114,6 +122,7 @@
                         <div class="bot-review-header">
                             <h4><i class="fas fa-robot"></i> {{ review.name }}</h4>
                             <span class="muted">{{ review.created_at }}</span>
+                            <button type="button" class="secondary small open-review" title="Open review" aria-label="Open review: {{ review.name }}"><i class="fas fa-up-right-and-down-left-from-center"></i></button>
                         </div>
                         <div class="bot-review-content">
                             <div class="bot-review-value">{{ review.value }}</div>

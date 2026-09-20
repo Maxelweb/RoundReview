@@ -49,6 +49,12 @@ const buttonNightMode = document.getElementById('night-mode');
 
 const buttonsDeleteReview = document.querySelectorAll('.delete-review');
 const boxesReviewValue = document.querySelectorAll('.bot-review-value');
+const buttonsOpenReview = document.querySelectorAll('.open-review');
+const reviewDialog = document.getElementById('review-dialog');
+const reviewDialogTitle = document.getElementById('review-dialog-title');
+const reviewDialogContent = document.getElementById('review-dialog-content');
+const buttonCloseReviewDialog = document.getElementById('close-review-dialog');
+
 const editCommentDialog = document.getElementById('edit-comment-dialog');
 const editCommentForm = document.getElementById('edit-comment-form');
 const editCommentInput = document.getElementById('edit-comment-input');
@@ -460,6 +466,21 @@ editCommentForm.addEventListener('submit', event => {
 });
 
 // ======================= Reviews =======================
+
+// Open the already-rendered review content in a larger dialog
+buttonsOpenReview.forEach(button => {
+    button.addEventListener('click', () => {
+        const review = button.closest('.bot-review');
+        const reviewValue = review.querySelector('.bot-review-value');
+        const reviewTitle = review.querySelector('.bot-review-header h4');
+
+        reviewDialogTitle.textContent = reviewTitle.textContent.trim();
+        reviewDialogContent.innerHTML = reviewValue.outerHTML;
+        reviewDialog.showModal();
+    });
+});
+
+buttonCloseReviewDialog.addEventListener('click', () => reviewDialog.close());
 
 
 // Event listener to delete review if present
