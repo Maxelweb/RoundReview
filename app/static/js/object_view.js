@@ -273,7 +273,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
             commentTextarea.removeEventListener("keydown", onKeyDown);
             setTimeout(() => {
                 loadComments(commentsModePerPage);
-            }, 100);
+            }, 250); // Delay to ensure the comment is saved before reloading
         } else if (e.key === "Escape") {
             commentTextarea.value = "";
             commentTextarea.style.display = "none";
