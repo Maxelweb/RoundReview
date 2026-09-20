@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: Round Review - Integration API
   description: "API for 3rd party integrations (for project owners and reviewers only). [NOTES]: The documentation is under creation and it can be subject to changes"
-  version: "0.1.0"
+  version: "0.3.0"
   contact:
     name: Developer
     email: maxelweb+roundreview@gmail.com
