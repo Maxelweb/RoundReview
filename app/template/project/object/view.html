@@ -95,21 +95,24 @@
         <div class="menu-content">
             <p><span class="menu-content-title">Project title</span> <strong>{{ project.title }}</strong></p>
             <p><span class="menu-content-title">Document version</span> <strong>v{{ object.version }}</strong></p>
-            <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code diblock">{{ object.path }}</span></p>
+            <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code inline small">{{ object.path }}</span></p>
             <p><span class="menu-content-title">Author</span> <strong>{{ object.user.name }}</strong></p>
             <p><span class="menu-content-title">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
             <p><span class="menu-content-title">Last update date</span> <strong>{{ object.update_date }}</strong></p>
 
-            <p><span class="menu-content-title my-1">Actions</span> 
-            <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
-            &nbsp;
-            <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-arrow-down"></i> Download</button></a>
-            &nbsp;
+            <p><span class="menu-content-title my-1">Actions</span></p> 
+            <p>
+                <a target="_blank" href="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}"><button><i class="fas fa-file-arrow-down"></i> Download original</button></a>
+            </p>
+            <p>
+                <a href="{{ url_for('object.get_file_with_comments', project_id=project.id, object_id=object.id) }}"><button type="button"><i class="fas fa-file-circle-plus"></i> Download with comments</button></a>
+            </p>
             <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
+                <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
+                &nbsp;
                 <input type="hidden" name="object_id" value="{{ object.id }}">
                 <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>
             </form>
-            </p>
         </div>
     </div>
 

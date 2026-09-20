@@ -1,6 +1,9 @@
 import base64
+import io
+import json
+import fitz
 from types import SimpleNamespace
-from flask import render_template, request, session, Blueprint, redirect
+from flask import render_template, request, session, Blueprint, redirect, send_file
 from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
@@ -85,6 +88,64 @@ def get_file(project_id: str, object_id: str):
             return {"error": "PDF content not found"}, 404
     else:
         return {"error": f"Error fetching object: {res['error']}"}, status
+
+
+@object_blueprint.route('/api/projects/<project_id>/objects/<object_id>/file/comments', methods=["GET"])
+def get_file_with_comments(project_id: str, object_id: str):
+    """Serve a copy of the PDF with its comments as standard PDF annotations."""
+    if not is_logged():
+        return {"error": "Unauthorized"}, 401
+
+    res, status = object_get(object_id, load_raw=True)
+    if status != 200:
+        return {"error": f"Error fetching object: {res['error']}"}, status
+
+    obj = Object.from_dict(res["object"])
+    if str(obj.project_id) != str(project_id):
+        return {"error": "Object not found"}, 404
+    if obj.raw is None:
+        return {"error": "PDF content not found"}, 404
+
+    raw_object = base64.b64decode(obj.raw)
+    document = fitz.open(stream=raw_object, filetype="pdf")
+    try:
+        comments_data = json.loads(obj.comments or '{"inlineComments": []}')
+    except (TypeError, json.JSONDecodeError):
+        comments_data = {"inlineComments": []}
+
+    for comment in comments_data.get("inlineComments", []):
+        try:
+            page_number = int(comment.get("page", 1)) - 1
+            x = float(comment["x"])
+            y = float(comment["y"])
+            if not 0 <= page_number < len(document):
+                continue
+
+            page = document[page_number]
+            annotation_text = comment.get("text", "")
+            annotation = page.add_text_annot(fitz.Point(x, y), annotation_text, icon="Comment")
+            annotation.set_info(
+                title=comment.get("authorName", "Round Review"),
+                subject="Round Review comment",
+            )
+            annotation.update()
+        except (KeyError, TypeError, ValueError):
+            continue
+
+    metadata = document.metadata or {}
+    metadata["producer"] = "Round Review"
+    metadata["creator"] = metadata.get("creator") or "Round Review"
+    metadata["keywords"] = ", ".join(filter(None, [metadata.get("keywords", ""), "Round Review"]))
+    document.set_metadata(metadata)
+    output = document.tobytes(garbage=4, deflate=True)
+    document.close()
+
+    return send_file(
+        io.BytesIO(output),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"{obj.name}-with-comments.pdf",
+    )
 
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>/edit', methods=["GET", "POST"])
