@@ -11,3 +11,12 @@ export function renderText(rawText) {
 
   return safeText;
 }
+
+export function escapeText(rawText) {
+  const safeText = rawText
+    // Escape HTML
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+
+  return safeText;
+}

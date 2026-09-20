@@ -2,7 +2,7 @@
 // ===========================================
 
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-import { renderText } from "./utils/text.js";
+import { renderText, escapeText } from "./utils/text.js";
 import { buildOutlineList } from "./object/viewer.js";
 import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
@@ -506,9 +506,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Render markdown
     if (boxesReviewValue.length > 0) {
-        console.debug("CIAO")
         boxesReviewValue.forEach(element => {
-            element.innerHTML = marked.parse(renderText(element.textContent));
+            element.innerHTML = marked.parse(escapeText(element.textContent));
         });
     }
 });
