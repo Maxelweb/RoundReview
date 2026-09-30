@@ -3,6 +3,7 @@
 
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 import { renderText, escapeText } from "./utils/text.js";
+import { compareSemanticVersions } from "./utils/version.js";
 import { buildOutlineList } from "./object/viewer.js";
 import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
@@ -510,6 +511,22 @@ if (compareVersionsButton && compareDialog) {
         );
     };
 
+    const findNewerVersion = versions => {
+        const versionOrder = compareSemanticVersions(versions[0].dataset.version, versions[1].dataset.version);
+        if (versionOrder !== null && versionOrder !== 0) return versionOrder > 0 ? versions[0] : versions[1];
+
+        const dateOrder = versions[0].dataset.updateDate.localeCompare(versions[1].dataset.updateDate);
+        if (dateOrder === 0) return null;
+        return dateOrder > 0 ? versions[0] : versions[1];
+    };
+
+    const setNewerLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-newer-label';
+        label.textContent = 'Newer';
+        element.append(document.createTextNode(' '), label);
+    };
+
     const updateVersionSelection = () => {
         const selectedVersions = compareVersionOptions.filter(option => option.checked);
         compareVersionsButton.disabled = selectedVersions.length !== 2;
@@ -524,12 +541,12 @@ if (compareVersionsButton && compareDialog) {
     const updateComparisonZoom = () => {
         compareDialog.style.setProperty('--compare-zoom-width', `${comparisonZoom * 100}%`);
         zoomValue.textContent = `${Math.round(comparisonZoom * 100)}%`;
-        zoomOutButton.disabled = comparisonZoom <= 1;
+        zoomOutButton.disabled = comparisonZoom <= 0.5;
         zoomInButton.disabled = comparisonZoom >= 2;
     };
 
     zoomOutButton.addEventListener('click', () => {
-        comparisonZoom = Math.max(1, comparisonZoom - 0.25);
+        comparisonZoom = Math.max(0.5, comparisonZoom - 0.25);
         updateComparisonZoom();
     });
     zoomInButton.addEventListener('click', () => {
@@ -550,8 +567,13 @@ if (compareVersionsButton && compareDialog) {
         document.getElementById('text-removed-count').textContent = '0';
         document.getElementById('text-modified-count').textContent = '0';
         document.getElementById('visual-difference-count').textContent = '0';
-        setVersionTitle(document.getElementById('compare-previous-title'), selectedVersions[0]);
-        setVersionTitle(document.getElementById('compare-current-title'), selectedVersions[1]);
+        const newerVersion = findNewerVersion(selectedVersions);
+        const previousTitle = document.getElementById('compare-previous-title');
+        const currentTitle = document.getElementById('compare-current-title');
+        setVersionTitle(previousTitle, selectedVersions[0]);
+        setVersionTitle(currentTitle, selectedVersions[1]);
+        if (newerVersion === selectedVersions[0]) setNewerLabel(previousTitle);
+        if (newerVersion === selectedVersions[1]) setNewerLabel(currentTitle);
         document.querySelectorAll('.compare-content').forEach(content => {
             content.textContent = 'Loading comparison...';
         });

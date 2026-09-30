@@ -229,6 +229,7 @@ function appendPdfPage(container, imageUrl, width, height, textRegions, graphics
     const frame = document.createElement('div');
     frame.className = 'compare-page-frame';
     frame.style.aspectRatio = `${width} / ${height}`;
+    frame.appendChild(heading);
     if (imageUrl) {
         const image = document.createElement('img');
         image.src = imageUrl;
@@ -272,7 +273,7 @@ function appendPdfPage(container, imageUrl, width, height, textRegions, graphics
         textOverlay.appendChild(box);
     });
     frame.appendChild(textOverlay);
-    page.append(heading, frame);
+    page.appendChild(frame);
     container.appendChild(page);
 }
 

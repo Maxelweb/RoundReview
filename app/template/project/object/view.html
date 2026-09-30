@@ -175,6 +175,7 @@
                                            data-url="{{ url_for('object.get_file', project_id=project.id, object_id=revision.id) }}"
                                          data-name="{{ revision.name }}"
                                          data-version="{{ revision.version }}"
+                                                                                     data-update-date="{{ revision.update_date }}"
                                            aria-label="Select {{ revision.name }} version {{ revision.version }} for comparison"
                                            {% if revision.id == object.id %}checked{% endif %}>
                                 </td>
