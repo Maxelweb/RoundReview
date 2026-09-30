@@ -531,6 +531,17 @@ table.resource-table tr.folder-row.drag-over .action-item {
     white-space: nowrap;
 }
 
+.compare-newer-label {
+    display: inline-block;
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 14%, transparent);
+    border-radius: 2px;
+    padding: 1px 4px;
+    font-size: 0.78em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 .compare-content {
     min-height: 0;
     overflow: auto;
@@ -1042,15 +1053,19 @@ select.comments-mode {
 }
 
 .comment-list::-webkit-scrollbar-track,
-.bot-review::-webkit-scrollbar-track {
+.bot-review::-webkit-scrollbar-track,
+.compare-content::-webkit-scrollbar-track {
 	background-color: transparent;
 }
 .comment-list::-webkit-scrollbar,
-.bot-review::-webkit-scrollbar {
+.bot-review::-webkit-scrollbar,
+.compare-content::-webkit-scrollbar {
 	width: 12px;
+    height: 12px;
 }
 .comment-list::-webkit-scrollbar-thumb,
-.bot-review::-webkit-scrollbar-thumb {
+.bot-review::-webkit-scrollbar-thumb,
+.compare-content::-webkit-scrollbar-thumb {
 	background-color: var(--secondary);
 	border: 4px solid transparent;
 	background-clip: padding-box;
@@ -1058,7 +1073,8 @@ select.comments-mode {
     padding-left: 2px;
 }
 .comment-list:hover::-webkit-scrollbar-thumb,
-.bot-review:hover::-webkit-scrollbar-thumb {
+.bot-review:hover::-webkit-scrollbar-thumb,
+.compare-content:hover::-webkit-scrollbar-thumb {
 	background-color: var(--secondary);
 }
 
