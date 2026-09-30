@@ -153,6 +153,86 @@
 
     {% endif %}
 
+    {% if object_versions %}
+        <section class="container version-history">
+            <h3><i class="fas fa-code-branch primary my-1"></i> Document versions</h3>
+            <div class="version-history-table-wrap">
+                <table class="resource-table">
+                    <thead>
+                        <tr>
+                            <th class="version-select-heading" aria-hidden="true"></th>
+                            <th>Document name</th>
+                            <th>Status</th>
+                            <th>Last modified</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for revision in object_versions %}
+                            <tr{% if revision.id == object.id %} class="current-version"{% endif %}>
+                                <td class="version-select-cell">
+                                    <input type="checkbox" class="compare-version-option"
+                                           data-url="{{ url_for('object.get_file', project_id=project.id, object_id=revision.id) }}"
+                                         data-name="{{ revision.name }}"
+                                         data-version="{{ revision.version }}"
+                                           aria-label="Select {{ revision.name }} version {{ revision.version }} for comparison"
+                                           {% if revision.id == object.id %}checked{% endif %}>
+                                </td>
+                                <td><a href="{{ url_for('object.view_object', project_id=project.id, object_id=revision.id) }}">{{ revision.name }}</a></td>
+                                <td><span class="status-label" style="background-color: {{ revision.status.get_color(revision.status) }};">{{ revision.status.value }}</span></td>
+                                <td>{{ revision.update_date }}</td>
+                                <td>v{{ revision.version }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" id="compare-versions" class="my-1" disabled>
+                <i class="fas fa-code-compare"></i> Compare selected versions
+            </button>
+        </section>
+    {% endif %}
+
+    {% if object_versions %}
+        <dialog id="compare-dialog" class="drop-upload-dialog pdf-compare-dialog">
+            <div class="drop-upload-dialog-header">
+                <h2><i class="fas fa-code-compare primary"></i> Compare document versions</h2>
+                <button type="button" class="secondary dialog-close" id="close-compare-dialog" aria-label="Close">&times;</button>
+            </div>
+            <div class="compare-toolbar">
+                <div class="compare-counters" aria-live="polite">
+                    <span><i class="fas fa-font"></i> Text differences: <strong id="text-difference-count">0</strong></span>
+                    <ul class="compare-text-breakdown">
+                        <li class="compare-stat-added"><span>Added</span><strong id="text-added-count">0</strong></li>
+                        <li class="compare-stat-removed"><span>Removed</span><strong id="text-removed-count">0</strong></li>
+                        <li class="compare-stat-modified"><span>Modified</span><strong id="text-modified-count">0</strong></li>
+                    </ul>
+                    <span><i class="fas fa-image"></i> Visual differences: <strong id="visual-difference-count">0</strong></span>
+                </div>
+                <fieldset class="compare-mode" aria-label="Difference type">
+                    <label><input type="checkbox" id="show-text-differences" checked> Text</label>
+                    <label><input type="checkbox" id="show-visual-differences" checked> Graphics</label>
+                    <label><input type="checkbox" id="sync-pdf-scroll" checked> Sync scroll</label>
+                </fieldset>
+                <div class="compare-zoom" role="group" aria-label="PDF zoom">
+                    <button type="button" id="compare-zoom-out" class="secondary" title="Zoom out" aria-label="Zoom out"><i class="fas fa-search-minus"></i></button>
+                    <span id="compare-zoom-value">100%</span>
+                    <button type="button" id="compare-zoom-in" class="secondary" title="Zoom in" aria-label="Zoom in"><i class="fas fa-search-plus"></i></button>
+                </div>
+            </div>
+            <div class="compare-panes">
+                <section class="compare-pane">
+                    <h3 id="compare-previous-title"></h3>
+                    <div id="compare-previous-content" class="compare-content"></div>
+                </section>
+                <section class="compare-pane">
+                    <h3 id="compare-current-title"></h3>
+                    <div id="compare-current-content" class="compare-content"></div>
+                </section>
+            </div>
+        </dialog>
+    {% endif %}
+
     <script src="{{ url_for('static', filename='js/object_view.js') }}" type="module"></script>
 
 {% endblock %}

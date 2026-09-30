@@ -342,6 +342,338 @@ table.resource-table tr.folder-row.drag-over .action-item {
     margin-top: 6px;
 }
 
+
+/* ==== Comparison dialog ==== */
+
+.version-history {
+    margin-top: 28px;
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.version-history-table-wrap {
+    overflow-x: auto;
+}
+
+.version-history .current-version {
+    background-color: color-mix(in srgb, var(--primary) 12%, var(--theme-input-tables-bg));
+}
+
+.version-select-heading,
+.version-select-cell {
+    width: 38px;
+    text-align: center;
+}
+
+.version-select-cell input {
+    width: auto;
+    margin: 0;
+    accent-color: var(--primary);
+}
+
+.pdf-compare-dialog {
+    width: min(1600px, calc(100vw - 40px));
+    height: min(88vh, 960px);
+    max-height: calc(100% - 24px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "header header" "pdf controls";
+    gap: 10px 14px;
+    min-height: 0;
+}
+
+.pdf-compare-dialog:not([open]) {
+    display: none;
+}
+
+.pdf-compare-dialog > .drop-upload-dialog-header {
+    grid-area: header;
+    align-self: start;
+}
+
+.pdf-compare-dialog > .drop-upload-dialog-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.compare-toolbar {
+    display: flex;
+    grid-area: controls;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 12px;
+    min-height: 0;
+    overflow-y: auto;
+    border-bottom: 0;
+    border-left: 1px solid var(--theme-input-tables-border);
+    padding: 8px 4px 8px 14px;
+}
+
+.compare-counters {
+    display: flex;
+    order: 2;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid var(--theme-input-tables-border);
+    padding-top: 10px;
+}
+
+.compare-text-breakdown {
+    display: grid;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.compare-text-breakdown li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 3px 8px;
+    border-left: 3px solid var(--compare-stat-color);
+    background: color-mix(in srgb, var(--compare-stat-color) 12%, transparent);
+    font-size: 0.88rem;
+}
+
+.compare-stat-added {
+    --compare-stat-color: var(--success);
+}
+
+.compare-stat-removed {
+    --compare-stat-color: var(--danger);
+}
+
+.compare-stat-modified {
+    --compare-stat-color: var(--warning);
+}
+
+.compare-mode {
+    display: flex;
+    order: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--theme-input-tables-border);
+    padding: 6px 10px;
+    margin: 0;
+}
+
+.compare-mode label {
+    white-space: nowrap;
+}
+
+.compare-mode input {
+    accent-color: var(--primary);
+    margin-right: 4px;
+}
+
+.compare-zoom {
+    display: flex;
+    order: 0;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+}
+
+.compare-zoom span {
+    min-width: 48px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.compare-panes {
+    display: grid;
+    grid-area: pdf;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-height: 0;
+    flex: 1;
+}
+
+.compare-pane {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.compare-pane > h3 {
+    position: absolute;
+    z-index: 4;
+    top: 8px;
+    left: 8px;
+    max-width: calc(100% - 16px);
+    margin: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--theme-input-tables-border);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--theme-body-bg) 92%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.compare-version-title {
+    display: inline-block;
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 14%, transparent);
+    border-radius: 2px;
+    padding: 1px 4px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.compare-content {
+    min-height: 0;
+    overflow: auto;
+    flex: 1;
+    border: 1px solid var(--theme-input-tables-border);
+    background: var(--theme-input-tables-bg);
+    padding: 10px;
+}
+
+.compare-content[hidden],
+.compare-text-overlay[hidden],
+.compare-graphics-overlay[hidden] {
+    display: none;
+}
+
+.compare-pdf-page {
+    position: relative;
+    border-bottom: 1px solid var(--theme-input-tables-border);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.compare-pdf-page h4 {
+    position: absolute;
+    z-index: 3;
+    top: 6px;
+    right: 8px;
+    margin: 0;
+    padding: 2px 6px;
+    border: 1px solid var(--theme-input-tables-border);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--theme-body-bg) 90%, transparent);
+    color: var(--theme-body-text);
+    font-size: 0.75rem;
+}
+
+.compare-page-frame {
+    position: relative;
+    width: var(--compare-zoom-width, 100%);
+    background: #fff;
+    overflow: hidden;
+}
+
+.compare-page-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+}
+
+.compare-text-overlay,
+.compare-graphics-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.compare-text-overlay {
+    z-index: 2;
+}
+
+.compare-graphics-overlay {
+    z-index: 1;
+}
+
+.compare-text-box {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 1px;
+}
+
+.compare-text-added {
+    background: color-mix(in srgb, color-mix(in srgb, var(--success) 55%, #22c55e 45%) 48%, transparent);
+    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--success) 60%, #15803d 40%);
+}
+
+.compare-text-modified {
+    background: color-mix(in srgb, color-mix(in srgb, var(--warning) 45%, #facc15 55%) 48%, transparent);
+    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--warning) 60%, #a16207 40%);
+}
+
+.compare-text-removed {
+    background: color-mix(in srgb, color-mix(in srgb, var(--danger) 55%, #ef4444 45%) 48%, transparent);
+    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--danger) 60%, #b91c1c 40%);
+}
+
+.compare-graphics-box {
+    position: absolute;
+    border: 2px dashed var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+@media (max-width: 760px) {
+    .pdf-compare-dialog {
+        width: calc(100% - 16px);
+        height: calc(100vh - 16px);
+        padding: 12px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        grid-template-areas: "header" "controls" "pdf";
+    }
+
+    .compare-toolbar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        border-left: 0;
+        border-bottom: 1px solid var(--theme-input-tables-border);
+        padding: 0 0 8px;
+    }
+
+    .compare-counters,
+    .compare-mode {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .compare-zoom,
+    .compare-mode,
+    .compare-counters {
+        order: initial;
+    }
+
+    .compare-counters {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .compare-panes {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+
+    .compare-counters {
+        gap: 6px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+
+
+
+/* ==== Drop zones ==== */
+
 .drop-location {
     margin-left: 6px;
     font-weight: 600;

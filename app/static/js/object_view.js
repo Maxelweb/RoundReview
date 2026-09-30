@@ -55,6 +55,10 @@ const reviewDialogTitle = document.getElementById('review-dialog-title');
 const reviewDialogContent = document.getElementById('review-dialog-content');
 const buttonCloseReviewDialog = document.getElementById('close-review-dialog');
 
+const compareVersionsButton = document.getElementById('compare-versions');
+const compareDialog = document.getElementById('compare-dialog');
+const buttonCloseCompareDialog = document.getElementById('close-compare-dialog');
+
 const editCommentDialog = document.getElementById('edit-comment-dialog');
 const editCommentForm = document.getElementById('edit-comment-form');
 const editCommentInput = document.getElementById('edit-comment-input');
@@ -465,6 +469,128 @@ editCommentForm.addEventListener('submit', event => {
     });
 });
 
+
+
+// ======================= Comparison =======================
+
+if (compareVersionsButton && compareDialog) {
+    let releaseCompareResources = () => {};
+    const compareVersionOptions = [...document.querySelectorAll('.compare-version-option')];
+    const zoomOutButton = document.getElementById('compare-zoom-out');
+    const zoomInButton = document.getElementById('compare-zoom-in');
+    const zoomValue = document.getElementById('compare-zoom-value');
+    const syncScrollToggle = document.getElementById('sync-pdf-scroll');
+    const previousContent = document.getElementById('compare-previous-content');
+    const currentContent = document.getElementById('compare-current-content');
+    let comparisonZoom = 1;
+    let scrollSyncing = false;
+
+    const syncScroll = (source, target) => {
+        if (!syncScrollToggle.checked || scrollSyncing) return;
+        const sourceMax = source.scrollHeight - source.clientHeight;
+        const targetMax = Math.max(0, target.scrollHeight - target.clientHeight);
+        const scrollProgress = sourceMax > 0 ? source.scrollTop / sourceMax : 0;
+        scrollSyncing = true;
+        target.scrollTop = scrollProgress * targetMax;
+        window.requestAnimationFrame(() => {
+            scrollSyncing = false;
+        });
+    };
+
+    previousContent.addEventListener('scroll', () => syncScroll(previousContent, currentContent));
+    currentContent.addEventListener('scroll', () => syncScroll(currentContent, previousContent));
+
+    const setVersionTitle = (element, versionOption) => {
+        const versionLabel = document.createElement('span');
+        versionLabel.className = 'compare-version-title';
+        versionLabel.textContent = `v${versionOption.dataset.version}`;
+        element.replaceChildren(
+            document.createTextNode(`${versionOption.dataset.name} `),
+            versionLabel,
+        );
+    };
+
+    const updateVersionSelection = () => {
+        const selectedVersions = compareVersionOptions.filter(option => option.checked);
+        compareVersionsButton.disabled = selectedVersions.length !== 2;
+        compareVersionOptions.forEach(option => {
+            option.disabled = selectedVersions.length === 2 && !option.checked;
+        });
+    };
+
+    compareVersionOptions.forEach(option => option.addEventListener('change', updateVersionSelection));
+    updateVersionSelection();
+
+    const updateComparisonZoom = () => {
+        compareDialog.style.setProperty('--compare-zoom-width', `${comparisonZoom * 100}%`);
+        zoomValue.textContent = `${Math.round(comparisonZoom * 100)}%`;
+        zoomOutButton.disabled = comparisonZoom <= 1;
+        zoomInButton.disabled = comparisonZoom >= 2;
+    };
+
+    zoomOutButton.addEventListener('click', () => {
+        comparisonZoom = Math.max(1, comparisonZoom - 0.25);
+        updateComparisonZoom();
+    });
+    zoomInButton.addEventListener('click', () => {
+        comparisonZoom = Math.min(2, comparisonZoom + 0.25);
+        updateComparisonZoom();
+    });
+    updateComparisonZoom();
+
+    compareVersionsButton.addEventListener('click', async () => {
+        const selectedVersions = compareVersionOptions.filter(option => option.checked);
+        if (selectedVersions.length !== 2) return;
+
+        compareDialog.showModal();
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+        document.getElementById('text-difference-count').textContent = '0';
+        document.getElementById('text-added-count').textContent = '0';
+        document.getElementById('text-removed-count').textContent = '0';
+        document.getElementById('text-modified-count').textContent = '0';
+        document.getElementById('visual-difference-count').textContent = '0';
+        setVersionTitle(document.getElementById('compare-previous-title'), selectedVersions[0]);
+        setVersionTitle(document.getElementById('compare-current-title'), selectedVersions[1]);
+        document.querySelectorAll('.compare-content').forEach(content => {
+            content.textContent = 'Loading comparison...';
+        });
+
+        try {
+            const { comparePdfs } = await import('./object/compare.js');
+            releaseCompareResources = await comparePdfs(selectedVersions[0].dataset.url, selectedVersions[1].dataset.url);
+        } catch (error) {
+            console.error('Unable to compare PDF versions:', error);
+            document.querySelectorAll('.compare-content').forEach(content => {
+                content.textContent = 'Unable to load the document comparison.';
+            });
+        }
+    });
+
+    const closeCompareDialog = () => {
+        compareDialog.close();
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+    };
+
+    buttonCloseCompareDialog.addEventListener('click', closeCompareDialog);
+    compareDialog.addEventListener('close', () => {
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+    });
+
+    document.getElementById('show-text-differences').addEventListener('change', event => {
+        document.querySelectorAll('.compare-text-overlay').forEach(overlay => {
+            overlay.hidden = !event.target.checked;
+        });
+    });
+    document.getElementById('show-visual-differences').addEventListener('change', event => {
+        document.querySelectorAll('.compare-graphics-overlay').forEach(overlay => {
+            overlay.hidden = !event.target.checked;
+        });
+    });
+}
+
 // ======================= Reviews =======================
 
 // Open the already-rendered review content in a larger dialog
@@ -481,7 +607,6 @@ buttonsOpenReview.forEach(button => {
 });
 
 buttonCloseReviewDialog.addEventListener('click', () => reviewDialog.close());
-
 
 // Event listener to delete review if present
 if (buttonsDeleteReview.length > 0) {
