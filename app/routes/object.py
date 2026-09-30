@@ -8,7 +8,7 @@ from .utils import is_logged, is_logged_admin
 from ..config import VERSION, log
 from ..database import Database
 from ..models import Project, Object, ObjectStatus, Role, Review
-from .api import project_list, object_get, object_update, object_review_get
+from .api import project_list, project_objects_list, object_get, object_update, object_review_get
 from .project import get_user_role_in_project
 
 
@@ -35,6 +35,13 @@ def view_object(project_id: str, object_id: str):
         obj = Object.from_dict(res["object"])
     else:
         output = ("error", res["error"])
+
+    res, status = project_objects_list(project_id)
+    object_versions = []
+    if status == 200:
+        same_name = [Object.from_dict(data) for data in res["objects"] if data["name"] == obj.name]
+        if len({revision.version for revision in same_name}) > 1:
+            object_versions = sorted(same_name, key=lambda revision: revision.update_date)
 
     res, status = object_review_get(project_id=project_id, object_id=object_id)
     reviews = []
@@ -63,6 +70,7 @@ def view_object(project_id: str, object_id: str):
         project_role=get_user_role_in_project(project_id),
         object_statuses=ObjectStatus,
         reviews=reviews,
+        object_versions=object_versions,
     )
 
 
