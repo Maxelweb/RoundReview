@@ -10,6 +10,9 @@ import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar
 import { saveLocalSettings } from "./object/storage.js";
 import { formatRelativeDate } from "./utils/date.js"
 
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
 // ======================= Variables and Constants =======================
 
 let pdfCurrentScale = 1.20;
