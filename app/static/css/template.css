@@ -1061,6 +1061,8 @@ select.comments-mode {
 .comment-list {
     max-height: calc(100vh - 100px);
     overflow: auto;
+    min-width: 330px;
+    max-width: 350px;
 }
 
 .comment-list::-webkit-scrollbar-track,
@@ -1288,6 +1290,23 @@ canvas {
 
 .bot-review-value {
     margin: 15px 0;
+    font-size: 85%;
+}
+
+.bot-review-value h4 {
+    font-size: 95%;
+}
+
+.bot-review-value h3 {
+    font-size: 110%;
+}
+
+.bot-review-value h2 {
+    font-size: 125%;
+}
+
+.bot-review-value h1 {
+    font-size: 140%;
 }
 
 .bot-review-value code {

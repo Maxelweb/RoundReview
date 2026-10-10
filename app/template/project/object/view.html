@@ -47,7 +47,8 @@
         </div>
 
         <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}" data-pdf-object-version="{{ object.version }}">
-            <canvas id="pdf-canvas"></canvas>
+            <div id="pdf-loading" class="my-2 muted"><i class="fas fa-circle-notch fa-spin"></i> Loading document...</div>
+            <canvas id="pdf-canvas" width="714" height="1010"></canvas>
             <div id="markers"></div>
             <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
         </div>

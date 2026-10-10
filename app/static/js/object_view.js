@@ -86,7 +86,9 @@ const selectStatusTick = {
 // Render page with annotations
 function renderPage(pageNumber, scale = pdfCurrentScale) {
     const canvas = document.getElementById("pdf-canvas");
+    const loading = document.getElementById("pdf-loading");
     const context = canvas.getContext("2d");
+    if(loading.className != 'hidden') loading.className = 'hidden';
     pdfInstance.getPage(pageNumber).then(page => {
         const viewport = page.getViewport({ scale });
         canvas.width =  viewport.width;
@@ -604,7 +606,7 @@ if (compareVersionsButton && compareDialog) {
         if (pdfObjectVersion === selectedVersions[1].dataset.version) setCurrentLabel(currentTitle);
 
         document.querySelectorAll('.compare-content').forEach(content => {
-            content.innerHTML = '<p class="my-2 muted"><i class="fas fa-spinner fa-spin"></i> Loading document...</p>';
+            content.innerHTML = '<p class="my-2 muted"><i class="fas fa-circle-notch fa-spin"></i> Loading document...</p>';
         });
 
         try {
