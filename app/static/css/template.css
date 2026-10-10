@@ -1022,6 +1022,14 @@ a.document-widgets:nth-last-child(1) {
     margin: 0.3em 0;
 }
 
+.pdf-outline-item .toggle-icon {
+    color: var(--primary);
+}
+
+.pdf-outline-item span:hover {
+    color: var(--muted);
+}
+
 .toggle-icon {
     cursor: pointer;
     margin-right: 0.5em;
