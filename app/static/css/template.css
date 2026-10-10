@@ -531,7 +531,8 @@ table.resource-table tr.folder-row.drag-over .action-item {
     white-space: nowrap;
 }
 
-.compare-newer-label {
+.compare-label,
+.compare-label-newer {
     display: inline-block;
     color: var(--success);
     background: color-mix(in srgb, var(--success) 14%, transparent);
@@ -540,6 +541,16 @@ table.resource-table tr.folder-row.drag-over .action-item {
     font-size: 0.78em;
     font-weight: 700;
     text-transform: uppercase;
+}
+
+.compare-label-older {
+    color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 14%, transparent);;
+}
+
+.compare-label-current {
+    color: var(--muted);
+    background: color-mix(in srgb, var(--muted) 14%, transparent);;
 }
 
 .compare-content {

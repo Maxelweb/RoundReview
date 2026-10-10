@@ -8,6 +8,7 @@ import { buildOutlineList } from "./object/viewer.js";
 import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
 import { saveLocalSettings } from "./object/storage.js";
+import { formatRelativeDate } from "./utils/date.js"
 
 // ======================= Variables and Constants =======================
 
@@ -522,7 +523,7 @@ if (compareVersionsButton && compareDialog) {
 
     const setNewerLabel = element => {
         const label = document.createElement('span');
-        label.className = 'compare-newer-label';
+        label.className = 'compare-label compare-label-newer';
         label.textContent = 'Newer';
         element.append(document.createTextNode(' '), label);
     };
@@ -678,4 +679,13 @@ document.addEventListener('DOMContentLoaded', function () {
             element.innerHTML = marked.parse(escapeText(element.textContent));
         });
     }
+
+    // Set object readable date from timestamp
+    const allObjectLastUpdates = document.querySelectorAll('.object-relative-date');
+    allObjectLastUpdates.forEach(el => {
+        const isoTimestamp = el.getAttribute('data-timestamp');
+        if (isoTimestamp) {
+            el.textContent = formatRelativeDate(isoTimestamp);
+        }
+    });
 });

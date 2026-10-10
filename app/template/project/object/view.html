@@ -97,8 +97,10 @@
             <p><span class="menu-content-title">Document version</span> <strong>v{{ object.version }}</strong></p>
             <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code inline small">{{ object.path }}</span></p>
             <p><span class="menu-content-title">Author</span> <strong>{{ object.user.name }}</strong></p>
-            <p><span class="menu-content-title">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
-            <p><span class="menu-content-title">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+            <p><span class="menu-content-title">Upload date</span> 
+                <span class="object-relative-date" data-timestamp="{{ object.upload_date }}" title="Last update: {{ object.upload_date }}"></span></p>
+            <p><span class="menu-content-title">Last update date</span> 
+                <span class="object-relative-date" data-timestamp="{{ object.update_date }}" title="Last update: {{ object.update_date }}"></span></p>
 
             <p><span class="menu-content-title my-1">Actions</span></p> 
             <p>
@@ -107,11 +109,14 @@
             <p>
                 <a href="{{ url_for('object.get_file_with_comments', project_id=project.id, object_id=object.id) }}"><button type="button"><i class="fas fa-file-circle-plus"></i> Download with comments</button></a>
             </p>
-            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
+
+            <p class="inline">
                 <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
-                &nbsp;
+            </p>
+            &nbsp;
+            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" onsubmit="return confirm('Are you sure to delete this document?')" class="inline" method="POST">
                 <input type="hidden" name="object_id" value="{{ object.id }}">
-                <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>
+                <button id="delete-object-button" type="submit" class="danger"><i class="fas fa-trash"></i> Delete</button>
             </form>
         </div>
     </div>
@@ -154,42 +159,48 @@
     {% endif %}
 
     {% if object_versions %}
-        <section class="container version-history">
+        <section class="container version-history" id="versions">
             <h3><i class="fas fa-code-branch primary my-1"></i> Document versions</h3>
             <div class="version-history-table-wrap">
                 <table class="resource-table">
                     <thead>
                         <tr>
                             <th class="version-select-heading" aria-hidden="true"></th>
-                            <th>Document name</th>
+                            <th>Version</th>
                             <th>Status</th>
                             <th>Last modified</th>
-                            <th>Version</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for revision in object_versions %}
-                            <tr{% if revision.id == object.id %} class="current-version"{% endif %}>
+                            <tr {% if revision.id == object.id %} class="current-version"{% endif %}>
                                 <td class="version-select-cell">
                                     <input type="checkbox" class="compare-version-option"
-                                           data-url="{{ url_for('object.get_file', project_id=project.id, object_id=revision.id) }}"
-                                         data-name="{{ revision.name }}"
-                                         data-version="{{ revision.version }}"
-                                                                                     data-update-date="{{ revision.update_date }}"
-                                           aria-label="Select {{ revision.name }} version {{ revision.version }} for comparison"
-                                           {% if revision.id == object.id %}checked{% endif %}>
+                                        data-url="{{ url_for('object.get_file', project_id=project.id, object_id=revision.id) }}"
+                                        data-name="{{ revision.name }}"
+                                        data-version="{{ revision.version }}"
+                                        data-update-date="{{ revision.update_date }}"
+                                        aria-label="Select {{ revision.name }} version {{ revision.version }} for comparison"
+                                        {% if revision.id == object.id %}checked{% endif %}>
                                 </td>
-                                <td><a href="{{ url_for('object.view_object', project_id=project.id, object_id=revision.id) }}">{{ revision.name }}</a></td>
-                                <td><span class="status-label" style="background-color: {{ revision.status.get_color(revision.status) }};">{{ revision.status.value }}</span></td>
-                                <td>{{ revision.update_date }}</td>
-                                <td>v{{ revision.version }}</td>
+                                <td>
+                                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=revision.id) }}#versions">v{{ revision.version }}</a>
+                                    &nbsp;
+                                    {% if revision.id == object.id %} <span class="compare-label compare-label-current">Current</span>{% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-label" style="background-color: {{ revision.status.get_color(revision.status) }};">{{ revision.status.value }}</span>
+                                </td>
+                                <td>
+                                    <span class="object-relative-date" data-timestamp="{{ revision.update_date }}" title="Last update: {{ revision.update_date }}"></span>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <button type="button" id="compare-versions" class="my-1" disabled>
-                <i class="fas fa-code-compare"></i> Compare selected versions
+            <button type="button" id="compare-versions" class="my-2" disabled>
+                Compare versions
             </button>
         </section>
     {% endif %}
