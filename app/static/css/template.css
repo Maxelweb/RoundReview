@@ -523,9 +523,9 @@ table.resource-table tr.folder-row.drag-over .action-item {
 
 .compare-version-title {
     display: inline-block;
-    color: var(--primary);
-    background: color-mix(in srgb, var(--primary) 14%, transparent);
-    border-radius: 2px;
+    color: var(--theme-body-text);
+    /* background: color-mix(in srgb, var(--primary) 14%, transparent);
+    border-radius: 2px; */
     padding: 1px 4px;
     font-weight: 700;
     white-space: nowrap;

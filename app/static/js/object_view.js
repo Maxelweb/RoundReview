@@ -24,6 +24,7 @@ let nightModeEnabled = false;
 const pdfDefaultScale = 1.20;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
 const pdfObjectId = document.getElementById("pdf-container").getAttribute("data-pdf-object-id");
+const pdfObjectVersion = document.getElementById("pdf-container").getAttribute("data-pdf-object-version");
 
 const pdfMarkers = document.getElementById("markers");
 const commentTextarea = document.getElementById("comment-input");
@@ -507,7 +508,8 @@ if (compareVersionsButton && compareDialog) {
         versionLabel.className = 'compare-version-title';
         versionLabel.textContent = `v${versionOption.dataset.version}`;
         element.replaceChildren(
-            document.createTextNode(`${versionOption.dataset.name} `),
+            // document.createTextNode(`${versionOption.dataset.name} `),
+            document.createTextNode(` `),
             versionLabel,
         );
     };
@@ -525,6 +527,20 @@ if (compareVersionsButton && compareDialog) {
         const label = document.createElement('span');
         label.className = 'compare-label compare-label-newer';
         label.textContent = 'Newer';
+        element.append(document.createTextNode(' '), label);
+    };
+
+    const setCurrentLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-label compare-label-current';
+        label.textContent = 'Current';
+        element.append(document.createTextNode(' '), label);
+    };
+
+    const setOlderLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-label compare-label-older';
+        label.textContent = 'Older';
         element.append(document.createTextNode(' '), label);
     };
 
@@ -573,10 +589,19 @@ if (compareVersionsButton && compareDialog) {
         const currentTitle = document.getElementById('compare-current-title');
         setVersionTitle(previousTitle, selectedVersions[0]);
         setVersionTitle(currentTitle, selectedVersions[1]);
-        if (newerVersion === selectedVersions[0]) setNewerLabel(previousTitle);
-        if (newerVersion === selectedVersions[1]) setNewerLabel(currentTitle);
+        if (newerVersion === selectedVersions[0]) {
+            setNewerLabel(previousTitle);
+            setOlderLabel(currentTitle);
+        }
+        if (newerVersion === selectedVersions[1]) {
+            setNewerLabel(currentTitle);
+            setOlderLabel(previousTitle);
+        }
+        if (pdfObjectVersion === selectedVersions[0].dataset.version) setCurrentLabel(previousTitle);
+        if (pdfObjectVersion === selectedVersions[1].dataset.version) setCurrentLabel(currentTitle);
+
         document.querySelectorAll('.compare-content').forEach(content => {
-            content.textContent = 'Loading comparison...';
+            content.innerHTML = '<p class="my-2 muted"><i class="fas fa-spinner fa-spin"></i> Loading document...</p>';
         });
 
         try {

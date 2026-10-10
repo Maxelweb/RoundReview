@@ -46,7 +46,7 @@
             <ul class="pdf-outline-list" id="pdf-outline-list"></ul>
         </div>
 
-        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}">
+        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}" data-pdf-object-version="{{ object.version }}">
             <canvas id="pdf-canvas"></canvas>
             <div id="markers"></div>
             <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
@@ -208,7 +208,7 @@
     {% if object_versions %}
         <dialog id="compare-dialog" class="drop-upload-dialog pdf-compare-dialog">
             <div class="drop-upload-dialog-header">
-                <h2><i class="fas fa-code-compare primary"></i> Compare document versions</h2>
+                <h2><i class="fas fa-code-compare primary"></i> Compare versions of <span class="primary">{{ object.name }}</span></h2>
                 <button type="button" class="secondary dialog-close" id="close-compare-dialog" aria-label="Close">&times;</button>
             </div>
             <div class="compare-toolbar">
