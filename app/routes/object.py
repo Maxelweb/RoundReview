@@ -181,7 +181,7 @@ def edit_object(project_id: str, object_id: str):
 
     return render_template(
         "project/object/edit.html",
-        title="Update document",
+        title="Edit document information",
         user=session["user"],
         object=obj,
         project_id=project_id,

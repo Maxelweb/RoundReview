@@ -1,12 +1,12 @@
 {% extends 'project/base.html' %}
 
 {% block inner_content %}
-    <a href="{{ url_for('project.list') }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to projects</a>
+    <a href="{{ url_for('project.list') }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to your projects</a>
 
     {% if project_role == role.OWNER %}
     <h3><i class="fas fa-rocket primary my-1"></i> Project Management</h3>
         
-    <p class="muted">&raquo; Go to <a href="{{ url_for('project.manage_project', project_id=project.id) }}">Project Management</a> to manage users and others (only for project owners).</p>
+    <p class="muted">Go to <a href="{{ url_for('project.manage_project', project_id=project.id) }}">Project Management</a> to manage info and users (only for project owners).</p>
     {% endif %}
 
     <h3><i class="fas fa-newspaper muted my-1"></i> Recent documents</h3>
