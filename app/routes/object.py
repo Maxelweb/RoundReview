@@ -131,7 +131,20 @@ def get_file_with_comments(project_id: str, object_id: str):
 
             page = document[page_number]
             annotation_text = comment.get("text", "")
-            annotation = page.add_text_annot(fitz.Point(x, y), annotation_text, icon="Comment")
+            annotation_resolved = comment.get("resolved", False)
+            if annotation_resolved:
+                annotation = page.add_text_annot(
+                    fitz.Point(x, y), 
+                    "(OK) " + annotation_text, 
+                    icon="Comment"
+                )
+                annotation.set_colors(stroke=(0.1, 0.8, 0.0))
+            else:
+                annotation = page.add_text_annot(
+                    fitz.Point(x, y), 
+                    annotation_text, 
+                    icon="Comment"
+                )          
             annotation.set_info(
                 title=comment.get("authorName", "Round Review"),
                 subject="Round Review comment",
