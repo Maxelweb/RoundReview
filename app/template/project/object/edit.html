@@ -5,14 +5,14 @@
     <br>
     <a href="{{ url_for('object.view_object', project_id=project_id, object_id=object.id) }}" class="small go-back-link"><i class="fas fa-circle-arrow-left"></i> Back to document</a>
     
-    <p>Edit the fields below as needed.</p>
+    <p>Edit the fields as needed to move the document or update information.</p>
 
     <form action="{{ url_for('object.edit_object', project_id=project_id, object_id=object.id) }}" method="post">
         <table>
             <tr>
                 <th><label for="objectPdf">Location</label></th>
                 <td width="75%">
-                    <div id="locationInput" class="location-input" tabindex="0" style="display: flex; align-items: center; flex-wrap: wrap; padding: 4px; min-height: 26px;">
+                    <div id="locationInput" class="location-input" tabindex="0">
                         <code>/</code> &nbsp;
                         <input type="hidden" name="path" id="locationHidden" value="{{ object.path }}">
                         <span id="locationSegments" style="display: flex; align-items: center; flex-wrap: wrap;">
@@ -27,6 +27,7 @@
                 <th><label for="objectName">Document name</label></th>
                 <td>
                     <input type="text" id="objectName" name="name" placeholder="Enter object name" required class="my-1" value="{{ object.name }}">
+                    <p class="small block muted">Current name: <code>{{ object.name }}</code></p>
                 </td>
             </tr>
             <tr>

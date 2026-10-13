@@ -32,7 +32,7 @@ Checkout more screenshots [here](https://github.com/Maxelweb/RoundReview/release
 - 🤖 **Plugins with Bot Integration Review**  
   - Supports external bots via 3rd-party API for document reviews  
     - 📝 *Example 1:* When a document is `Approved`, apply a signature to the PDF  
-    - 🧠 *Example 2:* Create your own AI integration for LLM-based summaries and reviews  
+    - 🧠 *Example 2:* Integrate AI with LLM to create summaries and automatic reviews
 
 > [!NOTE]
 > The project is under active development and the current version is in **beta**
@@ -60,7 +60,7 @@ If you want to add **plugins** to your Round Review instance, checkout [Round Re
 1. Start the Round Review (app) container
     - `docker-compose up roundreview_app -d --build`
 1. Go to [localhost:8080](http://localhost:8080)
-    - In case of port error (e.g. already in use), change the first port inside the docker-compose file to something else
+    - In case of port error (e.g. already in use), change the port inside the docker-compose
     - To stop this, use `docker-compose down roundreview_app`
 
 #### Default admin credentials

@@ -1,6 +1,6 @@
 # Changelogs
 
-**v0.3.0** (2026-10-20)
+**v0.3.0** (2026-10-13)
 
 - Add drag-n-drop in project view
 - Add drag-n-drop in add new document
@@ -10,6 +10,7 @@
 - Add bot integration review improvement to read reviews
 - Add `PUT /api/integrations/reviews/{review_id}` to API support
 - Add **download with comments** capability with standard PDF format for notes
+- Add comparison for documents with the same name but different version
 - Style and theme improvements
 - Refactor: move `./plugins` to separate repository ([Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins))
 

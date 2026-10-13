@@ -46,8 +46,9 @@
             <ul class="pdf-outline-list" id="pdf-outline-list"></ul>
         </div>
 
-        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}">
-            <canvas id="pdf-canvas"></canvas>
+        <div class="pdf-viewer" id="pdf-container" data-pdf-url="{{ url_for('object.get_file', project_id=project.id, object_id=object.id) }}" data-pdf-object-id="{{ object.id }}" data-pdf-object-version="{{ object.version }}">
+            <div id="pdf-loading" class="my-2 muted"><i class="fas fa-circle-notch fa-spin"></i> Loading document...</div>
+            <canvas id="pdf-canvas" width="714" height="1010"></canvas>
             <div id="markers"></div>
             <textarea id="comment-input" class="comment-textarea" placeholder="Write the comment here (press ESC to quit)"></textarea>
         </div>
@@ -97,8 +98,10 @@
             <p><span class="menu-content-title">Document version</span> <strong>v{{ object.version }}</strong></p>
             <p><span class="menu-content-title">Folder Path (<a href="{{ url_for('project.view_objects', project_id=project.id ) }}?path={{ object.path }}#resource-table">Go to folder</a>)</span> <span class="location-segment border-muted code inline small">{{ object.path }}</span></p>
             <p><span class="menu-content-title">Author</span> <strong>{{ object.user.name }}</strong></p>
-            <p><span class="menu-content-title">Upload date</span> <strong>{{ object.upload_date }}</strong></p>
-            <p><span class="menu-content-title">Last update date</span> <strong>{{ object.update_date }}</strong></p>
+            <p><span class="menu-content-title">Upload date</span> 
+                <span class="object-relative-date" data-timestamp="{{ object.upload_date }}" title="Last update: {{ object.upload_date }}"></span></p>
+            <p><span class="menu-content-title">Last update date</span> 
+                <span class="object-relative-date" data-timestamp="{{ object.update_date }}" title="Last update: {{ object.update_date }}"></span></p>
 
             <p><span class="menu-content-title my-1">Actions</span></p> 
             <p>
@@ -107,11 +110,14 @@
             <p>
                 <a href="{{ url_for('object.get_file_with_comments', project_id=project.id, object_id=object.id) }}"><button type="button"><i class="fas fa-file-circle-plus"></i> Download with comments</button></a>
             </p>
-            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" method="POST">
+
+            <p class="inline">
                 <a href="{{ url_for('object.edit_object', project_id=project.id, object_id=object.id) }}"><button id="edit-object-button" class="warning"><i class="fas fa-edit"></i> Edit</button></a>
-                &nbsp;
+            </p>
+            &nbsp;
+            <form action="{{ url_for('project.view_objects', project_id=project.id) }}?delete=1" onsubmit="return confirm('Are you sure to delete this document?')" class="inline" method="POST">
                 <input type="hidden" name="object_id" value="{{ object.id }}">
-                <button id="delete-object-button" type="submit" onclick="confirm('Are you sure to delete this document?')" class="danger"><i class="fas fa-trash"></i> Delete</button>
+                <button id="delete-object-button" type="submit" class="danger"><i class="fas fa-trash"></i> Delete</button>
             </form>
         </div>
     </div>
@@ -151,6 +157,93 @@
                 </div>
         </div>
 
+    {% endif %}
+
+    {% if object_versions %}
+        <section class="container version-history" id="versions">
+            <h3><i class="fas fa-code-branch primary my-1"></i> Document versions</h3>
+            <div class="version-history-table-wrap">
+                <table class="resource-table">
+                    <thead>
+                        <tr>
+                            <th class="version-select-heading" aria-hidden="true"></th>
+                            <th>Version</th>
+                            <th>Status</th>
+                            <th>Last modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for revision in object_versions %}
+                            <tr {% if revision.id == object.id %} class="current-version"{% endif %}>
+                                <td class="version-select-cell">
+                                    <input type="checkbox" class="compare-version-option"
+                                        data-url="{{ url_for('object.get_file', project_id=project.id, object_id=revision.id) }}"
+                                        data-name="{{ revision.name }}"
+                                        data-version="{{ revision.version }}"
+                                        data-update-date="{{ revision.update_date }}"
+                                        aria-label="Select {{ revision.name }} version {{ revision.version }} for comparison"
+                                        {% if revision.id == object.id %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('object.view_object', project_id=project.id, object_id=revision.id) }}#versions">v{{ revision.version }}</a>
+                                    &nbsp;
+                                    {% if revision.id == object.id %} <span class="compare-label compare-label-current">Current</span>{% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-label" style="background-color: {{ revision.status.get_color(revision.status) }};">{{ revision.status.value }}</span>
+                                </td>
+                                <td>
+                                    <span class="object-relative-date" data-timestamp="{{ revision.update_date }}" title="Last update: {{ revision.update_date }}"></span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" id="compare-versions" class="my-2" disabled>
+                Compare versions
+            </button>
+        </section>
+    {% endif %}
+
+    {% if object_versions %}
+        <dialog id="compare-dialog" class="drop-upload-dialog pdf-compare-dialog">
+            <div class="drop-upload-dialog-header">
+                <h2><i class="fas fa-code-compare primary"></i> Compare versions of <span class="primary">{{ object.name }}</span></h2>
+                <button type="button" class="secondary dialog-close" id="close-compare-dialog" aria-label="Close">&times;</button>
+            </div>
+            <div class="compare-toolbar">
+                <div class="compare-counters" aria-live="polite">
+                    <span><i class="fas fa-font"></i> Text differences: <strong id="text-difference-count">0</strong></span>
+                    <ul class="compare-text-breakdown">
+                        <li class="compare-stat-added"><span>Added</span><strong id="text-added-count">0</strong></li>
+                        <li class="compare-stat-removed"><span>Removed</span><strong id="text-removed-count">0</strong></li>
+                        <li class="compare-stat-modified"><span>Modified</span><strong id="text-modified-count">0</strong></li>
+                    </ul>
+                    <span><i class="fas fa-image"></i> Visual differences: <strong id="visual-difference-count">0</strong></span>
+                </div>
+                <fieldset class="compare-mode" aria-label="Difference type">
+                    <label><input type="checkbox" id="show-text-differences" checked> Text</label>
+                    <label><input type="checkbox" id="show-visual-differences" checked> Graphics</label>
+                    <label><input type="checkbox" id="sync-pdf-scroll" checked> Sync scroll</label>
+                </fieldset>
+                <div class="compare-zoom" role="group" aria-label="PDF zoom">
+                    <button type="button" id="compare-zoom-out" class="secondary" title="Zoom out" aria-label="Zoom out"><i class="fas fa-search-minus"></i></button>
+                    <span id="compare-zoom-value">100%</span>
+                    <button type="button" id="compare-zoom-in" class="secondary" title="Zoom in" aria-label="Zoom in"><i class="fas fa-search-plus"></i></button>
+                </div>
+            </div>
+            <div class="compare-panes">
+                <section class="compare-pane">
+                    <h3 id="compare-previous-title"></h3>
+                    <div id="compare-previous-content" class="compare-content"></div>
+                </section>
+                <section class="compare-pane">
+                    <h3 id="compare-current-title"></h3>
+                    <div id="compare-current-content" class="compare-content"></div>
+                </section>
+            </div>
+        </dialog>
     {% endif %}
 
     <script src="{{ url_for('static', filename='js/object_view.js') }}" type="module"></script>
