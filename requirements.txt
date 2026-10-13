@@ -4,3 +4,4 @@ waitress~=3.0
 apscheduler~=3.11
 requests~=2.32
 Authlib~=1.6
+PyMuPDF~=1.24

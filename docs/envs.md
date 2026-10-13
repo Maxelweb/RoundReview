@@ -31,23 +31,3 @@
 | `GITHUB_OAUTH_ACCESS_TOKEN_URL` | OAuth access token endpoint | https://github.com/login/oauth/access_token | No — change only for GitHub enterprise/custom endpoints |
 | `GITHUB_OAUTH_AUTHORIZE_URL` | OAuth authorize endpoint | https://github.com/login/oauth/authorize | No — change only for GitHub enterprise/custom endpoints |
 | `GITHUB_OAUTH_API_BASE_URL` | GitHub API base URL | https://api.github.com/ | No — change only for GitHub enterprise/custom endpoints |
-
-## PDF Notary Bot (plugin)
-
-> [!NOTE]
-> Copy the environment file inside `envs/template.rr-pdf-notary-bot.env` and create `envs/rr-pdf-notary-bot.env`
-
-| Variable name | Description | Default | Required to change |
-|---|---|---|---|
-| `API_KEY` | API key of a RoundReview user (used to authenticate plugin calls to the app) | None | Yes — required for operation; keep it secret |
-| `API_BASE_URL` | RoundReview application API endpoint the plugin calls | "http://roundreview_app:8080/api" | Yes — set to your app's reachable API URL (internally via Docker or externally) |
-| `PLUGIN_BASE_URL` | Public/base URL where the plugin is served; it is used to create the URL in the reviews. | "http://localhost:8081" | Yes - change this to the reachable base url + port (no forward slash) |
-| `PLUGIN_KEY_PASSPHRASE` | Passphrase for the plugin private key (if any) | None | No - if your key certificate is NOT encrypted; keep it secret |
-| `PLUGIN_KEY_PATH` | Filesystem path to private key used for signing | /certs/key.pem | No — ensure path matches your container/host path |
-| `PLUGIN_CERT_PATH` | Filesystem path to certificate used for signing | /certs/cert.pem | No — ensure path matches your container/host path |
-| `PLUGIN_SIGN_IMAGE_PATH` | Optional image used to stamp signed PDFs | None | No — set if you want a visible signature image and change it according to your container/host path (e.g. `/certs/sign.png`) |
-| `PLUGIN_SIGNED_PDFS_FOLDER` | Folder where signed PDFs are stored | /signed_pdfs | No — change it according to your container/host path |
-| `PLUGIN_IS_BEHIND_PROXY` | Plugin is hosted behind proxy (passing `x-forwarded-*`) | False | No — change it according to your configuration |
-| `PLUGIN_BASE_URL_PREFIX` | Plugin base URL prefix for APIs (must start with `/`) | `/` | No — change it according to your configuration (useful if put under a path (e.g. `mywebsite.ltd/notary-bot`)) |
-
-| `DEBUG` | Enable debug logging and development mode for the plugin | None (unset) | No — let empty in production and `1` or `True` in development |

@@ -1,4 +1,0 @@
-pyHanko[image-support]~=0.31
-Flask~=3.1
-apscheduler~=3.11
-waitress~=3.0

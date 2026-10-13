@@ -2,11 +2,16 @@
 // ===========================================
 
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-import { renderText } from "./utils/text.js";
+import { renderText, escapeText } from "./utils/text.js";
+import { compareSemanticVersions } from "./utils/version.js";
 import { buildOutlineList } from "./object/viewer.js";
 import { getObjectComments, putObject, deleteReview } from "./object/xhttp.js";
 import { saveComment, focusCommentFromSidebarToPdf, focusCommentFromPdfToSidebar } from "./object/comments.js"
 import { saveLocalSettings } from "./object/storage.js";
+import { formatRelativeDate } from "./utils/date.js"
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 // ======================= Variables and Constants =======================
 
@@ -22,6 +27,7 @@ let nightModeEnabled = false;
 const pdfDefaultScale = 1.20;
 const pdfUrl = document.getElementById("pdf-container").getAttribute("data-pdf-url");
 const pdfObjectId = document.getElementById("pdf-container").getAttribute("data-pdf-object-id");
+const pdfObjectVersion = document.getElementById("pdf-container").getAttribute("data-pdf-object-version");
 
 const pdfMarkers = document.getElementById("markers");
 const commentTextarea = document.getElementById("comment-input");
@@ -49,6 +55,20 @@ const buttonNightMode = document.getElementById('night-mode');
 
 const buttonsDeleteReview = document.querySelectorAll('.delete-review');
 const boxesReviewValue = document.querySelectorAll('.bot-review-value');
+const buttonsOpenReview = document.querySelectorAll('.open-review');
+const reviewDialog = document.getElementById('review-dialog');
+const reviewDialogTitle = document.getElementById('review-dialog-title');
+const reviewDialogContent = document.getElementById('review-dialog-content');
+const buttonCloseReviewDialog = document.getElementById('close-review-dialog');
+
+const compareVersionsButton = document.getElementById('compare-versions');
+const compareDialog = document.getElementById('compare-dialog');
+const buttonCloseCompareDialog = document.getElementById('close-compare-dialog');
+
+const editCommentDialog = document.getElementById('edit-comment-dialog');
+const editCommentForm = document.getElementById('edit-comment-form');
+const editCommentInput = document.getElementById('edit-comment-input');
+let commentBeingEdited = null;
 
 const selectStatusElement = document.getElementById("status-label");
 const selectStatusTick = {
@@ -66,7 +86,9 @@ const selectStatusTick = {
 // Render page with annotations
 function renderPage(pageNumber, scale = pdfCurrentScale) {
     const canvas = document.getElementById("pdf-canvas");
+    const loading = document.getElementById("pdf-loading");
     const context = canvas.getContext("2d");
+    if(loading.className != 'hidden') loading.className = 'hidden';
     pdfInstance.getPage(pageNumber).then(page => {
         const viewport = page.getViewport({ scale });
         canvas.width =  viewport.width;
@@ -263,7 +285,7 @@ document.getElementById("pdf-canvas").addEventListener("click", event => {
             commentTextarea.removeEventListener("keydown", onKeyDown);
             setTimeout(() => {
                 loadComments(commentsModePerPage);
-            }, 100);
+            }, 250); // Delay to ensure the comment is saved before reloading
         } else if (e.key === "Escape") {
             commentTextarea.value = "";
             commentTextarea.style.display = "none";
@@ -392,10 +414,21 @@ function loadComments(per_page = true) {
                         }, 100); 
                     }
                 });
+
+                const editBtn = document.createElement("span");
+                editBtn.title = "Edit comment";
+                editBtn.innerHTML = "<i class='fas warning fa-pen'></i>";
+                editBtn.addEventListener("click", () => {
+                    commentBeingEdited = { id, data };
+                    editCommentInput.value = text;
+                    editCommentDialog.showModal();
+                    editCommentInput.focus();
+                });
                 
                 // Create object
                 commentControl.appendChild(goToBtn);
                 if (reviewEnabled) {
+                    commentControl.appendChild(editBtn);
                     commentControl.appendChild(resolveBtn);
                     commentControl.appendChild(deleteBtn);
                 }
@@ -414,8 +447,220 @@ function loadComments(per_page = true) {
     });    
 }
 
+function closeEditCommentDialog() {
+    editCommentDialog.close();
+    commentBeingEdited = null;
+}
+
+document.getElementById('close-edit-comment').addEventListener('click', closeEditCommentDialog);
+document.getElementById('cancel-edit-comment').addEventListener('click', closeEditCommentDialog);
+
+editCommentForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const updatedText = editCommentInput.value.trim();
+    if (!commentBeingEdited || !updatedText) {
+        return;
+    }
+
+    const { id, data } = commentBeingEdited;
+    data.inlineComments = data.inlineComments.map(comment =>
+        comment.id === id ? { ...comment, text: updatedText } : comment
+    );
+
+    putObject("/api/objects/" + pdfObjectId, { comments: data }, (err) => {
+        if (err) {
+            alert("Error updating comment: " + err);
+            return;
+        }
+        closeEditCommentDialog();
+        loadComments(commentsModePerPage);
+    });
+});
+
+
+
+// ======================= Comparison =======================
+
+if (compareVersionsButton && compareDialog) {
+    let releaseCompareResources = () => {};
+    const compareVersionOptions = [...document.querySelectorAll('.compare-version-option')];
+    const zoomOutButton = document.getElementById('compare-zoom-out');
+    const zoomInButton = document.getElementById('compare-zoom-in');
+    const zoomValue = document.getElementById('compare-zoom-value');
+    const syncScrollToggle = document.getElementById('sync-pdf-scroll');
+    const previousContent = document.getElementById('compare-previous-content');
+    const currentContent = document.getElementById('compare-current-content');
+    let comparisonZoom = 1;
+    let scrollSyncing = false;
+
+    const syncScroll = (source, target) => {
+        if (!syncScrollToggle.checked || scrollSyncing) return;
+        const sourceMax = source.scrollHeight - source.clientHeight;
+        const targetMax = Math.max(0, target.scrollHeight - target.clientHeight);
+        const scrollProgress = sourceMax > 0 ? source.scrollTop / sourceMax : 0;
+        scrollSyncing = true;
+        target.scrollTop = scrollProgress * targetMax;
+        window.requestAnimationFrame(() => {
+            scrollSyncing = false;
+        });
+    };
+
+    previousContent.addEventListener('scroll', () => syncScroll(previousContent, currentContent));
+    currentContent.addEventListener('scroll', () => syncScroll(currentContent, previousContent));
+
+    const setVersionTitle = (element, versionOption) => {
+        const versionLabel = document.createElement('span');
+        versionLabel.className = 'compare-version-title';
+        versionLabel.textContent = `v${versionOption.dataset.version}`;
+        element.replaceChildren(
+            // document.createTextNode(`${versionOption.dataset.name} `),
+            document.createTextNode(` `),
+            versionLabel,
+        );
+    };
+
+    const findNewerVersion = versions => {
+        const versionOrder = compareSemanticVersions(versions[0].dataset.version, versions[1].dataset.version);
+        if (versionOrder !== null && versionOrder !== 0) return versionOrder > 0 ? versions[0] : versions[1];
+
+        const dateOrder = versions[0].dataset.updateDate.localeCompare(versions[1].dataset.updateDate);
+        if (dateOrder === 0) return null;
+        return dateOrder > 0 ? versions[0] : versions[1];
+    };
+
+    const setNewerLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-label compare-label-newer';
+        label.textContent = 'Newer';
+        element.append(document.createTextNode(' '), label);
+    };
+
+    const setCurrentLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-label compare-label-current';
+        label.textContent = 'Current';
+        element.append(document.createTextNode(' '), label);
+    };
+
+    const setOlderLabel = element => {
+        const label = document.createElement('span');
+        label.className = 'compare-label compare-label-older';
+        label.textContent = 'Older';
+        element.append(document.createTextNode(' '), label);
+    };
+
+    const updateVersionSelection = () => {
+        const selectedVersions = compareVersionOptions.filter(option => option.checked);
+        compareVersionsButton.disabled = selectedVersions.length !== 2;
+        compareVersionOptions.forEach(option => {
+            option.disabled = selectedVersions.length === 2 && !option.checked;
+        });
+    };
+
+    compareVersionOptions.forEach(option => option.addEventListener('change', updateVersionSelection));
+    updateVersionSelection();
+
+    const updateComparisonZoom = () => {
+        compareDialog.style.setProperty('--compare-zoom-width', `${comparisonZoom * 100}%`);
+        zoomValue.textContent = `${Math.round(comparisonZoom * 100)}%`;
+        zoomOutButton.disabled = comparisonZoom <= 0.5;
+        zoomInButton.disabled = comparisonZoom >= 2;
+    };
+
+    zoomOutButton.addEventListener('click', () => {
+        comparisonZoom = Math.max(0.5, comparisonZoom - 0.25);
+        updateComparisonZoom();
+    });
+    zoomInButton.addEventListener('click', () => {
+        comparisonZoom = Math.min(2, comparisonZoom + 0.25);
+        updateComparisonZoom();
+    });
+    updateComparisonZoom();
+
+    compareVersionsButton.addEventListener('click', async () => {
+        const selectedVersions = compareVersionOptions.filter(option => option.checked);
+        if (selectedVersions.length !== 2) return;
+
+        compareDialog.showModal();
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+        document.getElementById('text-difference-count').textContent = '0';
+        document.getElementById('text-added-count').textContent = '0';
+        document.getElementById('text-removed-count').textContent = '0';
+        document.getElementById('text-modified-count').textContent = '0';
+        document.getElementById('visual-difference-count').textContent = '0';
+        const newerVersion = findNewerVersion(selectedVersions);
+        const previousTitle = document.getElementById('compare-previous-title');
+        const currentTitle = document.getElementById('compare-current-title');
+        setVersionTitle(previousTitle, selectedVersions[0]);
+        setVersionTitle(currentTitle, selectedVersions[1]);
+        if (newerVersion === selectedVersions[0]) {
+            setNewerLabel(previousTitle);
+            setOlderLabel(currentTitle);
+        }
+        if (newerVersion === selectedVersions[1]) {
+            setNewerLabel(currentTitle);
+            setOlderLabel(previousTitle);
+        }
+
+        if (pdfObjectVersion === selectedVersions[0].dataset.version) setCurrentLabel(previousTitle);
+        else if (pdfObjectVersion === selectedVersions[1].dataset.version) setCurrentLabel(currentTitle);
+
+        document.querySelectorAll('.compare-content').forEach(content => {
+            content.innerHTML = '<p class="my-2 muted"><i class="fas fa-circle-notch fa-spin"></i> Loading document...</p>';
+        });
+
+        try {
+            const { comparePdfs } = await import('./object/compare.js');
+            releaseCompareResources = await comparePdfs(selectedVersions[0].dataset.url, selectedVersions[1].dataset.url);
+        } catch (error) {
+            console.error('Unable to compare PDF versions:', error);
+            document.querySelectorAll('.compare-content').forEach(content => {
+                content.textContent = 'Unable to load the document comparison.';
+            });
+        }
+    });
+
+    const closeCompareDialog = () => {
+        compareDialog.close();
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+    };
+
+    buttonCloseCompareDialog.addEventListener('click', closeCompareDialog);
+    compareDialog.addEventListener('close', () => {
+        releaseCompareResources();
+        releaseCompareResources = () => {};
+    });
+
+    document.getElementById('show-text-differences').addEventListener('change', event => {
+        document.querySelectorAll('.compare-text-overlay').forEach(overlay => {
+            overlay.hidden = !event.target.checked;
+        });
+    });
+    document.getElementById('show-visual-differences').addEventListener('change', event => {
+        document.querySelectorAll('.compare-graphics-overlay').forEach(overlay => {
+            overlay.hidden = !event.target.checked;
+        });
+    });
+}
+
 // ======================= Reviews =======================
 
+// Open the already-rendered review content in a larger dialog
+buttonsOpenReview.forEach(button => {
+    button.addEventListener('click', () => {
+        const review = button.closest('.bot-review');
+        const reviewValue = review.querySelector('.bot-review-value');
+        const reviewTitle = review.querySelector('.bot-review-header h4');
+
+        reviewDialogTitle.textContent = reviewTitle.textContent.trim();
+        reviewDialogContent.innerHTML = reviewValue.outerHTML;
+        reviewDialog.showModal();
+    });
+});
+
+buttonCloseReviewDialog.addEventListener('click', () => reviewDialog.close());
 
 // Event listener to delete review if present
 if (buttonsDeleteReview.length > 0) {
@@ -461,9 +706,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Render markdown
     if (boxesReviewValue.length > 0) {
-        console.debug("CIAO")
         boxesReviewValue.forEach(element => {
-            element.innerHTML = marked.parse(renderText(element.textContent));
+            element.innerHTML = marked.parse(escapeText(element.textContent));
         });
     }
+
+    // Set object readable date from timestamp
+    const allObjectLastUpdates = document.querySelectorAll('.object-relative-date');
+    allObjectLastUpdates.forEach(el => {
+        const isoTimestamp = el.getAttribute('data-timestamp');
+        if (isoTimestamp) {
+            el.textContent = formatRelativeDate(isoTimestamp);
+        }
+    });
 });

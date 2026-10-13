@@ -39,6 +39,27 @@
     font-weight: bold;
 }
 
+.border-primary {
+    border-color: var(--primary) !important;
+}
+
+.border-error,
+.border-danger {
+    border-color: var(--danger) !important;
+}
+
+.border-success {
+    border-color: var(--success) !important;
+}
+
+.border-warning {
+    border-color: var(--warning) !important;
+}
+
+.border-muted {
+    border-color: var(--muted) !important;
+}
+
 .primary, .blue{
     color: var(--primary);
 }
@@ -131,4 +152,9 @@
 
 .pointer {
     cursor: pointer;
+}
+
+.code {
+    word-break: break-all;
+    font-family: 'Courier New', Courier, monospace;
 }

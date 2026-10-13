@@ -186,3 +186,4 @@ cython_debug/
 !template.**.env
 **/*.pem
 **/certs
+**/.DS_Store
