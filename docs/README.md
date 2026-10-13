@@ -5,11 +5,20 @@
 
 ## APIs
 
+Checkout the OpenAPI file to use the integration API for your instance.
+
 - [Integration APIs - v0.1.0](./integration-openapi.yaml)
 
 ## Environment Variables
 
 Checkout the environment variables for the app and the plugin [in this page](./envs.md).
+
+
+# Integrations
+
+## Plugins 📄➕
+
+If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
 
 ## Webhook Notification for Document Status Updates
 
@@ -51,16 +60,16 @@ POST https://mywebsite.tld/webhook-handler
 - Status can be: `No Review`, `Pending Review`, `Under Review`, `Require Changes`, `Approved`
 
 
-## Development Notes
+# Development Notes
 
-### Logs and Auditing
+## Logs and Auditing
 
 All the logs are collected inside a `log` table. 
 Every **System Operation** (e.g. db update, first admin creation) is logged for the **System User**.
 
 All the API KEYs created by the user are available to admins for security reasons.
 
-### Database
+## Database
 
 For portability reasons, the database is a SQLite that lives within the main container. 
 All files are saved as blobs for performance reasons.
@@ -69,7 +78,7 @@ The database has a table called `rr_db_version` which contains the current db sc
 
 > In future releases, it will be possible to choose between SQLite or MySQL to gain more reading performance.
 
-### Github integration 
+# Github integration 
 
 The Github Integration works as follows:
 
@@ -82,7 +91,7 @@ The Github Integration works as follows:
   - If the user change its username in Github it needs to be updated.
 1. Done!
 
-### Permissions
+# Permissions
 
 - A member of a project can write/read resources, edit documents (name, description, path, version), remove the documents if is the author and view comments / reviews on documents.
 - A reviwer of a project can do everything as the member, and can also add / check / delete comments. It can also remove reviews.

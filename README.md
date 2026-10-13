@@ -37,20 +37,20 @@ Checkout more screenshots [here](https://github.com/Maxelweb/RoundReview/release
 > [!NOTE]
 > The project is under active development and the current version is in **beta**
 
-## Plugins
+# Plugins 📄➕
 
-If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins)
+If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
 
-## Installation and Maintenance
+# Installation and Maintenance
 
 > [!IMPORTANT]
 > Follow these instructions to get the container up and running properly
 
-### Requirements
+## Requirements
 
 - Docker with Docker Compose (v2+)
 
-### First installation - Round Review App
+## First installation - Round Review App
 
 1. Clone the repository in your system
     - `git clone https://github.com/Maxelweb/RoundReview.git`
@@ -63,7 +63,7 @@ If you want to add **plugins** to your Round Review instance, checkout [Round Re
     - In case of port error (e.g. already in use), change the port inside the docker-compose
     - To stop this, use `docker-compose down roundreview_app`
 
-#### Default admin credentials
+### Default admin credentials
 
 The following credentials applies only if you didn't change the default environment variables configuration.
 
@@ -73,7 +73,7 @@ The following credentials applies only if you didn't change the default environm
 > [!WARNING]
 > If you didn't change the default **admin password** to something else, you MUST check the logs from the docker container to get the generated password (`docker logs roundreview_app`). If you missed it, restart from scratch by removing the volumes created.
 
-### Docker stack management
+## Docker stack management
 
 1. `docker-compose up -d`: Start all containers in the stack
 1. `docker-compose down`: Stop all containers in the stack
@@ -84,16 +84,16 @@ The following credentials applies only if you didn't change the default environm
 1. `docker-compose -f docker-compose.custom.yml up -d`
 1. `docker-compose -f docker-compose.custom.yml down`
 
-### Updates
+## Updates
 
 1. `git pull` the last updates from the git repository
 1. `docker-compose up -d --build`: Start and build all containers; this will automatically update the internal database
 
-## Documentation
+# Documentation
 
 Go to [docs/](./docs/README.md) folder for more documentation.
 
-## License and Credits
+# License and Credits
 
 [Apache 2.0 License](./LICENSE)
 
