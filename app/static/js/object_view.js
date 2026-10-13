@@ -602,8 +602,9 @@ if (compareVersionsButton && compareDialog) {
             setNewerLabel(currentTitle);
             setOlderLabel(previousTitle);
         }
+
         if (pdfObjectVersion === selectedVersions[0].dataset.version) setCurrentLabel(previousTitle);
-        if (pdfObjectVersion === selectedVersions[1].dataset.version) setCurrentLabel(currentTitle);
+        else if (pdfObjectVersion === selectedVersions[1].dataset.version) setCurrentLabel(currentTitle);
 
         document.querySelectorAll('.compare-content').forEach(content => {
             content.innerHTML = '<p class="my-2 muted"><i class="fas fa-circle-notch fa-spin"></i> Loading document...</p>';
