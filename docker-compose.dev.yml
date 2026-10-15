@@ -1,5 +1,9 @@
 name: RoundReview_DevStack
 
+# Use this docker-compose file for local development and testing. 
+# It mounts the source code into the container so that changes are reflected immediately.
+
+
 services:
   roundreview_app:
     container_name: "roundreview_app"

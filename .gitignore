@@ -173,17 +173,23 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
 # Others
 **/__pycache__
-**/*.db
-**/flask_session
-**/*.env
 **/tmp
 **/docker-compose.custom.yml
 **/docker-compose.override.yml
 **/docker-compose.prod.yml
+
+# Environment files and secrets
 !template.**.env
 **/*.pem
 **/certs
+**/flask_session
+**/*.env
+
+# MacOS
 **/.DS_Store
+
+# Database
+*.sqlite3
+**/*.db
