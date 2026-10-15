@@ -1,6 +1,7 @@
 import base64
 import io
 import json
+import re
 import fitz
 from types import SimpleNamespace
 from flask import render_template, request, session, Blueprint, redirect, send_file
@@ -13,6 +14,22 @@ from .project import get_user_role_in_project
 
 
 object_blueprint = Blueprint('object', __name__)
+
+_SEMVER_PATTERN = (
+    r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?"
+    r"(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?"
+)
+_OBJECT_NAME_VERSION_PATTERN = re.compile(
+    rf"^(?P<base>.+?)[\s_-]+v?(?P<version>{_SEMVER_PATTERN})$",
+    re.ASCII,
+)
+
+
+def _object_name_base(name: str) -> str:
+    """Remove a trailing semantic version from an object name, if present."""
+    match = _OBJECT_NAME_VERSION_PATTERN.fullmatch(name)
+    return match.group("base") if match else name
 
 
 @object_blueprint.route('/projects/<project_id>/objects/<object_id>', methods=["GET"])
@@ -39,7 +56,12 @@ def view_object(project_id: str, object_id: str):
     res, status = project_objects_list(project_id)
     object_versions = []
     if status == 200:
-        same_name = [Object.from_dict(data) for data in res["objects"] if data["name"] == obj.name]
+        object_name_base = _object_name_base(obj.name)
+        same_name = [
+            Object.from_dict(data)
+            for data in res["objects"]
+            if _object_name_base(data["name"]) == object_name_base
+        ]
         if len({revision.version for revision in same_name}) > 1:
             object_versions = sorted(same_name, key=lambda revision: revision.update_date)
 

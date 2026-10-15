@@ -39,7 +39,7 @@ Checkout more screenshots [here](https://github.com/Maxelweb/RoundReview/release
 
 ## 📄➕ Plugins
 
-If you want to add **plugins** 📄➕ to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
+If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
 
 ## Installation and Maintenance
 
@@ -48,46 +48,81 @@ If you want to add **plugins** 📄➕ to your Round Review instance, checkout [
 
 ### Requirements
 
+
+- A system with `linux/amd64` or `linux/arm64`.
 - Docker with Docker Compose (v2+)
 
 ### First installation
 
 1. Clone the repository in your system
     - `git clone https://github.com/Maxelweb/RoundReview.git`
-1. Prepare the environment variables file
-    - `cp envs/template.rr-app.env envs/rr-app.env`
-1. Edit the environment file `envs/rr-app.env` according to your needs (see [envs documentation](./docs/envs.md))
-1. Start the Round Review (app) container
-    - `docker-compose up roundreview_app -d --build`
-1. Go to [localhost:8080](http://localhost:8080)
-    - In case of port error (e.g. already in use), change the port inside the docker-compose
-    - To stop this, use `docker-compose down roundreview_app`
+1. Start Round Review using the published image
+    - `docker compose up -d`
+1. In the browser, go to [localhost:8080](http://localhost:8080)
+    - If port `8080` is already in use, change the port mapping in `docker-compose.yml`.
+    - To stop the app, use `docker compose down`.
+
+
+To provide the full set of environment variables, copy `docker-compose.yml` to a custom Compose file, add an `env_file` entry pointing to `./envs/rr-app.env`, and follow the [environment variable documentation](./docs/envs.md). Create the environment file from the template with `cp envs/template.rr-app.env envs/rr-app.env`.
 
 #### Default admin credentials
 
-The following credentials applies only if you didn't change the default environment variables configuration.
+The following credentials apply if you have not configured custom admin environment variables.
 
 - Email: `admin@system.com`
 - Password: `<randomly generated>` (check docker logs)
 
 > [!WARNING]
-> If you didn't change the default **admin password** to something else, you MUST check the logs from the docker container to get the generated password (`docker logs roundreview_app`). If you missed it, restart from scratch by removing the volumes created.
+> If you have not set a custom **admin password**, check the container logs for the generated password with `docker logs roundreview_app`. If you missed it, restart from scratch by removing the volumes created.
 
 ### Manage the Docker stack
 
-1. `docker-compose up -d`: Start all containers in the stack
-1. `docker-compose down`: Stop all containers in the stack
+Start and stop the published-image stack with:
+
+```sh
+docker compose up -d
+docker compose down
+```
 
 > [!TIP]
-> Copy `docker-compose.yml` and paste as `docker-compose.custom.yml`. Then customize the stack according to your needs.
+> Copy `docker-compose.yml` to `docker-compose.custom.yml` to customize the published-image stack. For local builds or source-mounted development, see the [Local and Development Docker Compose guide](./docs/README.md#local-and-development-docker-compose). Both require `envs/rr-app.env`.
 
-1. `docker-compose -f docker-compose.custom.yml up -d`
-1. `docker-compose -f docker-compose.custom.yml down`
+Run a custom stack with:
 
-### Updates the Docker stack
+```sh
+docker compose -f docker-compose.custom.yml up -d
+docker compose -f docker-compose.custom.yml down
+```
 
-1. `git pull` the last updates from the git repository
-1. `docker-compose up -d --build`: Start and build all containers; this will automatically update the internal database
+### Update the Docker stack
+
+Pull the latest published image and recreate the app container:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+The `latest` tag follows the newest stable version published from a matching `v<version>` Git tag. To stay on a fixed release, set the image in the Compose file to `ghcr.io/maxelweb/roundreview:<version>` and pull that version instead. Database files and sessions are kept in named volumes when the container is recreated.
+
+### Local build and development
+
+Create the environment file first:
+```sh
+cp envs/template.rr-app.env envs/rr-app.env
+```
+
+Build and run the checkout as an image:
+```sh
+docker compose -f docker-compose.local.yml up -d --build
+```
+
+For development with `app/` mounted into the container:
+```sh
+docker compose -f docker-compose.dev.yml up -d --build
+```
+
+See the [detailed Compose guide](./docs/README.md#local-and-development-docker-compose) for storage behavior and shutdown commands.
 
 ## Documentation
 

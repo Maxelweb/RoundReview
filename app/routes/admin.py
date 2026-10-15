@@ -1,7 +1,14 @@
+import os
 from datetime import datetime
 from flask import render_template, request, session, redirect, Blueprint
 from .utils import is_logged, is_logged_admin
-from ..config import VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID
+from ..config import (
+    VERSION, log, USER_DEFAULT_PASSWORD, USER_SYSTEM_ID, DEBUG, APP_NAME,
+    USER_ADMIN_NAME, USER_ADMIN_EMAIL, GITHUB_OAUTH_ENABLED,
+    GITHUB_OAUTH_CLIENT_ID,
+    GITHUB_OAUTH_ACCESS_TOKEN_URL, GITHUB_OAUTH_AUTHORIZE_URL,
+    GITHUB_OAUTH_API_BASE_URL,
+)
 from ..database import Database
 from ..models import User, Log, SystemPropertyInfo, SystemProperty, Property
 
@@ -141,6 +148,33 @@ def settings():
     if res:
         sys_user = User(res)
         sys_user.load_properties_from_db(db)
+    sensitive_environment_variables = {
+        "RR_DEFAULT_USER_PASSWORD",
+        "GITHUB_OAUTH_CLIENT_SECRET",
+    }
+    configured_environment_variables = [
+        ("DEBUG", DEBUG),
+        ("RR_APP_NAME", APP_NAME),
+        ("RR_ADMIN_NAME", USER_ADMIN_NAME),
+        ("RR_ADMIN_EMAIL", USER_ADMIN_EMAIL),
+        ("RR_DEFAULT_USER_PASSWORD", None),
+        ("GITHUB_OAUTH_ENABLED", GITHUB_OAUTH_ENABLED),
+        ("GITHUB_OAUTH_CLIENT_ID", GITHUB_OAUTH_CLIENT_ID),
+        ("GITHUB_OAUTH_CLIENT_SECRET", None),
+        ("GITHUB_OAUTH_ACCESS_TOKEN_URL", GITHUB_OAUTH_ACCESS_TOKEN_URL),
+        ("GITHUB_OAUTH_AUTHORIZE_URL", GITHUB_OAUTH_AUTHORIZE_URL),
+        ("GITHUB_OAUTH_API_BASE_URL", GITHUB_OAUTH_API_BASE_URL),
+    ]
+    environment_variables = []
+    for name, value in configured_environment_variables:
+        is_set = bool(os.environ.get(name))
+        environment_variables.append({
+            "name": name,
+            "value": (
+                "Set (hidden)" if is_set else "-"
+            ) if name in sensitive_environment_variables else str(value),
+            "is_set": is_set,
+        })
     if request.method == "POST":
         error = False
         # For each request form key, update the system user property
@@ -166,6 +200,7 @@ def settings():
         title="Global Settings",
         syspropinfo=SystemProperty,
         sys_user=sys_user,
+        environment_variables=environment_variables,
         version=VERSION,
         output=output,
         logged=is_logged(),

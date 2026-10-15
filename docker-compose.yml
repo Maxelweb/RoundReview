@@ -1,17 +1,18 @@
 name: RoundReview_Stack
 
+# Use this docker-compose to rapidly start the latest RoundReview from the public registry.
 services:
   roundreview_app:
     container_name: "roundreview_app"
-    build: .
+    image: ghcr.io/maxelweb/roundreview:latest
     restart: unless-stopped
     ports: 
       - "8080:8080"
     volumes:
       - rr_sessions:/app/flask_session:rw
       - rr_database:/app/database:rw
-    env_file:
-      - ./envs/rr-app.env
+    environment:
+      - RR_APP_NAME="My RoundReview App" # CHANGE THIS TO YOUR APP NAME
 
 volumes:
   rr_sessions:
