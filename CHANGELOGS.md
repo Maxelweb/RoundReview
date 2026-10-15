@@ -4,6 +4,8 @@
 
 - Fix debug and github enabled environment variables values
 - Add environment variables list in global settings
+- Chore: add github workflow to publish packages on Github Registry
+- Docs: update documentation for docker compose
 
 **v0.3.0** (2026-10-13)
 
