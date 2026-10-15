@@ -26,5 +26,36 @@
             <input type="reset" class="secondary" value="Reset">
         </fieldset>
     </form>
+    <h3>Environment Variables</h3>
+    <p class="small block muted">
+        These values are read-only. Change them in your deployment environment as described in
+        <a href="https://github.com/Maxelweb/RoundReview" target="_blank" rel="noopener noreferrer">the environment variable documentation</a>.
+    <table class="resource-table">
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Is default value?</th>
+                <th>Current Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for variable in environment_variables %}
+            <tr>
+                <td><span class="muted">{{ variable.name }}</span></td>
+                <td>
+                    <i
+                        class="fas {{ 'fa-edit warning' if variable.is_set else 'fa-check success' }}"
+                        role="img"
+                        aria-label="{{ 'Changed' if variable.is_set else 'Not changed' }}"
+                        title="{{ 'Changed' if variable.is_set else 'Not changed' }}"
+                    ></i>
+                </td>
+                <td>
+                    {{ variable.value }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </section>
 {% endblock %}
