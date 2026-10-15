@@ -1,5 +1,10 @@
 # Changelogs
 
+**v0.3.1** (2026-10-15)
+
+- Fix debug and github enabled environment variables values
+- Add environment variables list in global settings
+
 **v0.3.0** (2026-10-13)
 
 - Add drag-n-drop in project view
