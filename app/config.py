@@ -3,13 +3,13 @@ import logging
 import secrets
 
 # ------ Environment Variables ------ 
-DEBUG = os.environ.get('DEBUG', '').strip().lower() in {'1', 'true'}
+DEBUG = os.environ.get('DEBUG', '').strip().lower() in {'1', 'true', 'yes'}
 APP_NAME = os.environ.get('RR_APP_NAME') or "Round Review"
 USER_ADMIN_NAME = os.environ.get('RR_ADMIN_NAME') or "admin"
 USER_ADMIN_EMAIL = os.environ.get('RR_ADMIN_EMAIL') or "admin@system.com"
 USER_DEFAULT_PASSWORD = os.environ.get('RR_DEFAULT_USER_PASSWORD') or secrets.token_hex(16)
 
-GITHUB_OAUTH_ENABLED = os.environ.get('GITHUB_OAUTH_ENABLED') is not None or False
+GITHUB_OAUTH_ENABLED = os.environ.get('GITHUB_OAUTH_ENABLED', '').strip().lower() in {'1', 'true', 'yes'}
 GITHUB_OAUTH_CLIENT_ID = os.environ.get('GITHUB_OAUTH_CLIENT_ID') or None
 GITHUB_OAUTH_CLIENT_SECRET = os.environ.get('GITHUB_OAUTH_CLIENT_SECRET') or None
 GITHUB_OAUTH_ACCESS_TOKEN_URL = os.environ.get('GITHUB_OAUTH_ACCESS_TOKEN_URL') or 'https://github.com/login/oauth/access_token'
