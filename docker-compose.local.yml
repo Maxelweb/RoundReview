@@ -1,0 +1,21 @@
+name: RoundReview_LocalStack
+
+# Use this docker-compose file for local docker build. 
+# It builds the source code into the container without using a public registry.
+
+services:
+  roundreview_app:
+    container_name: "roundreview_app"
+    build: .
+    restart: unless-stopped
+    ports: 
+      - "8080:8080"
+    volumes:
+      - rr_sessions:/app/flask_session:rw
+      - rr_database:/app/database:rw
+    env_file:
+      - ./envs/rr-app.env
+
+volumes:
+  rr_sessions:
+  rr_database:
