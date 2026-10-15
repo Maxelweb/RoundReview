@@ -15,7 +15,7 @@
 | `RR_ADMIN_NAME` | Default administrator username | "admin" | No - Note that you cannot change the name afterwards |
 | `RR_ADMIN_EMAIL` | Default administrator email | "admin@system.com" | No — you can change to a real admin email afterwards |
 | `RR_DEFAULT_USER_PASSWORD` | Default password for created users (used when not provided) | Random password (generated at runtime) | No |
-| `DEBUG` | Enable debug logging and development mode | None (unset) | No — let empty in production and `1` or `True` in development |
+| `DEBUG` | Enable debug logging and development mode | False | No — set to `1` or `true` (case-insensitive) in development; other values disable it |
 
 
 ### Github OAuth - Extra Configuration
