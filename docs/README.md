@@ -13,6 +13,37 @@ Checkout the OpenAPI file to use the integration API for your instance.
 
 Checkout the environment variables for the app and the plugin [in this page](./envs.md).
 
+## Local and Development Docker Compose
+
+Both source-checkout Compose files require `envs/rr-app.env`. Create it from the template and configure it as needed:
+
+```sh
+cp envs/template.rr-app.env envs/rr-app.env
+```
+
+### Local build
+
+`docker-compose.local.yml` builds the current source into an image. Source changes require a rebuild:
+
+```sh
+docker compose -f docker-compose.local.yml up -d --build
+docker compose -f docker-compose.local.yml logs -f roundreview_app
+docker compose -f docker-compose.local.yml down
+```
+
+The database and sessions use named Docker volumes, which are retained by `down`.
+
+### Development with mounted source
+
+`docker-compose.dev.yml` builds the image and mounts `./app` into the container, so source edits are available without rebuilding. Restart the container if changes are not picked up automatically.
+
+```sh
+docker compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml logs -f roundreview_app
+docker compose -f docker-compose.dev.yml down
+```
+
+This setup stores the database in the checkout's `database/` directory and sessions in a named volume. Both files use the same container name and port, so run one at a time. For the published GHCR image, see [First installation](../README.md#first-installation).
 
 # Integrations
 
@@ -84,8 +115,8 @@ The Github Integration works as follows:
 
 1. First, create a new [OAuth Apps](https://github.com/settings/developers) in Github > Settings > Developer Settings
 1. Copy the client ID (e.g. `Ov2xxxxxx`) and client Secret (e.g. `xxxxxxxxxxdf21c24f`) from the OAuth Apps.
-1. Add the information in your `.env` config file and enable `GITHUB_OAUTH_ENABLED=True`
-1. Restart the container (`docker compose up -d`) and login into your app as admin
+1. Add the information to `envs/rr-app.env` and enable `GITHUB_OAUTH_ENABLED=True`. Make sure the Compose file you use includes this environment file.
+1. Restart the container with the Compose file you use (for the published image: `docker compose up -d`) and login into your app as admin
 1. Add (or update) a user and insert its Github Username (e.g. `Maxelweb`)
   - The username is case folded, no worries about UPPER / lower cases.
   - If the user change its username in Github it needs to be updated.

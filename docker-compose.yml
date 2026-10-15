@@ -1,5 +1,6 @@
 name: RoundReview_Stack
 
+# Use this docker-compose to rapidly start the latest RoundReview from the public registry.
 services:
   roundreview_app:
     container_name: "roundreview_app"
