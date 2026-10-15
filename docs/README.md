@@ -26,20 +26,28 @@ cp envs/template.rr-app.env envs/rr-app.env
 `docker-compose.local.yml` builds the current source into an image. Source changes require a rebuild:
 
 ```sh
+# To start the stack (remove -d to attach to logs)
 docker compose -f docker-compose.local.yml up -d --build
-docker compose -f docker-compose.local.yml logs -f roundreview_app
+```
+
+```sh
+# To shutdown the stack
 docker compose -f docker-compose.local.yml down
 ```
 
-The database and sessions use named Docker volumes, which are retained by `down`.
+The database and sessions use Docker volumes, which are retained by `down`. To force remove use `[...] down -d`.
 
 ### Development with mounted source
 
 `docker-compose.dev.yml` builds the image and mounts `./app` into the container, so source edits are available without rebuilding. Restart the container if changes are not picked up automatically.
 
 ```sh
+# To start the stack (remove -d to attach to logs)
 docker compose -f docker-compose.dev.yml up -d --build
-docker compose -f docker-compose.dev.yml logs -f roundreview_app
+```
+
+```sh
+# To shutdown the stack
 docker compose -f docker-compose.dev.yml down
 ```
 
@@ -47,7 +55,7 @@ This setup stores the database in the checkout's `database/` directory and sessi
 
 # Integrations
 
-## Plugins 📄➕
+## 📄➕ Plugins
 
 If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
 

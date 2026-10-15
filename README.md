@@ -39,7 +39,7 @@ Checkout more screenshots [here](https://github.com/Maxelweb/RoundReview/release
 
 ## 📄➕ Plugins
 
-If you want to add **plugins** 📄➕ to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
+If you want to add **plugins** to your Round Review instance, checkout [Round Review Plugins](https://github.com/Maxelweb/RoundReviewPlugins).
 
 ## Installation and Maintenance
 
